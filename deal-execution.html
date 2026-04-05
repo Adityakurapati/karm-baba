@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KARM BABA | Deal Execution Detail</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline-variant": "#c3c6d6",
+              "on-secondary-fixed": "#07006c",
+              "on-secondary": "#ffffff",
+              "on-tertiary-fixed": "#2d004f",
+              "on-secondary-container": "#fffbff",
+              "secondary-fixed": "#e1e0ff",
+              "on-tertiary-fixed-variant": "#632892",
+              "on-tertiary-container": "#e8c7ff",
+              "on-error": "#ffffff",
+              "on-primary-fixed-variant": "#003ea8",
+              "on-primary-container": "#c5d2ff",
+              "primary-fixed-dim": "#b4c5ff",
+              "background": "#faf8ff",
+              "surface-container-low": "#f2f3ff",
+              "surface-bright": "#faf8ff",
+              "surface-container-lowest": "#ffffff",
+              "secondary": "#4648d4",
+              "on-surface": "#131b2e",
+              "surface-dim": "#d2d9f4",
+              "on-error-container": "#93000a",
+              "inverse-surface": "#283044",
+              "tertiary-fixed-dim": "#e0b6ff",
+              "on-surface-variant": "#434654",
+              "surface-tint": "#0053db",
+              "on-secondary-fixed-variant": "#2f2ebe",
+              "on-background": "#131b2e",
+              "error-container": "#ffdad6",
+              "surface-variant": "#dae2fd",
+              "surface": "#faf8ff",
+              "surface-container": "#eaedff",
+              "primary-fixed": "#dbe1ff",
+              "inverse-primary": "#b4c5ff",
+              "surface-container-high": "#e2e7ff",
+              "primary-container": "#0050d3",
+              "tertiary": "#5f248e",
+              "tertiary-fixed": "#f2daff",
+              "secondary-fixed-dim": "#c0c1ff",
+              "tertiary-container": "#783fa7",
+              "on-tertiary": "#ffffff",
+              "outline": "#737685",
+              "primary": "#003ba1",
+              "on-primary": "#ffffff",
+              "inverse-on-surface": "#eef0ff",
+              "error": "#ba1a1a",
+              "surface-container-highest": "#dae2fd",
+              "on-primary-fixed": "#00174b",
+              "secondary-container": "#6063ee"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-nav {
+        backdrop-filter: blur(12px);
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      h1, h2, h3 {
+        font-family: 'Manrope', sans-serif;
+      }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full h-16 px-6 flex justify-between items-center bg-[#faf8ff] border-b border-[#c3c6d6]/15 z-50">
+<div class="flex items-center gap-8">
+<span class="text-xl font-black text-[#131b2e] tracking-tight">KARM BABA</span>
+<div class="hidden md:flex items-center bg-surface-container px-4 py-2 rounded-full gap-2">
+<span class="material-symbols-outlined text-outline text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-64 text-on-surface" placeholder="Search deals, entities..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">help</span>
+</button>
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional portrait of a male executive in a sharp navy suit with natural office lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBagzWAYEghdJK6WHh6L-yvye4tfVuPb0pd02UfPB8TEyhlrcl7vqbVTdbbYv-D6a4dsFI8ttSKgKiHGGiNQiHY8O2K8V-tmihWml0XLLT7yf7eOzgljupVQMd97KYAQTh1uqgfGuqhWwMKm1ViP4F5S3vO945lNOSMmVKEhR-sMkWvc6BhT4Ve3uzD_RvVG28PcGeIueAlPdfDQrwWxVKzecOyjdjAxOC_HN5NNaYGssqYjkVJBNF1W3DnuLX6Ux2Anpf3fwu0JFo"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-[#f2f3ff]/80 glass-nav border-r border-[#c3c6d6]/15 pt-20 pb-6 flex flex-col hidden md:flex">
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-[#434654] opacity-80 hover:bg-[#dae2fd] hover:opacity-100 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-semibold text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#434654] opacity-80 hover:bg-[#dae2fd] hover:opacity-100 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">person_add</span>
+<span class="font-semibold text-sm">Onboarding</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#434654] opacity-80 hover:bg-[#dae2fd] hover:opacity-100 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">filter_list</span>
+<span class="font-semibold text-sm">Leads</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#003ba1] border-r-4 border-[#0052CC] bg-[#dae2fd] rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">handshake</span>
+<span class="font-semibold text-sm">Deals</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#434654] opacity-80 hover:bg-[#dae2fd] hover:opacity-100 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-semibold text-sm">CRM</span>
+</a>
+</nav>
+<div class="px-4 mt-auto space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-[#434654] opacity-80 hover:bg-[#dae2fd] rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-semibold text-sm">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#434654] opacity-80 hover:bg-[#dae2fd] rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-semibold text-sm">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-20 p-6 min-h-screen">
+<!-- Header & Stage Tracker -->
+<section class="max-w-7xl mx-auto mb-10">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<div>
+<nav class="flex items-center gap-2 text-on-surface-variant text-sm mb-2">
+<span>Deals</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="font-medium text-primary">Strategic Asset Acquisition #4492</span>
+</nav>
+<h1 class="text-4xl font-extrabold tracking-tight text-on-surface">Strategic Asset Acquisition</h1>
+</div>
+<div class="flex items-center gap-3">
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-xs font-bold text-primary uppercase tracking-wider">Priority: High</span>
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-xs font-bold uppercase tracking-wider">Intelligence Active</span>
+</div>
+</div>
+<!-- Stage Tracker -->
+<div class="bg-surface-container-low p-2 rounded-2xl flex items-center justify-between gap-1 overflow-x-auto">
+<div class="flex-1 flex items-center justify-center py-3 px-4 bg-surface-container-highest rounded-xl border border-outline-variant/10 text-on-surface-variant text-sm font-semibold">
+                    Discovery
+                </div>
+<div class="h-1 w-8 bg-surface-variant hidden lg:block"></div>
+<div class="flex-1 flex items-center justify-center py-3 px-4 bg-surface-container-highest rounded-xl border border-outline-variant/10 text-on-surface-variant text-sm font-semibold">
+                    Due Diligence
+                </div>
+<div class="h-1 w-8 bg-surface-variant hidden lg:block"></div>
+<div class="flex-1 flex items-center justify-center py-3 px-4 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl shadow-lg shadow-primary/20 text-sm font-bold scale-105 z-10">
+                    Negotiation
+                </div>
+<div class="h-1 w-8 bg-surface-variant hidden lg:block"></div>
+<div class="flex-1 flex items-center justify-center py-3 px-4 bg-surface-container-low text-outline text-sm font-semibold">
+                    Legal Review
+                </div>
+<div class="h-1 w-8 bg-surface-variant hidden lg:block"></div>
+<div class="flex-1 flex items-center justify-center py-3 px-4 bg-surface-container-low text-outline text-sm font-semibold">
+                    Closed Won
+                </div>
+</div>
+</section>
+<!-- Main Layout Grid -->
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Counterparty Intelligence -->
+<div class="lg:col-span-3 space-y-6">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-tertiary">psychology</span>
+<h2 class="text-lg font-bold">Counterparty Intelligence</h2>
+</div>
+<!-- Buyer Profile -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/10">
+<div class="flex items-center gap-3 mb-4">
+<div class="h-10 w-10 bg-primary-fixed flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-primary">corporate_fare</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Buyer</p>
+<h3 class="font-bold">Atlas Group Ltd.</h3>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-surface-container-low p-3 rounded-xl">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase mb-1">Trust Score</p>
+<div class="flex items-center gap-2">
+<span class="text-lg font-black text-on-surface">98%</span>
+<div class="flex-1 h-1.5 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[98%]"></div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">Trade Vol.</p>
+<p class="font-bold">$42M</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">Status</p>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-xs font-bold">Verified</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Seller Profile -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/10">
+<div class="flex items-center gap-3 mb-4">
+<div class="h-10 w-10 bg-tertiary-fixed flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-tertiary">account_balance</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Seller</p>
+<h3 class="font-bold">Global Holding Co.</h3>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-surface-container-low p-3 rounded-xl">
+<p class="text-[10px] text-on-surface-variant font-bold uppercase mb-1">Trust Score</p>
+<div class="flex items-center gap-2">
+<span class="text-lg font-black text-on-surface">82%</span>
+<div class="flex-1 h-1.5 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[82%]"></div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">Trade Vol.</p>
+<p class="font-bold">$125M</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">Status</p>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">history</span>
+<span class="text-xs font-bold">Legacy</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Center Column: Communication & Audit Timeline -->
+<div class="lg:col-span-6 flex flex-col h-full">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-lg font-bold">Execution Timeline</h2>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-surface-container hover:bg-surface-variant text-xs font-bold rounded-full transition-colors">Internal Only</button>
+<button class="px-3 py-1 bg-primary-container text-on-primary-container text-xs font-bold rounded-full transition-colors">Shared View</button>
+</div>
+</div>
+<div class="flex-1 bg-surface-container-lowest rounded-3xl p-6 shadow-sm border border-outline-variant/10 overflow-y-auto min-h-[500px]">
+<div class="space-y-8">
+<!-- Date Divider -->
+<div class="flex items-center gap-4">
+<div class="flex-1 h-px bg-outline-variant/20"></div>
+<span class="text-[10px] font-black uppercase tracking-widest text-outline">Today, Oct 24</span>
+<div class="flex-1 h-px bg-outline-variant/20"></div>
+</div>
+<!-- System Alert -->
+<div class="flex justify-center">
+<div class="bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/15 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">info</span>
+<span class="text-xs font-medium text-on-surface-variant">Deal moved to <span class="font-bold text-on-surface">Negotiation</span> by KARM Intelligence</span>
+</div>
+</div>
+<!-- Chat Message: Incoming -->
+<div class="flex items-start gap-4">
+<div class="h-8 w-8 rounded-full bg-surface-dim flex-shrink-0">
+<img class="w-full h-full object-cover rounded-full" data-alt="Professional profile of a business woman with a neutral, professional background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWfn3r5NZGh9x_9TGyoHSJWGFa8RNLsDDQzzNpEVUSXJApDQ6lErEs-80PSlu96o_oLRJwP-DX4ErRLUIqJK5QDr_aVzqL_WxgVdk1920BMlHp1wCuJ_0XScxoAw62ttkZWF0GUqCxxBdvM_4wOxUaTo3BL2IxwW9bg0IDarvZA2SxRPswe4fBbUrvElCOJgFFw0tjRDFJ4kFm4EV7ZF3eoWOZMi_zL65-yAuxL8GmiiqYqwVjeBZGZgSdqtjRPsHKXbIMCNGD3jU"/>
+</div>
+<div class="max-w-[80%]">
+<p class="text-[10px] font-bold text-on-surface-variant mb-1 ml-1">Sarah Chen (Buyer Rep) • 09:42 AM</p>
+<div class="bg-surface-container-low p-4 rounded-2xl rounded-tl-none border border-outline-variant/10">
+<p class="text-sm leading-relaxed">The revised valuation of $1.25M is acceptable, however, we require the audit reports for Q3 to be finalized before Friday's closing session.</p>
+</div>
+</div>
+</div>
+<!-- Chat Message: Internal Note -->
+<div class="flex items-start gap-4 justify-end">
+<div class="max-w-[80%]">
+<p class="text-[10px] font-bold text-tertiary mb-1 mr-1 text-right">Internal Execution Note • 10:15 AM</p>
+<div class="bg-tertiary-container/10 border border-tertiary/20 p-4 rounded-2xl rounded-tr-none">
+<p class="text-sm leading-relaxed text-on-tertiary-fixed-variant italic">RM Action: Expediting the Q3 audit report with the finance team. Target delivery is 14:00 today.</p>
+</div>
+</div>
+<div class="h-8 w-8 rounded-full bg-tertiary-fixed flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-tertiary text-lg">lock</span>
+</div>
+</div>
+<!-- Chat Message: Outgoing -->
+<div class="flex items-start gap-4 justify-end">
+<div class="max-w-[80%]">
+<p class="text-[10px] font-bold text-on-surface-variant mb-1 mr-1 text-right">You • 10:20 AM</p>
+<div class="bg-primary text-on-primary p-4 rounded-2xl rounded-tr-none shadow-md">
+<p class="text-sm leading-relaxed">Noted, Sarah. We are preparing those documents now and they will be uploaded to the portal shortly.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Chat Input Area -->
+<div class="mt-4 bg-surface-container-lowest p-3 rounded-2xl border border-outline-variant/15 flex items-center gap-3">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-sm" placeholder="Send a message or internal note..." type="text"/>
+<button class="p-2 bg-primary text-on-primary rounded-xl hover:scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+<!-- Right Column: RM Execution Panel -->
+<div class="lg:col-span-3 space-y-6">
+<!-- Deal Value Card -->
+<div class="bg-gradient-to-br from-primary to-primary-container p-8 rounded-3xl shadow-xl shadow-primary/20 text-on-primary relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-6xl">monetization_on</span>
+</div>
+<p class="text-xs font-bold uppercase tracking-widest opacity-80 mb-2">Deal Valuation</p>
+<h3 class="text-4xl font-black font-headline tracking-tighter">$1,250,000</h3>
+<p class="text-xs mt-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>12.5% increase from last bid</span>
+</p>
+</div>
+<!-- Executive Actions -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/10 space-y-3">
+<h2 class="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-4">Executive Actions</h2>
+<button class="w-full py-3 px-4 bg-surface-container-high hover:bg-surface-variant text-on-surface text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+                        Schedule Call
+                    </button>
+<button class="w-full py-3 px-4 bg-surface-container-high hover:bg-surface-variant text-on-surface text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined text-sm">edit_note</span>
+                        Update Stage
+                    </button>
+<button class="w-full py-4 px-4 bg-gradient-to-r from-primary to-tertiary text-on-primary text-sm font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg hover:scale-[1.02] active:scale-100 transition-all mt-6">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Close Deal
+                    </button>
+</div>
+<!-- RM Assignments -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/10">
+<h2 class="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-4">Assigned Managers</h2>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full border-2 border-primary overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional headshot of a senior relationship manager with soft blurred office background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5vWVRP299YtieMCrNTS-P_h11f13aJS7etXQiP6QYDT6asEje5I-E9r6P1az0iMLaTUWWX2YAOZ17LgLIaUzJ5SgrRWdasgjRVfuK8tQ6ArEYfnu_sTI5P7E_GpbCRipqvrL5BU_odSEUnd8I3jXaN_2F1bXf7UHnVE6c75g3vifUBcfwCnz2T1OHhgE_iVW1zxbZNdH3IWbyIgzFi0CyNeOtnbvyP2fDvvDwNYOfKF1cyN9rWqmUyBHE2W_iWwbyZrTeIFm9QRc"/>
+</div>
+<div>
+<h4 class="text-sm font-bold">Marcus Thorne</h4>
+<p class="text-[10px] text-on-surface-variant font-medium">Lead Relationship Manager</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full border-2 border-tertiary overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional headshot of a female legal advisor in a modern corporate setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuLzBvLW-nzZYSGNF6OwrT6Z_g_u_DR_ov1Yh4_2iErAsSrjYoTtthe0qIH7abmkt_riI37lXtcHiNmTP7_79NEZpzFevGR-STyhyUDqVq_CYJ2EMkHeHsWqZMjK5sYnwBOzFsmF1fllddj04x8NbKjxqJXtoLMqbzg79qmrgTsfCgTRI0QoQbDhKKoMLIsbr_R-EhCUl0x5CvKeeqpTVtG63Rrct4Anv3e-FKmDddFM-bpaYJJZhlHqoFGziJfZBPWBqtrW3vegg"/>
+</div>
+<div>
+<h4 class="text-sm font-bold">Elena Rodriguez</h4>
+<p class="text-[10px] text-on-surface-variant font-medium">Compliance Specialist</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Execution HUD (Floating Footer) -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-2xl px-6 z-40">
+<div class="bg-[#dae2fd]/90 glass-nav border border-[#c3c6d6]/20 shadow-2xl rounded-full px-8 py-4 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="flex -space-x-3">
+<div class="h-8 w-8 rounded-full border-2 border-white bg-primary-fixed overflow-hidden">
+<img class="h-full w-full object-cover" data-alt="Manager avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMvMMxfT-x86mWMixQrNKQu5hNSp99X0BB08_F-9eYC4VaNZj2PNRw7-SiLP2nfPFilyex6ayKJuJMLTjmXLvY77tpHYSiZbgZzcjXlxcumYXqAaA9h5Zi6LUh45raDoyiV-1c8O9lzwMwJgYmrRJfQwtBRJnVN7zwEZ5Uz1_H-3EypVqBhYd-vZt5on6cwk9SUzTjxh56LRV0_7nkGrBa5I8Ksbg_H4NS29MuZIJlLQJxR9UHPSmVjx0u4Ke-5wOEpu-BrBUQDbI"/>
+</div>
+<div class="h-8 w-8 rounded-full border-2 border-white bg-tertiary-fixed overflow-hidden">
+<img class="h-full w-full object-cover" data-alt="Advisor avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcJjUe1F4e3ys_aJpDJX2MWxEStYMX3p4RKHY7iA3auBbi3X64nLHoNUpnUwcc4_X1Qz0--CipNX4YpoMSVLzEsV037oXFRgIgGBrNDTwCOx4z5IP5eIdtrIX9Jcf6xVlqNbJoIOlUB279sG_usH5wvx_JALeG3g38CCaRB_nsOIb6jMH_J60CxySnCGbgCZwGpABGb3cU22wU-vdreiOKLvTwJu96IrJWesdy6puyZE9lIojtz7Nx-n7TXZpKHu0UCf17G_eL5dY"/>
+</div>
+</div>
+<p class="text-xs font-bold text-on-surface">3 active reviewers in deal room</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="text-xs font-bold text-primary hover:underline px-2">Export Briefing</button>
+<button class="h-10 px-6 bg-primary text-on-primary text-xs font-bold rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-transform">
+                    View Live Deck
+                </button>
+</div>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KARM BABA | Product Promotion &amp; Ads Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#783fa7",
+                    "error-container": "#ffdad6",
+                    "surface-tint": "#0053db",
+                    "primary-container": "#0050d3",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-variant": "#dae2fd",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed": "#00174b",
+                    "on-surface-variant": "#434654",
+                    "inverse-surface": "#283044",
+                    "on-primary-container": "#c5d2ff",
+                    "secondary-container": "#6063ee",
+                    "on-error": "#ffffff",
+                    "on-secondary-container": "#fffbff",
+                    "surface-container-highest": "#dae2fd",
+                    "error": "#ba1a1a",
+                    "inverse-primary": "#b4c5ff",
+                    "tertiary": "#5f248e",
+                    "outline": "#737685",
+                    "on-error-container": "#93000a",
+                    "surface-bright": "#faf8ff",
+                    "tertiary-fixed-dim": "#e0b6ff",
+                    "surface-container-low": "#f2f3ff",
+                    "on-tertiary-container": "#e8c7ff",
+                    "surface": "#faf8ff",
+                    "primary": "#003ba1",
+                    "surface-container": "#eaedff",
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "surface-dim": "#d2d9f4",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "inverse-on-surface": "#eef0ff",
+                    "on-tertiary-fixed": "#2d004f",
+                    "on-secondary": "#ffffff",
+                    "outline-variant": "#c3c6d6",
+                    "tertiary-fixed": "#f2daff",
+                    "on-secondary-fixed": "#07006c",
+                    "on-surface": "#131b2e",
+                    "background": "#faf8ff",
+                    "secondary": "#4648d4",
+                    "on-tertiary": "#ffffff",
+                    "on-background": "#131b2e",
+                    "on-tertiary-fixed-variant": "#632892",
+                    "surface-container-high": "#e2e7ff",
+                    "secondary-fixed": "#e1e0ff",
+                    "primary-fixed": "#dbe1ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tonal-shift { background-color: #f2f3ff; }
+        .executive-gradient { background: linear-gradient(135deg, #003ba1 0%, #0050d3 100%); }
+        .glass-panel { backdrop-filter: blur(12px); }
+        body { font-family: 'Inter', sans-serif; background-color: #faf8ff; color: #131b2e; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased">
+<!-- SideNavBar -->
+<aside class="flex flex-col fixed left-0 top-0 h-full h-screen w-64 border-r border-slate-200/15 dark:border-slate-800/15 bg-slate-50/80 dark:bg-slate-950/80 backdrop-blur-xl z-50">
+<div class="p-8">
+<h1 class="text-xl font-bold text-slate-900 dark:text-slate-50 mb-1">Executive Editorial</h1>
+<p class="text-xs text-slate-500 font-medium tracking-widest uppercase">Sovereign Architect</p>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all duration-200 rounded-xl group" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="font-['Manrope'] font-semibold tracking-tight">Dashboard</span>
+</a>
+<a class="flex items-center px-4 py-3 text-blue-700 dark:text-blue-400 font-bold border-r-2 border-blue-700 hover:bg-slate-200/50 transition-all duration-200 rounded-xl group" href="#">
+<span class="material-symbols-outlined mr-3">ads_click</span>
+<span class="font-['Manrope'] font-semibold tracking-tight">Campaigns</span>
+</a>
+<a class="flex items-center px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all duration-200 rounded-xl group" href="#">
+<span class="material-symbols-outlined mr-3">groups</span>
+<span class="font-['Manrope'] font-semibold tracking-tight">Audience</span>
+</a>
+<a class="flex items-center px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all duration-200 rounded-xl group" href="#">
+<span class="material-symbols-outlined mr-3">insights</span>
+<span class="font-['Manrope'] font-semibold tracking-tight">Analytics</span>
+</a>
+<a class="flex items-center px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all duration-200 rounded-xl group" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="font-['Manrope'] font-semibold tracking-tight">Settings</span>
+</a>
+</nav>
+<div class="p-6 mt-auto">
+<button class="w-full executive-gradient text-white py-4 rounded-full font-headline font-bold text-sm shadow-lg hover:scale-105 transition-transform duration-200">
+                Create Campaign
+            </button>
+<div class="mt-8 flex items-center space-x-3">
+<img alt="Executive Profile" class="w-10 h-10 rounded-full border-2 border-primary/20" data-alt="close-up portrait of a professional executive in a sharp navy suit with clean studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfjeaFOES1uwSrIPzisZz7WXKvZCxMJTT5GXW60ek6mMl7U9t9SVyzKrt6abU4WjdaKKqsXpDP532YMNBB05M96uwkRnuGQyjIJrnHGBQw2gN2UCKgJq_166paVolbbgcJ1zWC8Xl6A0lKyfxf7N4sA_OgjSbpH8ea6LhPewqZMj9EenCkMsIMj8OD8L1g179-wYx-W1ecaoouJ8auPpUdbCFZ_Kyw4pTo8ZUedrzmunmlFwMpp4UVeMw-HEaFG12Zv80TR9coaWQ"/>
+<div class="overflow-hidden">
+<p class="text-sm font-bold truncate">Sovereign Architect</p>
+<p class="text-xs text-slate-500">Managing Partner</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- TopNavBar -->
+<header class="flex items-center justify-between px-8 w-full h-16 sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md bg-surface-container-low border-b border-slate-200/10">
+<div class="flex items-center flex-1">
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+<input class="w-full bg-surface-container-lowest border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/30 transition-all" placeholder="Global deal search..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-6">
+<button class="relative text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute -top-1 -right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="flex items-center space-x-2 pl-4 border-l border-slate-200">
+<span class="text-sm font-medium font-['Inter']">Profile</span>
+<img alt="User Avatar" class="w-8 h-8 rounded-full" data-alt="minimalist user avatar icon with clean geometric lines on a neutral slate background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYiUvcmeJl_F02raCE63jOuVzwNAeHQ8vi7OlMCf_uIPYa7mgWhWPMXjGWNZdtN1ZntvNffHOd_Vze1kseXpUhmsvwteCH7rkkof5EliUsbZmVUNW2Ln2TbYYSbNw6SQ3Lx8KcUDomcq2-QKz5HkXsf1mWTcQlwFGQ_N3SxFNnc4q6Rf5I817Nph8rsAhYu7wQHVj4c0VhjGcbGTjPHwsTHHf3fMxl9viEaHM6Izzo-SdShZUCyaCOEXkx19I2K5cDyWO-HgA5pGA"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-10 space-y-10 max-w-7xl mx-auto">
+<!-- Page Header -->
+<div class="flex items-end justify-between">
+<div>
+<h2 class="text-4xl font-extrabold font-headline tracking-tight text-on-surface">Product Promotion</h2>
+<p class="text-on-surface-variant mt-2 text-lg">Strategic Ad Performance &amp; Growth Engine</p>
+</div>
+<div class="flex space-x-3">
+<button class="px-6 py-2.5 rounded-full border border-outline/20 font-semibold text-sm hover:bg-surface-container-high transition-colors">Export Report</button>
+<button class="px-6 py-2.5 rounded-full bg-primary text-on-primary font-bold text-sm shadow-md hover:translate-y-[-2px] transition-all">Optimize All</button>
+</div>
+</div>
+<!-- KPI Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="bg-surface-container-lowest p-6 rounded-xl border-none shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary p-2 bg-primary-container/10 rounded-lg">visibility</span>
+<span class="text-xs font-bold text-green-600 flex items-center bg-green-50 px-2 py-1 rounded-full">+12.4% <span class="material-symbols-outlined text-xs ml-1">trending_up</span></span>
+</div>
+<p class="text-on-surface-variant text-sm font-medium">Impressions</p>
+<h3 class="text-3xl font-extrabold mt-1">2.4M</h3>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border-none shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-secondary p-2 bg-secondary-container/10 rounded-lg">ads_click</span>
+<span class="text-xs font-bold text-green-600 flex items-center bg-green-50 px-2 py-1 rounded-full">+5.2% <span class="material-symbols-outlined text-xs ml-1">trending_up</span></span>
+</div>
+<p class="text-on-surface-variant text-sm font-medium">Clicks</p>
+<h3 class="text-3xl font-extrabold mt-1">84.2K</h3>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border-none shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-tertiary p-2 bg-tertiary-container/10 rounded-lg">person_add</span>
+<span class="text-xs font-bold text-red-600 flex items-center bg-red-50 px-2 py-1 rounded-full">-2.1% <span class="material-symbols-outlined text-xs ml-1">trending_down</span></span>
+</div>
+<p class="text-on-surface-variant text-sm font-medium">Leads</p>
+<h3 class="text-3xl font-extrabold mt-1">1,104</h3>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border-none shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-green-600 p-2 bg-green-100 rounded-lg">payments</span>
+<span class="text-xs font-bold text-green-600 flex items-center bg-green-50 px-2 py-1 rounded-full">+18.7% <span class="material-symbols-outlined text-xs ml-1">trending_up</span></span>
+</div>
+<p class="text-on-surface-variant text-sm font-medium">ROI</p>
+<h3 class="text-3xl font-extrabold mt-1">3.4x</h3>
+</div>
+</div>
+<!-- Bento Layout Main Content -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Performance Analytics Chart Area -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-8 shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="text-xl font-bold font-headline">Campaign Performance</h3>
+<p class="text-sm text-on-surface-variant">Engagement distribution over the last 30 days</p>
+</div>
+<div class="flex items-center space-x-2 bg-surface-container rounded-lg p-1">
+<button class="px-4 py-1 text-xs font-bold bg-white rounded-md shadow-sm">Daily</button>
+<button class="px-4 py-1 text-xs font-bold text-on-surface-variant">Weekly</button>
+<button class="px-4 py-1 text-xs font-bold text-on-surface-variant">Monthly</button>
+</div>
+</div>
+<!-- Placeholder for Chart -->
+<div class="h-64 w-full relative">
+<div class="absolute inset-0 flex items-end space-x-4 px-2">
+<div class="flex-1 bg-primary/10 h-1/2 rounded-t-lg relative group">
+<div class="absolute inset-x-0 bottom-0 bg-primary/40 h-3/4 rounded-t-lg transition-all group-hover:bg-primary/60"></div>
+</div>
+<div class="flex-1 bg-primary/10 h-2/3 rounded-t-lg relative group">
+<div class="absolute inset-x-0 bottom-0 bg-primary/40 h-2/3 rounded-t-lg transition-all group-hover:bg-primary/60"></div>
+</div>
+<div class="flex-1 bg-primary/10 h-full rounded-t-lg relative group">
+<div class="absolute inset-x-0 bottom-0 bg-primary/40 h-4/5 rounded-t-lg transition-all group-hover:bg-primary/60"></div>
+</div>
+<div class="flex-1 bg-primary/10 h-3/4 rounded-t-lg relative group">
+<div class="absolute inset-x-0 bottom-0 bg-primary/40 h-1/2 rounded-t-lg transition-all group-hover:bg-primary/60"></div>
+</div>
+<div class="flex-1 bg-primary/10 h-5/6 rounded-t-lg relative group">
+<div class="absolute inset-x-0 bottom-0 bg-primary/40 h-3/4 rounded-t-lg transition-all group-hover:bg-primary/60"></div>
+</div>
+<div class="flex-1 bg-primary/10 h-2/3 rounded-t-lg relative group">
+<div class="absolute inset-x-0 bottom-0 bg-primary/40 h-1/2 rounded-t-lg transition-all group-hover:bg-primary/60"></div>
+</div>
+<div class="flex-1 bg-primary/10 h-4/5 rounded-t-lg relative group">
+<div class="absolute inset-x-0 bottom-0 bg-primary/40 h-2/3 rounded-t-lg transition-all group-hover:bg-primary/60"></div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 h-[1px] bg-outline/10"></div>
+</div>
+<div class="mt-6 flex items-center space-x-8">
+<div class="flex items-center">
+<span class="w-3 h-3 rounded-full bg-primary mr-2"></span>
+<span class="text-xs font-bold">Conversion Rate</span>
+</div>
+<div class="flex items-center">
+<span class="w-3 h-3 rounded-full bg-primary/30 mr-2"></span>
+<span class="text-xs font-bold text-on-surface-variant">Impressions</span>
+</div>
+</div>
+</div>
+<!-- Why Promote? AI Panel -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<div class="executive-gradient p-8 rounded-xl text-white shadow-xl h-full relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-white/20 transition-all"></div>
+<div class="relative z-10">
+<div class="flex items-center space-x-2 mb-6">
+<span class="material-symbols-outlined text-secondary-fixed">auto_awesome</span>
+<h3 class="text-lg font-bold font-headline uppercase tracking-widest">Growth Intelligence</h3>
+</div>
+<h4 class="text-2xl font-extrabold mb-4 leading-tight">High Potential Product Alerts</h4>
+<div class="space-y-4">
+<div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/5">
+<p class="text-sm font-bold">Premium Sourdough Starter</p>
+<p class="text-xs text-white/70 mt-1">Trending +45% in Northeast region. Promoted ROI predicted: 5.2x.</p>
+</div>
+<div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/5 opacity-80">
+<p class="text-sm font-bold">Handcrafted Oak Table</p>
+<p class="text-xs text-white/70 mt-1">Low competition in 'Home Decor' segment this week. Target now.</p>
+</div>
+</div>
+<button class="w-full mt-8 py-3 bg-white text-primary rounded-full font-bold text-xs shadow-lg hover:scale-[1.02] transition-transform">Auto-Target Now</button>
+</div>
+</div>
+</div>
+<!-- Create Sponsored Listing Section -->
+<div class="col-span-12 lg:col-span-5 bg-surface-container-high rounded-xl p-8 shadow-sm">
+<h3 class="text-xl font-bold font-headline mb-6 flex items-center">
+<span class="material-symbols-outlined mr-2 text-primary">rocket_launch</span>
+                        New Sponsored Listing
+                    </h3>
+<div class="space-y-6">
+<div>
+<label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Select Campaign Budget</label>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest border-2 border-primary p-4 rounded-xl cursor-pointer">
+<p class="text-xs font-bold text-primary mb-1">Daily Cap</p>
+<p class="text-lg font-extrabold">$50.00</p>
+</div>
+<div class="bg-surface-container-lowest border border-outline/10 p-4 rounded-xl cursor-pointer hover:border-primary/30 transition-colors">
+<p class="text-xs font-bold text-on-surface-variant mb-1">Total Lifetime</p>
+<p class="text-lg font-extrabold text-on-surface-variant">$1,500.00</p>
+</div>
+</div>
+</div>
+<div>
+<label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Target Audience</label>
+<div class="space-y-3">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-3 text-outline text-sm">business</span>
+<select class="w-full bg-surface-container-lowest border-none rounded-xl py-3 pl-10 text-sm focus:ring-2 focus:ring-primary/20 appearance-none">
+<option>Select Industry</option>
+<option>Consumer Electronics</option>
+<option>Luxury Goods</option>
+<option>Health &amp; Wellness</option>
+</select>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-3 text-outline text-sm">public</span>
+<input class="w-full bg-surface-container-lowest border-none rounded-xl py-3 pl-10 text-sm focus:ring-2 focus:ring-primary/20" placeholder="Add Geographies (e.g. New York, London)" type="text"/>
+</div>
+</div>
+</div>
+<button class="w-full executive-gradient text-white py-4 rounded-full font-bold shadow-lg hover:shadow-primary/20 transition-all mt-4">Launch Campaign</button>
+</div>
+</div>
+<!-- Active Campaigns Table -->
+<div class="col-span-12 lg:col-span-7 bg-surface-container-lowest rounded-xl p-8 shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-xl font-bold font-headline">Active Campaigns</h3>
+<a class="text-xs font-bold text-primary flex items-center hover:underline" href="#">View All <span class="material-symbols-outlined text-sm ml-1">arrow_forward</span></a>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full">
+<thead>
+<tr class="text-left border-b border-outline/5">
+<th class="pb-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Campaign Name</th>
+<th class="pb-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Status</th>
+<th class="pb-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Budget</th>
+<th class="pb-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Spent</th>
+<th class="pb-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Score</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline/5">
+<tr class="group hover:bg-surface-container-low transition-colors">
+<td class="py-5">
+<p class="font-bold text-sm">Summer Collection Launch</p>
+<p class="text-xs text-on-surface-variant">Electronics • ID: 29384</p>
+</td>
+<td class="py-5">
+<span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Active</span>
+</td>
+<td class="py-5 font-semibold text-sm">$1,200</td>
+<td class="py-5 font-semibold text-sm">$842.10</td>
+<td class="py-5">
+<div class="flex items-center space-x-1">
+<span class="font-bold text-sm text-primary">8.4</span>
+<div class="w-16 h-1 bg-primary/10 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[84%]"></div>
+</div>
+</div>
+</td>
+</tr>
+<tr class="group hover:bg-surface-container-low transition-colors">
+<td class="py-5">
+<p class="font-bold text-sm">Organic Flour Retargeting</p>
+<p class="text-xs text-on-surface-variant">Food &amp; Bev • ID: 29389</p>
+</td>
+<td class="py-5">
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant text-[10px] font-black rounded-full uppercase">Paused</span>
+</td>
+<td class="py-5 font-semibold text-sm">$450</td>
+<td class="py-5 font-semibold text-sm">$450.00</td>
+<td class="py-5">
+<div class="flex items-center space-x-1">
+<span class="font-bold text-sm text-primary">9.2</span>
+<div class="w-16 h-1 bg-primary/10 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[92%]"></div>
+</div>
+</div>
+</td>
+</tr>
+<tr class="group hover:bg-surface-container-low transition-colors">
+<td class="py-5">
+<p class="font-bold text-sm">Premium Coffee Bundles</p>
+<p class="text-xs text-on-surface-variant">Gifts • ID: 29402</p>
+</td>
+<td class="py-5">
+<span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Active</span>
+</td>
+<td class="py-5 font-semibold text-sm">$3,000</td>
+<td class="py-5 font-semibold text-sm">$128.50</td>
+<td class="py-5">
+<div class="flex items-center space-x-1">
+<span class="font-bold text-sm text-primary">7.1</span>
+<div class="w-16 h-1 bg-primary/10 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[71%]"></div>
+</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Execution HUD -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-surface-container-highest/70 glass-panel border border-white/20 px-8 py-4 rounded-full shadow-2xl flex items-center space-x-12 z-50">
+<div class="flex flex-col items-center">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Live Reach</span>
+<span class="text-sm font-black text-primary">48,291</span>
+</div>
+<div class="h-8 w-[1px] bg-outline/10"></div>
+<div class="flex flex-col items-center">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Avg CTR</span>
+<span class="text-sm font-black text-primary">2.84%</span>
+</div>
+<div class="h-8 w-[1px] bg-outline/10"></div>
+<div class="flex flex-col items-center">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Next Bill</span>
+<span class="text-sm font-black text-primary">Sept 24</span>
+</div>
+<button class="bg-primary text-white text-xs font-bold px-6 py-2 rounded-full hover:scale-105 transition-transform">Quick Top-up</button>
+</div>
+</body></html>

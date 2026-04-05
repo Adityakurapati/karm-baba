@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Executive Intelligence | KARM BABA</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#faf8ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "on-secondary-container": "#fffbff",
+                        "inverse-on-surface": "#eef0ff",
+                        "error": "#ba1a1a",
+                        "primary-container": "#0050d3",
+                        "on-surface": "#131b2e",
+                        "on-secondary-fixed": "#07006c",
+                        "inverse-surface": "#283044",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "primary": "#003ba1",
+                        "on-primary-fixed": "#00174b",
+                        "surface-variant": "#dae2fd",
+                        "secondary": "#4648d4",
+                        "on-tertiary-container": "#e8c7ff",
+                        "surface-bright": "#faf8ff",
+                        "surface-tint": "#0053db",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-container": "#c5d2ff",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "secondary-fixed": "#e1e0ff",
+                        "surface-container-highest": "#dae2fd",
+                        "on-surface-variant": "#434654",
+                        "tertiary": "#5f248e",
+                        "surface-container-high": "#e2e7ff",
+                        "inverse-primary": "#b4c5ff",
+                        "on-tertiary-fixed": "#2d004f",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c3c6d6",
+                        "secondary-container": "#6063ee",
+                        "surface-dim": "#d2d9f4",
+                        "surface-container-low": "#f2f3ff",
+                        "background": "#faf8ff",
+                        "tertiary-container": "#783fa7",
+                        "tertiary-fixed-dim": "#e0b6ff",
+                        "tertiary-fixed": "#f2daff",
+                        "surface-container": "#eaedff",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#632892",
+                        "on-background": "#131b2e",
+                        "outline": "#737685",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "primary-fixed": "#dbe1ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        .glass-panel {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex min-h-screen">
+<!-- SideNavBar (Shared Component) -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r border-slate-200/50 bg-slate-50 flex flex-col p-4 gap-2 z-50">
+<div class="mb-8 px-4 py-2">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">architecture</span>
+</div>
+<div>
+<div class="text-lg font-bold text-slate-900">Sovereign Arch</div>
+<div class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Tier 1 Access</div>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-slate-600 px-4 py-2 hover:bg-slate-100 flex items-center gap-3 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="text-slate-600 px-4 py-2 hover:bg-slate-100 flex items-center gap-3 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+<span class="text-sm font-medium">Pipeline</span>
+</a>
+<!-- Active State: Intelligence -->
+<a class="bg-blue-50 text-blue-800 rounded-lg px-4 py-2 flex items-center gap-3 font-semibold transition-all" href="#">
+<span class="material-symbols-outlined text-blue-700" data-icon="psychology" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="text-sm">Intelligence</span>
+</a>
+<a class="text-slate-600 px-4 py-2 hover:bg-slate-100 flex items-center gap-3 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="text-sm font-medium">Reports</span>
+</a>
+<a class="text-slate-600 px-4 py-2 hover:bg-slate-100 flex items-center gap-3 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+<div class="border-t border-slate-200/50 pt-4 mt-auto space-y-1">
+<a class="text-slate-600 px-4 py-2 hover:bg-slate-100 flex items-center gap-3 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="text-sm font-medium">Support</span>
+</a>
+<a class="text-slate-600 px-4 py-2 hover:bg-slate-100 flex items-center gap-3 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+<span class="text-sm font-medium">System Status</span>
+</a>
+</div>
+</aside>
+<div class="flex-1 ml-64 flex flex-col">
+<!-- TopNavBar (Shared Component) -->
+<header class="flex justify-between items-center w-full px-6 py-3 sticky top-0 z-40 bg-slate-50/80 backdrop-blur-md border-b border-slate-200/50 shadow-sm">
+<div class="flex items-center gap-8">
+<span class="text-xl font-black tracking-tight text-blue-900">Executive Intelligence</span>
+<div class="hidden lg:flex items-center gap-6">
+<a class="text-slate-500 hover:text-blue-600 text-sm font-medium transition-colors" href="#">Global View</a>
+<a class="text-blue-700 border-b-2 border-blue-700 pb-1 text-sm font-semibold transition-colors" href="#">Market Trends</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<button class="p-2 text-slate-500 hover:bg-slate-100/50 rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100/50 rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+</button>
+</div>
+<div class="h-8 w-[1px] bg-slate-200/50 mx-2"></div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-white px-5 py-2 rounded-full text-sm font-bold shadow-md hover:scale-[1.02] transition-transform">
+                    Execute Trade
+                </button>
+<img alt="Executive User Profile" class="w-10 h-10 rounded-full border-2 border-primary-container/20" data-alt="Professional portrait of a middle-aged executive in a dark navy suit with clean minimal background and soft corporate lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUES_k6dGxZVe7h3fpK64yQGvn6IOWSFOijgxNA2WHKJ4Pf23KJqDSwEmC8H8N8MJ7QAbY1MjPIm5UXieGmpLJYONa9Dqp40sMKkYwpyOqvVuJ6VGTk-bObDzK6RuCsFlwr3-veoaZMx2ssQEG9FUHiROr3KK6DeBobxrNUTG3q-MGA5k0u7LGxerJgIt_71M6q6WnRR7JmBBvhx9LYKjdciU0CNY4eby5NOGJYBL31tw3QkENin5nXMSZlnAi3aMc8XVPJ6DHWtU"/>
+</div>
+</header>
+<main class="p-8 space-y-8">
+<!-- Hero Intelligence Section -->
+<section class="flex flex-col md:flex-row gap-6">
+<!-- AI HUD Card -->
+<div class="flex-1 bg-gradient-to-br from-primary to-secondary p-[1px] rounded-3xl">
+<div class="bg-surface h-full w-full rounded-[23px] p-8 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-8 opacity-10">
+<span class="material-symbols-outlined text-[120px]" data-icon="bolt">bolt</span>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-black px-2 py-1 rounded uppercase tracking-widest">KARM Intelligence</span>
+<span class="text-on-surface-variant text-xs">• Just Updated</span>
+</div>
+<h2 class="text-4xl font-extrabold tracking-tight mb-4 max-w-lg">Next Best Action: Reallocate Textile Sourcing to Vietnam</h2>
+<p class="text-on-surface-variant text-lg leading-relaxed mb-6 max-w-xl">
+                                Supply chain signals indicate a <span class="text-primary font-bold">15% price drop</span> in high-grade textiles in Vietnam due to regional output expansion. Execution window closes in 48 hours.
+                            </p>
+<div class="flex gap-4">
+<button class="bg-primary text-white rounded-full px-6 py-3 font-bold flex items-center gap-2 hover:scale-105 transition-transform">
+                                    Analyze Impact <span class="material-symbols-outlined text-sm">trending_up</span>
+</button>
+<button class="text-primary font-bold border border-primary/20 rounded-full px-6 py-3 hover:bg-primary/5 transition-colors">
+                                    Dismiss
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Snapshot Stats -->
+<div class="grid grid-cols-1 gap-4 w-full md:w-80">
+<div class="bg-surface-container-low p-6 rounded-3xl flex flex-col justify-between">
+<span class="text-on-surface-variant text-xs font-bold uppercase tracking-widest">Market Sentiment</span>
+<div class="text-3xl font-black text-primary mt-2">Bullish</div>
+<div class="mt-4 h-1 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-4/5"></div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-3xl flex flex-col justify-between">
+<span class="text-on-surface-variant text-xs font-bold uppercase tracking-widest">Risk Exposure</span>
+<div class="text-3xl font-black text-tertiary mt-2">Low</div>
+<div class="mt-4 h-1 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-1/5"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Global Demand Trends & Map -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Heatmap / Trade Intensity -->
+<div class="lg:col-span-2 bg-surface-container-lowest rounded-3xl p-8 relative overflow-hidden">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h3 class="text-2xl font-bold tracking-tight">Global Trade Intensity</h3>
+<p class="text-on-surface-variant text-sm">Region-based real-time volume heatmap</p>
+</div>
+<div class="flex bg-surface-container rounded-full p-1">
+<button class="bg-white px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Volume</button>
+<button class="px-4 py-1.5 rounded-full text-xs font-bold text-on-surface-variant">Growth</button>
+</div>
+</div>
+<div class="h-[400px] w-full rounded-2xl bg-surface-container-low relative flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover opacity-60" data-alt="Abstract world map with glowing blue and purple data points and interconnecting lines representing global trade routes and shipping volume" data-location="Global" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFD3rQYhINXf3FpLHmfe_OrAjPDktVF098mvKiWzzY1rYNWhHSKEWm1HCRkwPWtICRzIp0K5mpf9eWxrYEolfQMz3QwccbRkydfGz_lVR9Z8Zxxd7Xpgr7BjNP91MdbiB83U-gcE63GMOT464D1fvlMKeNhd0F5gQYXpt-D0jGH9U5eEDvYVoqEn5UaY05UVcrIVJ8Kv2rpBCrb8dePH0c88GUtcb02jw9QEluxwVoqyovVO0QwsufrqAHfYAtvDZ6C2BIyNMNRY4"/>
+<!-- Heatmap Overlay Effect -->
+<div class="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
+<div class="absolute bottom-6 right-6 flex flex-col gap-2 p-4 glass-panel bg-white/40 border border-white/40 rounded-2xl shadow-xl">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<span class="text-[10px] font-bold">ASEAN: +22%</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-tertiary"></div>
+<span class="text-[10px] font-bold">LATAM: +14%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- High-Growth Sector Insights -->
+<div class="flex flex-col gap-6">
+<div class="flex-1 bg-surface-container-high rounded-3xl p-6">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-xl bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+</div>
+<h3 class="text-xl font-bold">Market Opportunity</h3>
+</div>
+<div class="space-y-6">
+<div class="bg-white/50 p-4 rounded-2xl border border-white/50">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs font-bold text-primary px-2 py-0.5 bg-primary/10 rounded">Lithium Carbonate</span>
+<span class="text-xs font-black text-green-600">+18.5%</span>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">High demand spike in EV battery manufacturing hubs in Eastern Europe. Recommend inventory hedge.</p>
+</div>
+<div class="bg-white/50 p-4 rounded-2xl border border-white/50">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs font-bold text-primary px-2 py-0.5 bg-primary/10 rounded">Sustainable Textiles</span>
+<span class="text-xs font-black text-green-600">+12.2%</span>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">Nordic apparel markets opening quotas for recycled synthetics. Supply chain pivot suggested.</p>
+</div>
+<div class="bg-white/50 p-4 rounded-2xl border border-white/50">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs font-bold text-primary px-2 py-0.5 bg-primary/10 rounded">Smart Logistics</span>
+<span class="text-xs font-black text-amber-600">-2.4%</span>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">Consolidation in freight tech expected. Monitor M&amp;A signals in North America.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Price Benchmarking & Shipment Tracking -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Price Benchmarking Chart -->
+<div class="bg-surface-container-low rounded-3xl p-8">
+<div class="flex justify-between items-start mb-10">
+<div>
+<h3 class="text-2xl font-bold tracking-tight">Price Benchmarking</h3>
+<p class="text-on-surface-variant text-sm">Global average vs. Premium procurement</p>
+</div>
+<div class="flex gap-2">
+<span class="flex items-center gap-1.5 text-[10px] font-bold text-primary">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Index
+                            </span>
+<span class="flex items-center gap-1.5 text-[10px] font-bold text-tertiary">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span> Market
+                            </span>
+</div>
+</div>
+<div class="h-64 flex items-end gap-2 relative">
+<!-- Simulated Chart Grid -->
+<div class="absolute inset-0 border-b border-l border-slate-200/50 flex flex-col justify-between py-2 pr-2">
+<div class="w-full border-t border-slate-100 h-0"></div>
+<div class="w-full border-t border-slate-100 h-0"></div>
+<div class="w-full border-t border-slate-100 h-0"></div>
+</div>
+<!-- Chart Bars -->
+<div class="flex-1 flex flex-col items-center justify-end group gap-1">
+<div class="w-full bg-primary/20 rounded-t-lg h-32 group-hover:bg-primary/40 transition-colors"></div>
+<div class="w-full bg-primary rounded-t-lg h-24"></div>
+<span class="text-[10px] font-bold text-slate-500 mt-2">JAN</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-end group gap-1">
+<div class="w-full bg-primary/20 rounded-t-lg h-40 group-hover:bg-primary/40 transition-colors"></div>
+<div class="w-full bg-primary rounded-t-lg h-28"></div>
+<span class="text-[10px] font-bold text-slate-500 mt-2">FEB</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-end group gap-1">
+<div class="w-full bg-primary/20 rounded-t-lg h-48 group-hover:bg-primary/40 transition-colors"></div>
+<div class="w-full bg-primary rounded-t-lg h-36"></div>
+<span class="text-[10px] font-bold text-slate-500 mt-2">MAR</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-end group gap-1">
+<div class="w-full bg-primary/20 rounded-t-lg h-44 group-hover:bg-primary/40 transition-colors"></div>
+<div class="w-full bg-primary rounded-t-lg h-32"></div>
+<span class="text-[10px] font-bold text-slate-500 mt-2">APR</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-end group gap-1">
+<div class="w-full bg-primary/20 rounded-t-lg h-56 group-hover:bg-primary/40 transition-colors"></div>
+<div class="w-full bg-primary rounded-t-lg h-42"></div>
+<span class="text-[10px] font-bold text-slate-500 mt-2">MAY</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-end group gap-1">
+<div class="w-full bg-tertiary/20 rounded-t-lg h-60 group-hover:bg-tertiary/40 transition-colors"></div>
+<div class="w-full bg-tertiary rounded-t-lg h-48"></div>
+<span class="text-[10px] font-bold text-slate-500 mt-2">JUN</span>
+</div>
+</div>
+</div>
+<!-- Competitor Shipment Tracking Table -->
+<div class="bg-surface-container-lowest rounded-3xl p-8 shadow-sm">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h3 class="text-2xl font-bold tracking-tight">Shipment Tracking</h3>
+<p class="text-on-surface-variant text-sm">High-level competitor movement by volume</p>
+</div>
+<button class="text-primary text-xs font-bold underline">Export Report</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="border-b border-slate-100 text-on-surface-variant text-[10px] font-black uppercase tracking-widest">
+<th class="pb-4">Competitor</th>
+<th class="pb-4">Origin</th>
+<th class="pb-4">Volume (TEU)</th>
+<th class="pb-4">Status</th>
+</tr>
+</thead>
+<tbody class="text-sm font-medium">
+<tr class="group hover:bg-slate-50/50 transition-colors">
+<td class="py-4 font-bold">Apex Logistics Corp</td>
+<td class="py-4 text-on-surface-variant">Shanghai, CN</td>
+<td class="py-4">12,450</td>
+<td class="py-4">
+<span class="flex items-center gap-2 text-green-600">
+<span class="w-1.5 h-1.5 rounded-full bg-green-600"></span> Transit
+                                        </span>
+</td>
+</tr>
+<tr class="group hover:bg-slate-50/50 transition-colors">
+<td class="py-4 font-bold">Meridian Trade Group</td>
+<td class="py-4 text-on-surface-variant">Rotterdam, NL</td>
+<td class="py-4">8,920</td>
+<td class="py-4">
+<span class="flex items-center gap-2 text-blue-600">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span> Loading
+                                        </span>
+</td>
+</tr>
+<tr class="group hover:bg-slate-50/50 transition-colors">
+<td class="py-4 font-bold">Global Sourcing Ltd</td>
+<td class="py-4 text-on-surface-variant">Santos, BR</td>
+<td class="py-4">15,100</td>
+<td class="py-4">
+<span class="flex items-center gap-2 text-amber-600">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span> Delayed
+                                        </span>
+</td>
+</tr>
+<tr class="group hover:bg-slate-50/50 transition-colors">
+<td class="py-4 font-bold">Zenith Exports</td>
+<td class="py-4 text-on-surface-variant">Singapore, SG</td>
+<td class="py-4">22,300</td>
+<td class="py-4">
+<span class="flex items-center gap-2 text-green-600">
+<span class="w-1.5 h-1.5 rounded-full bg-green-600"></span> Arrived
+                                        </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</main>
+<!-- Contextual FAB (Intelligence focused) -->
+<div class="fixed bottom-8 right-8">
+<button class="bg-primary text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform active:opacity-90">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</button>
+</div>
+</div>
+</body></html>

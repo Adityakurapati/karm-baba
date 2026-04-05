@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Certification Center | KARM BABA</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "outline": "#737685",
+                        "inverse-on-surface": "#eef0ff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "surface-dim": "#d2d9f4",
+                        "on-error-container": "#93000a",
+                        "secondary": "#4648d4",
+                        "on-secondary-fixed": "#07006c",
+                        "on-tertiary-fixed": "#2d004f",
+                        "tertiary-container": "#783fa7",
+                        "on-tertiary-container": "#e8c7ff",
+                        "on-surface": "#131b2e",
+                        "secondary-fixed": "#e1e0ff",
+                        "on-tertiary-fixed-variant": "#632892",
+                        "on-background": "#131b2e",
+                        "tertiary-fixed-dim": "#e0b6ff",
+                        "surface-container-highest": "#dae2fd",
+                        "inverse-surface": "#283044",
+                        "surface": "#faf8ff",
+                        "on-primary-fixed": "#00174b",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f2f3ff",
+                        "on-primary-container": "#c5d2ff",
+                        "on-secondary": "#ffffff",
+                        "background": "#faf8ff",
+                        "on-secondary-container": "#fffbff",
+                        "on-error": "#ffffff",
+                        "tertiary": "#5f248e",
+                        "on-primary": "#ffffff",
+                        "primary": "#003ba1",
+                        "surface-container": "#eaedff",
+                        "inverse-primary": "#b4c5ff",
+                        "surface-container-high": "#e2e7ff",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed": "#f2daff",
+                        "surface-bright": "#faf8ff",
+                        "secondary-container": "#6063ee",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "surface-variant": "#dae2fd",
+                        "on-surface-variant": "#434654",
+                        "primary-fixed": "#dbe1ff",
+                        "primary-container": "#0050d3",
+                        "surface-tint": "#0053db",
+                        "outline-variant": "#c3c6d6"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-pill-glow {
+            box-shadow: 0 0 15px rgba(0, 59, 161, 0.15);
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-slate-50 border-r-0 flex flex-col p-6 space-y-8 z-50">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white font-black text-xl">K</div>
+<div>
+<h1 class="text-xl font-black text-slate-900 tracking-tighter">KARM BABA</h1>
+<p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Executive Portal</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center space-x-3 p-3 text-slate-600 hover:bg-slate-100 hover:translate-x-1 transition-all duration-200 rounded-lg font-semibold text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center space-x-3 p-3 bg-blue-50 text-blue-700 rounded-lg font-semibold text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+<span>Onboarding</span>
+</a>
+<a class="flex items-center space-x-3 p-3 text-slate-600 hover:bg-slate-100 hover:translate-x-1 transition-all duration-200 rounded-lg font-semibold text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span>Leads</span>
+</a>
+<a class="flex items-center space-x-3 p-3 text-slate-600 hover:bg-slate-100 hover:translate-x-1 transition-all duration-200 rounded-lg font-semibold text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="handshake">handshake</span>
+<span>Deals</span>
+</a>
+<a class="flex items-center space-x-3 p-3 text-slate-600 hover:bg-slate-100 hover:translate-x-1 transition-all duration-200 rounded-lg font-semibold text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>CRM</span>
+</a>
+</nav>
+<div class="pt-6 border-t border-slate-200 space-y-1">
+<a class="flex items-center space-x-3 p-3 text-slate-500 hover:bg-slate-100 rounded-lg font-semibold text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center space-x-3 p-3 text-slate-500 hover:bg-slate-100 rounded-lg font-semibold text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</div>
+</aside>
+<!-- TopNavBar Shell -->
+<header class="fixed top-0 left-64 right-0 h-16 bg-slate-50/80 backdrop-blur-xl z-40 flex justify-between items-center px-8 border-b border-slate-200/50">
+<div class="flex items-center bg-slate-100 px-4 py-2 rounded-full w-96">
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-slate-400" placeholder="Search certifications or documents..." type="text"/>
+</div>
+<div class="flex items-center space-x-6">
+<div class="flex items-center space-x-4">
+<button class="text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-white px-6 py-2 rounded-full font-headline font-bold text-sm hover:scale-102 transition-transform shadow-md">
+                Execute Deal
+            </button>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="professional portrait of a business executive in a tailored suit with a confident expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_U9VlLdnv2iBcp00m0mU-NrmxLoxjjZc7iWqVeYCr2_BAxHUgPu98r8HukeXQRTSeRq6GLnl1fQNCB--H8CYzXE1d6kqPxsMuzKZ-PfN_tEVnWTt8GI20dfg6CTDyM0LA3Ly_XejHs5MqfMXqB_zLSLE7m9R-SUaP1ehDlCPjrb3EZwI7ak1AEe8zmTg0YyW3U4IxlSelZhI9TGjAVVmFzEv3xMf4ZgEEVjSOo2tNiCj_YCJOnbEjAEIU2Tvp645D-KGiuaH6ZEI"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-24 px-10 pb-20 max-w-7xl mx-auto">
+<!-- Header Section -->
+<div class="mb-10">
+<h2 class="text-4xl font-extrabold tracking-tight text-on-surface mb-2 font-headline">Certification Center</h2>
+<p class="text-on-surface-variant text-lg max-w-2xl">Validate your corporate identity, financial standing, and operational excellence to unlock premium deal flows on the KARM BABA network.</p>
+</div>
+<!-- Global Summary & Verification Levels Grid -->
+<div class="grid grid-cols-12 gap-6 mb-12">
+<!-- Global Progress Card -->
+<div class="col-span-8 bg-surface-container-low rounded-2xl p-8 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-end mb-6">
+<div>
+<span class="text-sm font-bold text-primary uppercase tracking-widest mb-1 block">Verification Progress</span>
+<h3 class="text-2xl font-bold">64% Completed</h3>
+</div>
+<span class="text-on-surface-variant font-medium">9 of 14 Documents Verified</span>
+</div>
+<div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden mb-8">
+<div class="bg-gradient-to-r from-primary to-secondary h-full w-[64%]"></div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-6">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-green-600">
+<span class="material-symbols-outlined" data-icon="verified">verified</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant font-bold uppercase">Corporate</p>
+<p class="text-sm font-bold">Verified</p>
+</div>
+</div>
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600">
+<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant font-bold uppercase">Financial</p>
+<p class="text-sm font-bold">In Review</p>
+</div>
+</div>
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-lg bg-slate-200 flex items-center justify-center text-slate-500">
+<span class="material-symbols-outlined" data-icon="lock">lock</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant font-bold uppercase">Compliance</p>
+<p class="text-sm font-bold text-slate-400">Locked</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Verification Levels Panel -->
+<div class="col-span-4 bg-surface-container-highest rounded-2xl p-6 border border-white/40">
+<h4 class="font-bold text-sm text-on-surface uppercase tracking-widest mb-4">Trust Tiers</h4>
+<div class="space-y-4">
+<div class="p-3 bg-white rounded-xl flex items-center justify-between border-l-4 border-slate-400">
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-slate-400" data-icon="check_circle">check_circle</span>
+<span class="font-bold text-sm">Basic Verified</span>
+</div>
+<span class="material-symbols-outlined text-green-500 text-sm" data-icon="done" data-weight="fill" style="font-variation-settings: 'FILL' 1;">done</span>
+</div>
+<div class="p-3 bg-white rounded-xl flex items-center justify-between border-l-4 border-primary shadow-sm active-pill-glow">
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-primary" data-icon="stars" data-weight="fill" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="font-bold text-sm">KARM BABA Certified</span>
+</div>
+<span class="text-[10px] font-bold text-primary px-2 py-0.5 bg-blue-50 rounded uppercase">Active</span>
+</div>
+<div class="p-3 bg-slate-100/50 rounded-xl flex items-center justify-between border-l-4 border-tertiary/30 opacity-60">
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-tertiary" data-icon="workspace_premium">workspace_premium</span>
+<span class="font-bold text-sm">Premium Verified</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="lock">lock</span>
+</div>
+</div>
+<button class="w-full mt-6 py-3 rounded-xl bg-white border border-slate-200 text-xs font-bold text-primary hover:bg-slate-50 transition-colors">
+                    VIEW TIER BENEFITS
+                </button>
+</div>
+</div>
+<!-- Tabbed Navigation -->
+<div class="mb-8 overflow-x-auto">
+<div class="flex space-x-8 border-b border-outline-variant/30 min-w-max">
+<button class="pb-4 text-primary font-bold border-b-2 border-primary flex items-center space-x-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="account_balance">account_balance</span>
+<span>Mandatory Base</span>
+</button>
+<button class="pb-4 text-on-surface-variant font-medium hover:text-primary transition-colors flex items-center space-x-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="receipt_long">receipt_long</span>
+<span>Financial Credibility</span>
+</button>
+<button class="pb-4 text-on-surface-variant font-medium hover:text-primary transition-colors flex items-center space-x-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="factory">factory</span>
+<span>Industry Compliance</span>
+</button>
+<button class="pb-4 text-on-surface-variant font-medium hover:text-primary transition-colors flex items-center space-x-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="public">public</span>
+<span>Export Readiness</span>
+</button>
+<button class="pb-4 text-on-surface-variant font-medium hover:text-primary transition-colors flex items-center space-x-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="verified_user">verified_user</span>
+<span>KARM Advantage</span>
+</button>
+</div>
+</div>
+<!-- Bento Grid Content: Mandatory Base -->
+<div class="grid grid-cols-12 gap-6">
+<!-- GST Verification -->
+<div class="col-span-4 bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-blue-50 text-primary rounded-lg">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+</div>
+<span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full uppercase">Verified</span>
+</div>
+<h5 class="text-lg font-bold mb-1">GST Registration</h5>
+<p class="text-sm text-on-surface-variant mb-4">Official Goods and Services Tax certificate as per Indian regulations.</p>
+</div>
+<div class="flex items-center justify-between text-xs font-semibold pt-4 border-t border-slate-50">
+<span class="text-slate-400">File: GST_2024_A.pdf</span>
+<button class="text-primary hover:underline">Replace</button>
+</div>
+</div>
+<!-- PAN Verification -->
+<div class="col-span-4 bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-blue-50 text-primary rounded-lg">
+<span class="material-symbols-outlined" data-icon="badge">badge</span>
+</div>
+<span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full uppercase">Verified</span>
+</div>
+<h5 class="text-lg font-bold mb-1">PAN Card</h5>
+<p class="text-sm text-on-surface-variant mb-4">Company Permanent Account Number for tax and identification.</p>
+</div>
+<div class="flex items-center justify-between text-xs font-semibold pt-4 border-t border-slate-50">
+<span class="text-slate-400">File: PAN_CORP_XY.jpg</span>
+<button class="text-primary hover:underline">Replace</button>
+</div>
+</div>
+<!-- Address Proof -->
+<div class="col-span-4 bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-blue-50 text-primary rounded-lg">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+</div>
+<span class="px-3 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-full uppercase">Pending Review</span>
+</div>
+<h5 class="text-lg font-bold mb-1">Registered Address</h5>
+<p class="text-sm text-on-surface-variant mb-4">Utility bill or lease agreement for principal place of business.</p>
+</div>
+<div class="flex items-center justify-between text-xs font-semibold pt-4 border-t border-slate-50">
+<span class="text-slate-400">Uploaded 2h ago</span>
+<button class="text-primary hover:underline">View</button>
+</div>
+</div>
+<!-- Bank Account -->
+<div class="col-span-6 bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-slate-100">
+<div class="flex justify-between items-center mb-6">
+<h5 class="text-lg font-bold">Bank Reconciliation</h5>
+<span class="px-3 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded-full uppercase">Rejected</span>
+</div>
+<div class="flex items-start space-x-4 mb-6">
+<div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+<div>
+<p class="font-bold">Current Account Statement</p>
+<p class="text-sm text-on-surface-variant">Last 6 months bank statement required.</p>
+<div class="mt-2 p-3 bg-red-50 text-red-700 text-xs rounded-lg border border-red-100">
+<strong>Reason:</strong> Document blurry, unable to read account number.
+                        </div>
+</div>
+</div>
+<button class="w-full py-3 bg-primary text-white font-bold rounded-xl text-sm shadow-lg shadow-primary/20 hover:scale-[1.01] transition-transform">
+                    RE-UPLOAD DOCUMENT
+                </button>
+</div>
+<!-- Quick Action Card -->
+<div class="col-span-6 relative overflow-hidden bg-slate-900 rounded-2xl p-8 text-white">
+<div class="relative z-10">
+<h4 class="text-2xl font-extrabold mb-2">Unlock Financial Credibility</h4>
+<p class="text-slate-400 text-sm mb-6 max-w-sm">Completed the Mandatory Base? Move to Financial Credibility to gain access to credit-backed deal opportunities.</p>
+<button class="flex items-center space-x-2 text-sm font-bold bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
+<span>Go to Next Tab</span>
+<span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-20">
+<span class="material-symbols-outlined text-[120px]" data-icon="shield">shield</span>
+</div>
+</div>
+</div>
+<!-- Info Toast / HUD -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-surface-container-highest/80 backdrop-blur-md px-6 py-4 rounded-full shadow-2xl border border-white/50 flex items-center space-x-6 z-50">
+<div class="flex items-center space-x-2">
+<div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+<span class="text-xs font-bold text-on-surface uppercase tracking-tighter">Profile Integrity: High</span>
+</div>
+<div class="h-4 w-px bg-slate-300"></div>
+<p class="text-sm font-medium text-on-surface-variant">Complete "Industry Compliance" to reach 80%</p>
+<button class="bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+                Optimize Now
+            </button>
+</div>
+</main>
+</body></html>

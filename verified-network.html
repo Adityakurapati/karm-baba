@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sovereign Match | Intelligent Matchmaking Engine</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#faf8ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#fffbff",
+                        "on-secondary-fixed": "#07006c",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#632892",
+                        "secondary-fixed": "#e1e0ff",
+                        "surface-container": "#eaedff",
+                        "primary-container": "#0050d3",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f2f3ff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#0053db",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#f2daff",
+                        "inverse-surface": "#283044",
+                        "tertiary": "#5f248e",
+                        "secondary-container": "#6063ee",
+                        "on-tertiary-container": "#e8c7ff",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#e0b6ff",
+                        "on-primary-fixed": "#00174b",
+                        "surface-variant": "#dae2fd",
+                        "surface": "#faf8ff",
+                        "tertiary-container": "#783fa7",
+                        "surface-container-high": "#e2e7ff",
+                        "on-surface": "#131b2e",
+                        "on-surface-variant": "#434654",
+                        "surface-container-highest": "#dae2fd",
+                        "primary": "#003ba1",
+                        "outline-variant": "#c3c6d6",
+                        "surface-dim": "#d2d9f4",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "on-background": "#131b2e",
+                        "secondary": "#4648d4",
+                        "on-tertiary-fixed": "#2d004f",
+                        "on-primary-container": "#c5d2ff",
+                        "inverse-primary": "#b4c5ff",
+                        "primary-fixed": "#dbe1ff",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#eef0ff",
+                        "background": "#faf8ff",
+                        "outline": "#737685"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf8ff; }
+        .font-headline { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-nav { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .text-gradient { background: linear-gradient(135deg, #003ba1 0%, #0050d3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn-gradient { background: linear-gradient(135deg, #003ba1 0%, #0050d3 100%); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#faf8ff] dark:bg-[#131b2e] flex justify-between items-center px-8 h-16">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black text-[#131b2e] dark:text-[#faf8ff] tracking-tighter font-headline">Sovereign Match</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="font-headline font-bold tracking-tight text-[#003ba1] dark:text-[#0050d3] border-b-2 border-[#003ba1] pb-1" href="#">Marketplace</a>
+<a class="font-headline font-bold tracking-tight text-[#434654] dark:text-[#c3c6d6] hover:text-[#003ba1] transition-colors" href="#">Network</a>
+<a class="font-headline font-bold tracking-tight text-[#434654] dark:text-[#c3c6d6] hover:text-[#003ba1] transition-colors" href="#">Analytics</a>
+<a class="font-headline font-bold tracking-tight text-[#434654] dark:text-[#c3c6d6] hover:text-[#003ba1] transition-colors" href="#">Vault</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full text-sm w-64 focus:ring-2 focus:ring-primary/30" placeholder="Search institutional partners..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">settings</button>
+<button class="btn-gradient text-white px-5 py-2 rounded-full font-headline font-bold text-sm hover:scale-105 transition-transform duration-200">Create Deal</button>
+<img alt="Executive Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/10" data-alt="professional portrait of a confident executive in a tailored suit with a modern office background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7KiKnAvPzKPLI9Bv7s_OwcWJX2QZfM2h_Ynyfz-RVXu8qqEtpqwGpKH3p_SGjyxwcvZF_nM32CUIZ8RJcWs-nOGmfMlyKKiopKzivlqx3IfcbhWQJ36OhMpXpl9ih5te9x9kVoHks_HL4zgW9XvxaC088XpEJVUow2_tQPo2MEXKQeNJKPu_lgC1YOLQ1kpAPzV8j457eV5AjVLPYvV33KgMeIGw66OqnmNFrp23xTo-AAWLqGucoDlL9eKL5HKBwxCGXHSWJrYI"/>
+</div>
+</nav>
+<!-- SideNavBar (Suppressed on specific pages as per mandate, but user requested for this screen) -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 border-r border-outline-variant/15 bg-[#faf8ff]/80 backdrop-blur-xl flex flex-col p-4 gap-2 z-40 hidden md:flex">
+<div class="px-4 py-6 mb-4 flex flex-col gap-1">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-white font-bold">GT</div>
+<div>
+<p class="font-bold text-on-surface text-sm">Global Trade Corp</p>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-medium">Verified Partner</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all font-medium text-sm" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-2.5 bg-surface-variant text-primary rounded-lg transition-all font-medium text-sm" href="#">
+<span class="material-symbols-outlined">handshake</span> Marketplace
+            </a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all font-medium text-sm" href="#">
+<span class="material-symbols-outlined">group</span> Counterparties
+            </a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all font-medium text-sm" href="#">
+<span class="material-symbols-outlined">psychology</span> Intelligence
+            </a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all font-medium text-sm" href="#">
+<span class="material-symbols-outlined">description</span> Documents
+            </a>
+</nav>
+<div class="mt-auto space-y-1 border-t border-outline-variant/10 pt-4">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-all text-sm" href="#">
+<span class="material-symbols-outlined">help_center</span> Support
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-all text-sm" href="#">
+<span class="material-symbols-outlined">inventory_2</span> Archive
+            </a>
+<div class="p-4 bg-tertiary/5 rounded-xl mt-4">
+<p class="text-xs font-bold text-tertiary mb-2 uppercase tracking-tighter">Pro Insights</p>
+<p class="text-[11px] text-on-surface-variant leading-relaxed">Upgrade to unlock cross-border trade analytics.</p>
+<button class="mt-3 w-full py-2 bg-tertiary text-white text-xs font-bold rounded-lg hover:opacity-90 transition-opacity">Execute Trade</button>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-20 px-8 pb-12 bg-surface min-h-screen">
+<!-- Page Header & Global Search/Filter -->
+<header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="max-w-2xl">
+<h1 class="text-4xl font-black font-headline tracking-tight text-on-surface leading-none mb-4">Verified Network</h1>
+<p class="text-on-surface-variant text-lg font-body leading-relaxed">Access the world's most trusted institutional counterparts through our Sovereign Intelligence engine.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-6 py-3 bg-surface-container-lowest border border-outline-variant/15 rounded-full font-headline font-bold text-sm text-on-surface shadow-sm hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+                    Advanced Filters
+                </button>
+<button class="flex items-center gap-2 px-6 py-3 bg-on-background text-surface rounded-full font-headline font-bold text-sm hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-lg">export_notes</span>
+                    Export List
+                </button>
+</div>
+</header>
+<!-- Intelligent Matchmaking Section (Top Horizontal Scroll) -->
+<section class="mb-12">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-container flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<h2 class="text-xl font-headline font-extrabold tracking-tight">Sovereign Match: Best for You</h2>
+</div>
+<div class="flex gap-2">
+<button class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+<div class="flex gap-6 overflow-x-auto pb-6 scrollbar-hide">
+<!-- Match Card 1 -->
+<div class="min-w-[420px] bg-surface-container-lowest rounded-3xl p-1 relative group overflow-hidden border border-outline-variant/10 shadow-[0_20px_40px_-10px_rgba(19,27,46,0.05)] transition-transform duration-300 hover:scale-[1.01]">
+<div class="bg-gradient-to-br from-primary/5 to-tertiary/5 rounded-[22px] p-6 h-full">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+<span class="text-2xl font-bold text-primary">N</span>
+</div>
+<div>
+<h3 class="font-headline font-extrabold text-lg">Nexus Logistics</h3>
+<p class="text-xs text-on-surface-variant font-medium">Pan-European Infrastructure</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-3xl font-black font-headline text-primary leading-none">98%</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Match Score</span>
+</div>
+</div>
+<div class="bg-white/60 backdrop-blur-sm rounded-2xl p-4 mb-6 border border-white/50">
+<p class="text-xs font-bold text-tertiary mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                                Why Recommended
+                            </p>
+<p class="text-sm text-on-surface leading-snug">Nexus maintains 100% compliance with your specific ISO standards and has a 2-hour response time on multi-modal logistics deals.</p>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-3 btn-gradient text-white rounded-xl font-headline font-bold text-xs">Connect Instantly</button>
+<button class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-highest text-primary hover:bg-primary hover:text-white transition-all"><span class="material-symbols-outlined">bookmark</span></button>
+</div>
+</div>
+</div>
+<!-- Match Card 2 -->
+<div class="min-w-[420px] bg-surface-container-lowest rounded-3xl p-1 relative group overflow-hidden border border-outline-variant/10 shadow-[0_20px_40px_-10px_rgba(19,27,46,0.05)] transition-transform duration-300 hover:scale-[1.01]">
+<div class="bg-gradient-to-br from-secondary/5 to-primary/5 rounded-[22px] p-6 h-full">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+<span class="text-2xl font-bold text-secondary">A</span>
+</div>
+<div>
+<h3 class="font-headline font-extrabold text-lg">Aurum Capital</h3>
+<p class="text-xs text-on-surface-variant font-medium">Verified Institutional Lenders</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-3xl font-black font-headline text-secondary leading-none">94%</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Match Score</span>
+</div>
+</div>
+<div class="bg-white/60 backdrop-blur-sm rounded-2xl p-4 mb-6 border border-white/50">
+<p class="text-xs font-bold text-secondary mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                                Why Recommended
+                            </p>
+<p class="text-sm text-on-surface leading-snug">Highest Trust Score in your industry sector. Their capital deployment speed matches your average deal execution timeline exactly.</p>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-3 bg-secondary text-white rounded-xl font-headline font-bold text-xs">Request Quote</button>
+<button class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-highest text-secondary hover:bg-secondary hover:text-white transition-all"><span class="material-symbols-outlined">bookmark</span></button>
+</div>
+</div>
+</div>
+<!-- Match Card 3 -->
+<div class="min-w-[420px] bg-surface-container-lowest rounded-3xl p-1 relative group overflow-hidden border border-outline-variant/10 shadow-[0_20px_40px_-10px_rgba(19,27,46,0.05)] transition-transform duration-300 hover:scale-[1.01]">
+<div class="bg-gradient-to-br from-tertiary/5 to-secondary/5 rounded-[22px] p-6 h-full">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+<span class="text-2xl font-bold text-tertiary">V</span>
+</div>
+<div>
+<h3 class="font-headline font-extrabold text-lg">Vertex Solutions</h3>
+<p class="text-xs text-on-surface-variant font-medium">Compliance &amp; Regulatory</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-3xl font-black font-headline text-tertiary leading-none">91%</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Match Score</span>
+</div>
+</div>
+<div class="bg-white/60 backdrop-blur-sm rounded-2xl p-4 mb-6 border border-white/50">
+<p class="text-xs font-bold text-tertiary mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                                Why Recommended
+                            </p>
+<p class="text-sm text-on-surface leading-snug">Recently obtained KARM BABA Certification in your target export market. Essential for your upcoming expansion deals.</p>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-3 bg-tertiary text-white rounded-xl font-headline font-bold text-xs">Schedule Meeting</button>
+<button class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-highest text-tertiary hover:bg-tertiary hover:text-white transition-all"><span class="material-symbols-outlined">bookmark</span></button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<div class="flex flex-col lg:flex-row gap-8 items-start">
+<!-- Sophisticated Filter Sidebar -->
+<aside class="w-full lg:w-72 flex-shrink-0 space-y-8">
+<div class="bg-surface-container-low rounded-3xl p-6 border border-outline-variant/10">
+<h3 class="text-sm font-headline font-black uppercase tracking-widest text-on-surface mb-6">Intelligence Suite</h3>
+<div class="space-y-6">
+<!-- Verification Level -->
+<div>
+<label class="text-xs font-bold text-on-surface-variant block mb-3 uppercase tracking-tight">Verification Levels</label>
+<div class="space-y-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">Premium Verified</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">KARM BABA Certified</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">Basic Verification</span>
+</label>
+</div>
+</div>
+<!-- Trust Score Range -->
+<div>
+<div class="flex justify-between items-center mb-3">
+<label class="text-xs font-bold text-on-surface-variant uppercase tracking-tight">Trust Score</label>
+<span class="text-xs font-bold text-primary">80 - 100</span>
+</div>
+<input class="w-full h-1.5 bg-surface-container-highest rounded-full appearance-none accent-primary" max="100" min="0" type="range" value="80"/>
+</div>
+<!-- Response Rate -->
+<div>
+<label class="text-xs font-bold text-on-surface-variant block mb-3 uppercase tracking-tight">Response Rate</label>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2 px-3 bg-primary/10 text-primary border border-primary/20 rounded-xl text-xs font-bold">Fast (&lt; 4h)</button>
+<button class="py-2 px-3 bg-surface-container-highest text-on-surface-variant rounded-xl text-xs font-bold">Standard</button>
+</div>
+</div>
+<!-- Export Readiness -->
+<div>
+<label class="text-xs font-bold text-on-surface-variant block mb-3 uppercase tracking-tight">Compliance &amp; Readiness</label>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-white border border-outline-variant/15 rounded-full text-[11px] font-bold text-on-surface cursor-pointer hover:bg-primary hover:text-white transition-colors">GST</span>
+<span class="px-3 py-1 bg-white border border-outline-variant/15 rounded-full text-[11px] font-bold text-on-surface cursor-pointer hover:bg-primary hover:text-white transition-colors">ISO 9001</span>
+<span class="px-3 py-1 bg-white border border-outline-variant/15 rounded-full text-[11px] font-bold text-on-surface cursor-pointer hover:bg-primary hover:text-white transition-colors">FSSAI</span>
+<span class="px-3 py-1 bg-white border border-outline-variant/15 rounded-full text-[11px] font-bold text-on-surface cursor-pointer hover:bg-primary hover:text-white transition-colors">Export Ready</span>
+<span class="px-3 py-1 bg-white border border-outline-variant/15 rounded-full text-[11px] font-bold text-on-surface cursor-pointer hover:bg-primary hover:text-white transition-colors">High Growth</span>
+</div>
+</div>
+</div>
+<button class="w-full mt-8 py-3 bg-on-background text-surface rounded-2xl font-headline font-bold text-xs hover:scale-[1.02] transition-transform">Apply Dynamic Engine</button>
+</div>
+<div class="bg-gradient-to-br from-primary to-primary-container rounded-3xl p-6 text-white overflow-hidden relative shadow-lg">
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-white/10 text-8xl">verified_user</span>
+<h4 class="font-headline font-bold text-lg mb-2">Join the Elite</h4>
+<p class="text-xs text-white/80 leading-relaxed mb-4">Complete your Tier-3 verification to appear in "High Growth" filters for institutional investors.</p>
+<button class="w-full py-2.5 bg-white text-primary rounded-xl font-headline font-bold text-xs">Begin Verification</button>
+</div>
+</aside>
+<!-- High-Trust Company Grid -->
+<div class="flex-1 space-y-6">
+<div class="flex items-center justify-between mb-4">
+<p class="text-sm font-medium text-on-surface-variant">Showing <span class="text-on-surface font-bold">1,284 verified partners</span></p>
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-on-surface-variant">Sort by:</span>
+<select class="bg-transparent border-none text-xs font-bold text-primary focus:ring-0 cursor-pointer">
+<option>Highest Trust Score</option>
+<option>Latest Active</option>
+<option>Match Priority</option>
+</select>
+</div>
+</div>
+<!-- Company Card 1 -->
+<div class="group bg-surface-container-lowest rounded-[32px] p-8 border border-outline-variant/15 hover:border-primary/30 transition-all duration-300 relative">
+<div class="flex flex-col md:flex-row gap-8">
+<div class="w-20 h-20 bg-surface-container rounded-2xl flex-shrink-0 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="minimalist modern corporate logo icon in shades of dark blue and silver on a clean background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBESgmjNN_q9b_5W31L5Gu6YSxcXRjBMEqt0LQef33nyQIS_C62CjoOUxZwIvnSqT5yhOroIn4mIVH6m-4Pp7DGD19QyvhomdLQc_U6bf7vBrQGLfFTJ6Xh1Sqs88-mCnABmTxxhzmWlvjA6DXpPSw6ccJZapEAbtxyLtXEInHJ62jDaTNsIJrDHBciZW-_HnQTSNay_IuF1FLgSBr3gPCy9Rbiuze_zMnl7qePMPOsr_Cb37QBw4Zy22Xu_nXnNbXzFwuxbp-qCzQ"/>
+</div>
+<div class="flex-1">
+<div class="flex flex-wrap items-center gap-3 mb-2">
+<h3 class="text-xl font-headline font-extrabold text-on-surface">Stellar Manufacturing</h3>
+<span class="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Top Verified</span>
+<span class="bg-tertiary/10 text-tertiary text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">KARM BABA Certified</span>
+</div>
+<p class="text-sm text-on-surface-variant mb-6 max-w-xl">Precision engineering partner specializing in aerospace components and advanced composite materials for European markets.</p>
+<div class="flex flex-wrap gap-4 mb-6">
+<div class="bg-surface-container-low px-4 py-3 rounded-2xl border border-outline-variant/10">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Trust Score</p>
+<div class="flex items-center gap-3">
+<span class="text-lg font-black text-on-surface">94<span class="text-[10px] text-on-surface-variant">/100</span></span>
+<div class="w-24 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 94%"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low px-4 py-3 rounded-2xl border border-outline-variant/10">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Success Rate</p>
+<p class="text-lg font-black text-on-surface">99.8%</p>
+</div>
+<div class="bg-surface-container-low px-4 py-3 rounded-2xl border border-outline-variant/10">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Response</p>
+<p class="text-lg font-black text-on-surface">Fast <span class="text-xs font-medium text-on-surface-variant">(1.2h)</span></p>
+</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-4 py-1.5 bg-surface-container text-on-surface text-xs font-bold rounded-full">Export Ready</span>
+<span class="px-4 py-1.5 bg-surface-container text-on-surface text-xs font-bold rounded-full">ISO 14001</span>
+<span class="px-4 py-1.5 bg-surface-container text-on-surface text-xs font-bold rounded-full">Tier 1 Supplier</span>
+</div>
+</div>
+<div class="flex flex-col gap-3 justify-center md:w-48">
+<button class="w-full py-3 btn-gradient text-white rounded-2xl font-headline font-bold text-sm shadow-md hover:scale-[1.02] transition-transform">Connect</button>
+<button class="w-full py-3 bg-surface-container-highest text-primary rounded-2xl font-headline font-bold text-sm hover:bg-primary/10 transition-colors">Request Quote</button>
+</div>
+</div>
+<!-- Hover Preview (Apple-like interaction) -->
+<div class="absolute left-0 -top-4 w-full h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+</div>
+<!-- Company Card 2 -->
+<div class="group bg-surface-container-lowest rounded-[32px] p-8 border border-outline-variant/15 hover:border-primary/30 transition-all duration-300 relative">
+<div class="flex flex-col md:flex-row gap-8">
+<div class="w-20 h-20 bg-surface-container rounded-2xl flex-shrink-0 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="professional abstract branding image for a technology firm with geometric shapes and teal highlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdvPFun9XUUIY7mHrt1g_nkO4Blkbkugm-lLNXne1jj4O1n8Ro0isSJz1zpIEBmfO7Wje5-m_VcqIK-jV1vfAsRyPl-HxtF4-c3clmz-koaSNDgAaEAylgcyDtdd0PSEQcxqRNK_-XMRN4fwl9IFbe13DwVukn_-P5nYLJmpxdB5n1MmTIti8YHXMG4Fb3NVhQa2iym1z7ZKYdcZDH1NAQRFRRTLAiRAp7BbIWnMuCwsAAcAJUs3s3HmhPhJcN_jgaQlgB0cp4G_8"/>
+</div>
+<div class="flex-1">
+<div class="flex flex-wrap items-center gap-3 mb-2">
+<h3 class="text-xl font-headline font-extrabold text-on-surface">Beacon FinTech Solutions</h3>
+<span class="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Top Verified</span>
+<span class="bg-secondary/10 text-secondary text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">High Growth</span>
+</div>
+<p class="text-sm text-on-surface-variant mb-6 max-w-xl">Digital payment infrastructure provider with verified transaction history across 14 emerging markets.</p>
+<div class="flex flex-wrap gap-4 mb-6">
+<div class="bg-surface-container-low px-4 py-3 rounded-2xl border border-outline-variant/10">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Trust Score</p>
+<div class="flex items-center gap-3">
+<span class="text-lg font-black text-on-surface">88<span class="text-[10px] text-on-surface-variant">/100</span></span>
+<div class="w-24 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 88%"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low px-4 py-3 rounded-2xl border border-outline-variant/10">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Success Rate</p>
+<p class="text-lg font-black text-on-surface">97.2%</p>
+</div>
+<div class="bg-surface-container-low px-4 py-3 rounded-2xl border border-outline-variant/10">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Response</p>
+<p class="text-lg font-black text-on-surface">Std <span class="text-xs font-medium text-on-surface-variant">(4.5h)</span></p>
+</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-4 py-1.5 bg-surface-container text-on-surface text-xs font-bold rounded-full">PCI-DSS</span>
+<span class="px-4 py-1.5 bg-surface-container text-on-surface text-xs font-bold rounded-full">Licensed Entity</span>
+<span class="px-4 py-1.5 bg-surface-container text-on-surface text-xs font-bold rounded-full">Series B</span>
+</div>
+</div>
+<div class="flex flex-col gap-3 justify-center md:w-48">
+<button class="w-full py-3 btn-gradient text-white rounded-2xl font-headline font-bold text-sm shadow-md hover:scale-[1.02] transition-transform">Connect</button>
+<button class="w-full py-3 bg-surface-container-highest text-primary rounded-2xl font-headline font-bold text-sm hover:bg-primary/10 transition-colors">Request Quote</button>
+</div>
+</div>
+</div>
+<!-- Company Card 3 -->
+<div class="group bg-surface-container-lowest rounded-[32px] p-8 border border-outline-variant/15 hover:border-primary/30 transition-all duration-300 relative">
+<div class="flex flex-col md:flex-row gap-8">
+<div class="w-20 h-20 bg-surface-container rounded-2xl flex-shrink-0 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="clean medical technology logo concept with soft green and blue gradients" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4S-0aRTSogLBtgQyBBuQYHFeEF6Vz_BElXPwBVPh-MdAkAMKoFjrFfai2njvxvmQm9kb19m2m3BmTIOFpsSvbXIqYddGd2TvosGKqH5Tm6xRWnkW2xfFEiUQS7eHOH3JrYifVG4M9Th5TfhHBNqJiO_pIzUT3hZzGC1ZsSAX4N68IxXASbhxWLdQyDBTNfhT7zb4iix8ONBrDWFJVsBs8Cs5ORBdF7IHvx5x1frC2im3BqQr_KttZp8MeDjoAXaln6646eECr1wE"/>
+</div>
+<div class="flex-1">
+<div class="flex flex-wrap items-center gap-3 mb-2">
+<h3 class="text-xl font-headline font-extrabold text-on-surface">Helix Bio-Distribution</h3>
+<span class="bg-tertiary/10 text-tertiary text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">KARM BABA Certified</span>
+<span class="bg-error-container text-error text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">FSSAI Gold</span>
+</div>
+<p class="text-sm text-on-surface-variant mb-6 max-w-xl">Strategic cold-chain distribution network for high-value pharmaceuticals and specialized clinical materials.</p>
+<div class="flex flex-wrap gap-4 mb-6">
+<div class="bg-surface-container-low px-4 py-3 rounded-2xl border border-outline-variant/10">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Trust Score</p>
+<div class="flex items-center gap-3">
+<span class="text-lg font-black text-on-surface">82<span class="text-[10px] text-on-surface-variant">/100</span></span>
+<div class="w-24 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 82%"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low px-4 py-3 rounded-2xl border border-outline-variant/10">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Success Rate</p>
+<p class="text-lg font-black text-on-surface">95.5%</p>
+</div>
+<div class="bg-surface-container-low px-4 py-3 rounded-2xl border border-outline-variant/10">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Response</p>
+<p class="text-lg font-black text-on-surface">Fast <span class="text-xs font-medium text-on-surface-variant">(0.8h)</span></p>
+</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-4 py-1.5 bg-surface-container text-on-surface text-xs font-bold rounded-full">Cold Chain</span>
+<span class="px-4 py-1.5 bg-surface-container text-on-surface text-xs font-bold rounded-full">WHO Certified</span>
+<span class="px-4 py-1.5 bg-surface-container text-on-surface text-xs font-bold rounded-full">Logistics Partner</span>
+</div>
+</div>
+<div class="flex flex-col gap-3 justify-center md:w-48">
+<button class="w-full py-3 btn-gradient text-white rounded-2xl font-headline font-bold text-sm shadow-md hover:scale-[1.02] transition-transform">Connect</button>
+<button class="w-full py-3 bg-surface-container-highest text-primary rounded-2xl font-headline font-bold text-sm hover:bg-primary/10 transition-colors">Request Quote</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Execution HUD (Floating Glassmorphic Footer) -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-xl px-4">
+<div class="bg-surface-container-highest/70 backdrop-blur-2xl border border-white/20 rounded-full px-6 py-4 flex items-center justify-between shadow-2xl">
+<div class="flex items-center gap-4">
+<div class="flex -space-x-2">
+<img class="w-8 h-8 rounded-full border-2 border-white object-cover" data-alt="professional female executive portrait in a modern glass-walled office" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA36qJMDKpwAq791gY_9w8Q4zAgsikZ0oH9SuFYawA473QBxcfqCUSGDQmZU2TDWYQppcxCwD4Oedix_-xbaqccukK5K-LmbGVC432EUhNwpZ06r72eq-iTJr7Pbh6cosKfxwYUxP6bHvli5fnSqxBydYDUVho0wZdycMk6KINN3r5uaCBGX1E7l2Dv5RRwH2u6UcRgKKf1ks9q3YnV8K5NLNHzFONX81YIsXQNiVH8k2CbIYdLhlA8tLwhUXZBDCpVWE-O4aVZioA"/>
+<img class="w-8 h-8 rounded-full border-2 border-white object-cover" data-alt="cheerful professional male executive smiling in a light airy office environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkLMft8-koQ3pc0MU4ANx79YMhBNSOKWB2_j72jnFCRE3qp2owBUaVPmjX0USuLKLtkio7G3U2B1LDlCX9XWKVg6yn7hwFtci1dlYcs0Lsm7wCwJyJOgtmTQvu_QqRfUYR6JsAP8tznIAiHOniUfc4SFI0g_zSLQ-0lzTvz_w1v-DJ3eMyLJVqGEyUtKp3t9sE0uWtZuFOm9d1Fo9utgsIZ6x7suHNNjiE7-FphO4PXexMmDM98g-ICBqw0ztYu1mPIHKQ0T7c__E"/>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-primary text-[10px] font-bold text-white flex items-center justify-center">+12</div>
+</div>
+<p class="text-xs font-bold text-on-surface tracking-tight">3 Saved Matches ready for execution</p>
+</div>
+<button class="bg-on-background text-surface px-6 py-2 rounded-full font-headline font-bold text-xs hover:scale-105 transition-all">Bulk Connect</button>
+</div>
+</div>
+</body></html>

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 
 export default function AnalyticsPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const stats = [
     { label: 'Total Revenue', value: '$2.45M', change: '+12.5%', icon: '💰' },
@@ -30,58 +30,58 @@ export default function AnalyticsPage() {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <Sidebar open={sidebarOpen} />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}>
         {/* Header */}
-        <header className="bg-white border-b border-outline-variant p-6 flex justify-between items-center">
+        <header className="bg-white border-b border-outline-variant p-4 md:p-6 flex justify-between items-center">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="text-on-surface hover:text-primary transition-colors"
           >
             <span className="material-symbols-outlined">menu</span>
           </button>
-          <h1 className="text-2xl font-headline font-black text-on-surface flex-1 ml-4">
+          <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface flex-1 ml-4">
             Analytics & Insights
           </h1>
         </header>
 
         {/* Content */}
-        <div className="p-6 overflow-auto">
+        <div className="p-4 md:p-6 overflow-auto">
           {/* Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
             {stats.map((stat, i) => (
               <div
                 key={i}
-                className="bg-white rounded-xl border border-outline-variant p-6"
+                className="bg-white rounded-xl border border-outline-variant p-4 md:p-6"
               >
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex justify-between items-start mb-3 md:mb-4">
                   <div>
-                    <p className="text-sm text-on-surface-variant mb-1">{stat.label}</p>
-                    <p className="text-2xl font-headline font-black text-on-surface">
+                    <p className="text-xs md:text-sm text-on-surface-variant mb-1">{stat.label}</p>
+                    <p className="text-xl md:text-2xl font-headline font-black text-on-surface">
                       {stat.value}
                     </p>
                   </div>
-                  <span className="text-2xl">{stat.icon}</span>
+                  <span className="text-xl md:text-2xl">{stat.icon}</span>
                 </div>
-                <p className="text-sm font-bold text-primary">{stat.change}</p>
+                <p className="text-xs md:text-sm font-bold text-primary">{stat.change}</p>
               </div>
             ))}
           </div>
 
           {/* Charts Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
             {/* Deal Status Breakdown */}
-            <div className="bg-white rounded-xl border border-outline-variant p-6">
-              <h2 className="text-xl font-headline font-black text-on-surface mb-6">
+            <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-6">
+              <h2 className="text-lg md:text-xl font-headline font-black text-on-surface mb-4 md:mb-6">
                 Deal Status Breakdown
               </h2>
               <div className="space-y-4">
                 {dealsByStatus.map((item, i) => (
                   <div key={i}>
                     <div className="flex justify-between items-center mb-2">
-                      <p className="font-bold text-on-surface">{item.status}</p>
+                      <p className="font-bold text-on-surface text-sm md:text-base">{item.status}</p>
                       <p className="text-sm text-on-surface-variant">{item.count} deals</p>
                     </div>
                     <div className="w-full bg-surface-container rounded-full h-3">
@@ -96,8 +96,8 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Revenue Trend */}
-            <div className="bg-white rounded-xl border border-outline-variant p-6">
-              <h2 className="text-xl font-headline font-black text-on-surface mb-6">
+            <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-6">
+              <h2 className="text-lg md:text-xl font-headline font-black text-on-surface mb-4 md:mb-6">
                 Monthly Revenue Trend
               </h2>
               <div className="space-y-4">
@@ -125,21 +125,21 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Top Partners */}
-          <div className="bg-white rounded-xl border border-outline-variant p-6">
-            <h2 className="text-xl font-headline font-black text-on-surface mb-6">
+          <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-6">
+            <h2 className="text-lg md:text-xl font-headline font-black text-on-surface mb-4 md:mb-6">
               Top Partners by Revenue
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-outline-variant">
-                    <th className="px-4 py-3 text-left font-headline font-bold text-on-surface">
+                    <th className="px-3 md:px-4 py-3 text-left font-headline font-bold text-on-surface text-sm">
                       Partner Name
                     </th>
-                    <th className="px-4 py-3 text-left font-headline font-bold text-on-surface">
+                    <th className="px-3 md:px-4 py-3 text-left font-headline font-bold text-on-surface text-sm">
                       Deals
                     </th>
-                    <th className="px-4 py-3 text-left font-headline font-bold text-on-surface">
+                    <th className="px-3 md:px-4 py-3 text-left font-headline font-bold text-on-surface text-sm">
                       Revenue
                     </th>
                   </tr>
@@ -147,9 +147,9 @@ export default function AnalyticsPage() {
                 <tbody>
                   {topPartners.map((partner, i) => (
                     <tr key={i} className="border-b border-outline-variant hover:bg-surface-container">
-                      <td className="px-4 py-3 text-on-surface font-bold">{partner.name}</td>
-                      <td className="px-4 py-3 text-on-surface-variant">{partner.deals}</td>
-                      <td className="px-4 py-3 text-primary font-bold">{partner.revenue}</td>
+                      <td className="px-3 md:px-4 py-3 text-on-surface font-bold text-sm">{partner.name}</td>
+                      <td className="px-3 md:px-4 py-3 text-on-surface-variant text-sm">{partner.deals}</td>
+                      <td className="px-3 md:px-4 py-3 text-primary font-bold text-sm">{partner.revenue}</td>
                     </tr>
                   ))}
                 </tbody>

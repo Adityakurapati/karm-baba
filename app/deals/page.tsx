@@ -6,7 +6,7 @@ import Sidebar from '@/components/Sidebar';
 
 export default function DealsPage() {
   const [filterStatus, setFilterStatus] = useState('all');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const deals = [
     {
@@ -86,39 +86,39 @@ export default function DealsPage() {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <Sidebar open={sidebarOpen} />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}>
         {/* Header */}
-        <header className="bg-white border-b border-outline-variant p-6 flex justify-between items-center">
+        <header className="bg-white border-b border-outline-variant p-4 md:p-6 flex justify-between items-center gap-3">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-on-surface hover:text-primary transition-colors"
+            className="text-on-surface hover:text-primary transition-colors flex-shrink-0"
           >
             <span className="material-symbols-outlined">menu</span>
           </button>
-          <h1 className="text-2xl font-headline font-black text-on-surface flex-1 ml-4">
+          <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface flex-1 ml-2 md:ml-4">
             Deal Management
           </h1>
           <Link
             href="/deals/new"
-            className="px-6 py-2 bg-primary text-white font-headline font-bold rounded-lg hover:bg-primary-dark transition-colors"
+            className="px-4 md:px-6 py-2 bg-primary text-white font-headline font-bold rounded-lg hover:bg-primary-dark transition-colors text-sm md:text-base flex-shrink-0"
           >
             Create Deal
           </Link>
         </header>
 
         {/* Content */}
-        <div className="p-6 overflow-auto">
+        <div className="p-4 md:p-6 overflow-auto">
           {/* Filters */}
-          <div className="mb-6 flex gap-3 flex-wrap">
+          <div className="mb-6 flex gap-2 md:gap-3 flex-wrap">
             {['all', 'In Negotiation', 'Pending Verification', 'Contract Signed', 'Completed'].map(
               (status) => (
                 <button
                   key={status}
                   onClick={() => setFilterStatus(status)}
-                  className={`px-4 py-2 rounded-lg font-bold transition-colors ${
+                  className={`px-3 md:px-4 py-2 rounded-lg font-bold text-xs md:text-sm transition-colors ${
                     filterStatus === status
                       ? 'bg-primary text-white'
                       : 'bg-surface-container text-on-surface hover:border-primary border border-outline-variant'
@@ -136,20 +136,20 @@ export default function DealsPage() {
               <Link
                 key={deal.id}
                 href={`/deals/${deal.id}`}
-                className="block bg-white rounded-xl border border-outline-variant hover:border-primary hover:shadow-md transition-all p-6"
+                className="block bg-white rounded-xl border border-outline-variant hover:border-primary hover:shadow-md transition-all p-4 md:p-6"
               >
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start mb-4 gap-2">
                   <div className="flex-1">
-                    <h3 className="text-lg font-headline font-bold text-on-surface mb-1">
+                    <h3 className="text-base md:text-lg font-headline font-bold text-on-surface mb-1">
                       {deal.title}
                     </h3>
-                    <div className="flex gap-4 text-sm text-on-surface-variant">
+                    <div className="flex gap-2 md:gap-4 text-xs md:text-sm text-on-surface-variant flex-wrap">
                       <span>Buyer: {deal.buyer}</span>
                       <span>Supplier: {deal.supplier}</span>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xl font-headline font-black text-primary mb-2">
+                  <div className="sm:text-right flex sm:flex-col items-center sm:items-end gap-2">
+                    <p className="text-lg md:text-xl font-headline font-black text-primary">
                       {deal.value}
                     </p>
                     <span

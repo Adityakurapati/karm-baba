@@ -10,7 +10,7 @@ interface PageProps {
 }
 
 export default function DealDetailPage({ params }: PageProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [dealId, setDealId] = useState<string | null>(null);
 
@@ -55,8 +55,8 @@ export default function DealDetailPage({ params }: PageProps) {
   if (!deal) {
     return (
       <div className="flex h-screen bg-background">
-        <Sidebar open={sidebarOpen} />
-        <main className="flex-1 flex items-center justify-center">
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <main className={`flex-1 flex items-center justify-center transition-all duration-300 ${sidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}>
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-on-surface-variant">Loading deal...</p>
@@ -69,12 +69,12 @@ export default function DealDetailPage({ params }: PageProps) {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <Sidebar open={sidebarOpen} />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}>
         {/* Header */}
-        <header className="bg-white border-b border-outline-variant p-6 flex justify-between items-center">
+        <header className="bg-white border-b border-outline-variant p-4 md:p-6 flex justify-between items-center">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="text-on-surface hover:text-primary transition-colors"
@@ -89,18 +89,18 @@ export default function DealDetailPage({ params }: PageProps) {
         </header>
 
         {/* Content */}
-        <div className="p-6 overflow-auto">
+        <div className="p-4 md:p-6 overflow-auto">
           {/* Deal Header */}
-          <div className="bg-white rounded-xl border border-outline-variant p-8 mb-6">
-            <div className="flex justify-between items-start mb-6">
+          <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8 mb-4 md:mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start mb-4 md:mb-6 gap-4">
               <div>
-                <h1 className="text-3xl font-headline font-black text-on-surface mb-2">
+                <h1 className="text-2xl md:text-3xl font-headline font-black text-on-surface mb-2">
                   {deal.title}
                 </h1>
                 <p className="text-on-surface-variant mb-4">{deal.description}</p>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-headline font-black text-primary mb-2">
+                <p className="text-2xl md:text-3xl font-headline font-black text-primary mb-2">
                   {deal.value}
                 </p>
                 <span className="inline-block px-4 py-2 bg-yellow-50 text-yellow-700 font-bold rounded-lg border border-yellow-200">
@@ -110,7 +110,7 @@ export default function DealDetailPage({ params }: PageProps) {
             </div>
 
             {/* Deal Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
               <div className="p-4 bg-surface-container rounded-lg">
                 <p className="text-sm text-on-surface-variant mb-1">Buyer</p>
                 <p className="font-headline font-bold text-on-surface">{deal.buyer}</p>

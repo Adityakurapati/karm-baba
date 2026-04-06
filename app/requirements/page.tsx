@@ -56,17 +56,17 @@ export default function RequirementsPage() {
   return (
     <DashboardLayout>
       {/* Header */}
-      <header className="bg-slate-50/80 backdrop-blur-md flex justify-between items-center h-16 px-8 border-b border-slate-200/20">
-        <h1 className="text-2xl font-headline font-black text-on-surface">
+      <header className="bg-slate-50/80 backdrop-blur-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:h-16 px-4 md:px-8 py-3 sm:py-0 border-b border-slate-200/20">
+        <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface">
           Purchase Requirements
         </h1>
-        <button className="px-6 py-2 bg-primary text-white font-headline font-bold rounded-lg hover:opacity-90 transition-all">
+        <button className="w-full sm:w-auto px-6 py-2 bg-primary text-white font-headline font-bold rounded-lg hover:opacity-90 transition-all text-sm">
           Post Requirement
         </button>
       </header>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto p-8">
+      <div className="flex-1 overflow-auto p-4 md:p-8">
           {/* Filters */}
           <div className="mb-6 flex gap-3 flex-wrap">
             {['all', 'buyer', 'supplier'].map((type) => (

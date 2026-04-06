@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 
 export default function SettingsPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
   const [formData, setFormData] = useState({
     firstName: 'John',
@@ -28,32 +28,32 @@ export default function SettingsPage() {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <Sidebar open={sidebarOpen} />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}>
         {/* Header */}
-        <header className="bg-white border-b border-outline-variant p-6 flex justify-between items-center">
+        <header className="bg-white border-b border-outline-variant p-4 md:p-6 flex justify-between items-center">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="text-on-surface hover:text-primary transition-colors"
           >
             <span className="material-symbols-outlined">menu</span>
           </button>
-          <h1 className="text-2xl font-headline font-black text-on-surface flex-1 ml-4">
+          <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface flex-1 ml-4">
             Settings
           </h1>
         </header>
 
         {/* Content */}
-        <div className="p-6 overflow-auto max-w-4xl">
+        <div className="p-4 md:p-6 overflow-auto max-w-4xl">
           {/* Tabs */}
-          <div className="mb-6 flex gap-4 border-b border-outline-variant">
+          <div className="mb-6 flex gap-2 md:gap-4 border-b border-outline-variant overflow-x-auto">
             {['profile', 'security', 'notifications', 'billing'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-3 font-headline font-bold border-b-2 transition-colors ${
+                className={`px-3 md:px-4 py-3 font-headline font-bold border-b-2 transition-colors text-sm md:text-base whitespace-nowrap ${
                   activeTab === tab
                     ? 'border-primary text-primary'
                     : 'border-transparent text-on-surface-variant hover:text-primary'
@@ -66,12 +66,12 @@ export default function SettingsPage() {
 
           {/* Tab Content */}
           {activeTab === 'profile' && (
-            <div className="bg-white rounded-xl border border-outline-variant p-8">
-              <h2 className="text-2xl font-headline font-black text-on-surface mb-6">
+            <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
+              <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">
                 Profile Information
               </h2>
               <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-headline font-bold text-on-surface mb-2">
                       First Name
@@ -156,7 +156,7 @@ export default function SettingsPage() {
 
                 <button
                   onClick={handleSave}
-                  className="px-8 py-3 bg-primary text-white font-headline font-bold rounded-lg hover:bg-primary-dark transition-colors"
+                  className="w-full md:w-auto px-8 py-3 bg-primary text-white font-headline font-bold rounded-lg hover:bg-primary-dark transition-colors"
                 >
                   Save Changes
                 </button>
@@ -165,8 +165,8 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'security' && (
-            <div className="bg-white rounded-xl border border-outline-variant p-8">
-              <h2 className="text-2xl font-headline font-black text-on-surface mb-6">
+            <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
+              <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">
                 Security Settings
               </h2>
               <div className="space-y-6">
@@ -177,7 +177,7 @@ export default function SettingsPage() {
                   <p className="text-on-surface-variant text-sm mb-4">
                     Update your password regularly to keep your account secure
                   </p>
-                  <button className="px-6 py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors">
+                  <button className="w-full sm:w-auto px-6 py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors">
                     Change Password
                   </button>
                 </div>
@@ -189,7 +189,7 @@ export default function SettingsPage() {
                   <p className="text-on-surface-variant text-sm mb-4">
                     Add an extra layer of security to your account
                   </p>
-                  <button className="px-6 py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors">
+                  <button className="w-full sm:w-auto px-6 py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors">
                     Enable 2FA
                   </button>
                 </div>
@@ -203,7 +203,7 @@ export default function SettingsPage() {
                   </p>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center p-3 bg-surface-container rounded">
-                      <span className="text-on-surface font-bold">Current Session</span>
+                      <span className="text-on-surface font-bold text-sm md:text-base">Current Session</span>
                       <span className="text-sm text-on-surface-variant">Active</span>
                     </div>
                   </div>
@@ -213,8 +213,8 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'notifications' && (
-            <div className="bg-white rounded-xl border border-outline-variant p-8">
-              <h2 className="text-2xl font-headline font-black text-on-surface mb-6">
+            <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
+              <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">
                 Notification Preferences
               </h2>
               <div className="space-y-6">
@@ -226,15 +226,15 @@ export default function SettingsPage() {
                 ].map((notif, i) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between py-4 border-b border-outline-variant last:border-b-0"
+                    className="flex items-center justify-between py-4 border-b border-outline-variant last:border-b-0 gap-4"
                   >
-                    <div>
-                      <p className="font-headline font-bold text-on-surface">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-headline font-bold text-on-surface text-sm md:text-base">
                         {notif.title}
                       </p>
-                      <p className="text-sm text-on-surface-variant">{notif.desc}</p>
+                      <p className="text-xs md:text-sm text-on-surface-variant">{notif.desc}</p>
                     </div>
-                    <input type="checkbox" defaultChecked className="w-5 h-5" />
+                    <input type="checkbox" defaultChecked className="w-5 h-5 flex-shrink-0" />
                   </div>
                 ))}
               </div>
@@ -242,13 +242,13 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'billing' && (
-            <div className="bg-white rounded-xl border border-outline-variant p-8">
-              <h2 className="text-2xl font-headline font-black text-on-surface mb-6">
+            <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
+              <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">
                 Billing & Subscription
               </h2>
               <div className="space-y-6">
-                <div className="p-6 bg-surface-container rounded-lg">
-                  <div className="flex justify-between items-center mb-4">
+                <div className="p-4 md:p-6 bg-surface-container rounded-lg">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
                     <h3 className="font-headline font-bold text-on-surface">
                       Current Plan: Professional
                     </h3>
@@ -257,7 +257,7 @@ export default function SettingsPage() {
                     </span>
                   </div>
                   <p className="text-on-surface-variant mb-4">$299/month</p>
-                  <button className="px-6 py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors">
+                  <button className="w-full sm:w-auto px-6 py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors">
                     Change Plan
                   </button>
                 </div>
@@ -273,11 +273,11 @@ export default function SettingsPage() {
                     ].map((invoice, i) => (
                       <div
                         key={i}
-                        className="flex justify-between items-center p-3 border border-outline-variant rounded"
+                        className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 border border-outline-variant rounded gap-2"
                       >
-                        <span className="text-on-surface font-bold">{invoice.date}</span>
-                        <div className="flex items-center gap-4">
-                          <span className="text-on-surface-variant">{invoice.amount}</span>
+                        <span className="text-on-surface font-bold text-sm">{invoice.date}</span>
+                        <div className="flex items-center gap-3 md:gap-4">
+                          <span className="text-on-surface-variant text-sm">{invoice.amount}</span>
                           <span className="text-sm font-bold text-green-700 bg-green-50 px-3 py-1 rounded">
                             {invoice.status}
                           </span>

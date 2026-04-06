@@ -6,7 +6,7 @@ import Sidebar from '@/components/Sidebar';
 
 export default function NewDealPage() {
   const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -35,26 +35,26 @@ export default function NewDealPage() {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <Sidebar open={sidebarOpen} />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}>
         {/* Header */}
-        <header className="bg-white border-b border-outline-variant p-6 flex justify-between items-center">
+        <header className="bg-white border-b border-outline-variant p-4 md:p-6 flex justify-between items-center">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="text-on-surface hover:text-primary transition-colors"
           >
             <span className="material-symbols-outlined">menu</span>
           </button>
-          <h1 className="text-2xl font-headline font-black text-on-surface flex-1 ml-4">
+          <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface flex-1 ml-4">
             Create New Deal
           </h1>
         </header>
 
         {/* Content */}
-        <div className="p-6 overflow-auto max-w-3xl">
-          <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-outline-variant p-8 space-y-6">
+        <div className="p-4 md:p-6 overflow-auto max-w-3xl">
+          <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-outline-variant p-4 md:p-8 space-y-6">
             {/* Title */}
             <div>
               <label className="block text-sm font-headline font-bold text-on-surface mb-2">
@@ -88,7 +88,7 @@ export default function NewDealPage() {
             </div>
 
             {/* Buyer & Supplier */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-headline font-bold text-on-surface mb-2">
                   Buyer *
@@ -120,8 +120,8 @@ export default function NewDealPage() {
             </div>
 
             {/* Value */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="col-span-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2">
                 <label className="block text-sm font-headline font-bold text-on-surface mb-2">
                   Deal Value *
                 </label>
@@ -191,7 +191,7 @@ export default function NewDealPage() {
             </div>
 
             {/* Submit Buttons */}
-            <div className="flex gap-4 pt-6 border-t border-outline-variant">
+            <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-outline-variant">
               <button
                 type="button"
                 onClick={() => router.back()}

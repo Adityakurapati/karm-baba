@@ -51,9 +51,9 @@ export default function DealsWorkflowPage() {
     <DashboardLayout>
       <TopHeader searchPlaceholder="Search workflows..." />
       
-      <div className="flex-1 overflow-auto p-8">
+      <div className="flex-1 overflow-auto p-4 md:p-8">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-6 md:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
             <h1 className="text-3xl font-headline font-black text-on-surface mb-2">
               Deal Workflows
@@ -62,7 +62,7 @@ export default function DealsWorkflowPage() {
               Track and manage your deal execution workflows
             </p>
           </div>
-          <button className="px-6 py-2 bg-primary text-white font-headline font-bold rounded-lg hover:bg-primary-container transition-colors">
+          <button className="w-full sm:w-auto px-6 py-2 bg-primary text-white font-headline font-bold rounded-lg hover:bg-primary-container transition-colors text-sm">
             + New Workflow
           </button>
         </div>

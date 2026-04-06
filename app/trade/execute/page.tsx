@@ -15,8 +15,8 @@ export default function TradeExecutionPage() {
     <DashboardLayout>
       <TopHeader searchPlaceholder="Search trades..." />
       
-      <div className="flex-1 overflow-auto p-8">
-        <div className="mb-8 flex justify-between items-center">
+      <div className="flex-1 overflow-auto p-4 md:p-8">
+        <div className="mb-6 md:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
             <h1 className="text-3xl font-headline font-black text-on-surface mb-2">
               Trade Execution
@@ -25,13 +25,13 @@ export default function TradeExecutionPage() {
               Monitor and manage your international trade transactions
             </p>
           </div>
-          <button className="px-6 py-2 bg-primary text-white font-headline font-bold rounded-lg hover:bg-primary-container">
+          <button className="w-full sm:w-auto px-6 py-2 bg-primary text-white font-headline font-bold rounded-lg hover:bg-primary-container text-sm">
             + New Trade
           </button>
         </div>
 
         {/* Execution Pipeline */}
-        <div className="grid grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
           {['Pending', 'Negotiating', 'Confirmed', 'Executing'].map((stage, i) => (
             <div key={i} className="bg-white rounded-xl border border-outline-variant p-4 text-center">
               <div className="text-2xl font-headline font-black text-primary mb-1">

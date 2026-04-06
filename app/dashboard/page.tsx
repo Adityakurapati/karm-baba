@@ -41,8 +41,8 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <header className="bg-slate-50/80 backdrop-blur-md flex justify-between items-center h-16 px-8 border-b border-slate-200/20">
-        <div className="relative w-96">
+      <header className="bg-slate-50/80 backdrop-blur-md flex justify-between items-center h-14 md:h-16 px-4 md:px-8 border-b border-slate-200/20">
+        <div className="relative w-full md:w-96">
           <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">
             search
           </span>
@@ -52,7 +52,7 @@ export default function DashboardPage() {
             type="text"
           />
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 md:gap-6 ml-4 flex-shrink-0">
           <button className="text-slate-500 hover:text-slate-900">
             <span className="material-symbols-outlined">notifications</span>
           </button>
@@ -63,10 +63,10 @@ export default function DashboardPage() {
       </header>
 
       {/* Dashboard Content */}
-      <div className="flex-1 overflow-auto p-8">
+      <div className="flex-1 overflow-auto p-4 md:p-8">
           {/* Welcome Section */}
           <div className="mb-8">
-            <h1 className="text-3xl font-headline font-black text-on-surface mb-2">
+            <h1 className="text-2xl md:text-3xl font-headline font-black text-on-surface mb-2">
               Welcome back, User!
             </h1>
             <p className="text-on-surface-variant">

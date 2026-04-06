@@ -27,9 +27,9 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
           <Image
             src="/logo.png"
             alt="KARM BABA Logo"
-            width={40}
-            height={40}
-            className="h-10 w-10"
+            width={120}
+            height={80}
+            className="h-14 w-20"
             priority
           />
         </Link>
@@ -41,11 +41,10 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
               key={link.id}
               href={link.href}
               onClick={() => setActiveNav(link.id)}
-              className={`font-headline font-bold text-sm transition-colors ${
-                activeNav === link.id
-                  ? 'text-primary border-b-2 border-primary'
-                  : 'text-on-surface-variant hover:text-primary'
-              }`}
+              className={`font-headline font-bold text-sm transition-colors ${activeNav === link.id
+                ? 'text-primary border-b-2 border-primary'
+                : 'text-on-surface-variant hover:text-primary'
+                }`}
             >
               {link.label}
             </Link>

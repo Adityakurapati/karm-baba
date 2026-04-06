@@ -30,7 +30,7 @@ export default function LeadScoringPage() {
     <DashboardLayout>
       <TopHeader searchPlaceholder="Search leads..." />
       
-      <div className="flex-1 overflow-auto p-8">
+      <div className="flex-1 overflow-auto p-4 md:p-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-headline font-black text-on-surface mb-2">
@@ -42,7 +42,7 @@ export default function LeadScoringPage() {
         </div>
 
         {/* Score Distribution Cards */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
           <div className="bg-white rounded-xl border border-outline-variant p-6">
             <div className="text-sm text-on-surface-variant mb-2">Hot Leads</div>
             <div className="text-3xl font-headline font-black text-green-600">3</div>

@@ -84,7 +84,7 @@ export default function PricingPage() {
       <main className="pt-20 px-6 md:px-12 max-w-7xl mx-auto py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-headline font-black text-on-surface mb-4">
+          <h1 className="text-3xl md:text-5xl font-headline font-black text-on-surface mb-4">
             Simple, Transparent Pricing
           </h1>
           <p className="text-xl text-on-surface-variant max-w-2xl mx-auto">
@@ -99,7 +99,7 @@ export default function PricingPage() {
               key={i}
               className={`rounded-xl border-2 transition-all ${
                 plan.highlighted
-                  ? 'border-primary bg-primary/5 shadow-lg scale-105'
+                  ? 'border-primary bg-primary/5 shadow-lg md:scale-105'
                   : 'border-outline-variant hover:border-primary'
               } p-8`}
             >
@@ -206,7 +206,7 @@ export default function PricingPage() {
         </div>
 
         {/* CTA */}
-        <div className="bg-primary text-white rounded-xl p-12 text-center">
+        <div className="bg-primary text-white rounded-xl p-6 md:p-12 text-center">
           <h2 className="text-3xl font-headline font-bold mb-4">Ready to get started?</h2>
           <p className="mb-8 max-w-2xl mx-auto">
             Join thousands of traders and suppliers using KARM BABA. Start your free trial today.

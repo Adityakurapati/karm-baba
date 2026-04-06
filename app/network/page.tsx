@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 
 export default function NetworkPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [filterType, setFilterType] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -100,25 +100,25 @@ export default function NetworkPage() {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <Sidebar open={sidebarOpen} />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}>
         {/* Header */}
-        <header className="bg-white border-b border-outline-variant p-6 flex justify-between items-center">
+        <header className="bg-white border-b border-outline-variant p-4 md:p-6 flex justify-between items-center">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="text-on-surface hover:text-primary transition-colors"
           >
             <span className="material-symbols-outlined">menu</span>
           </button>
-          <h1 className="text-2xl font-headline font-black text-on-surface flex-1 ml-4">
+          <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface flex-1 ml-4">
             Verified Network
           </h1>
         </header>
 
         {/* Content */}
-        <div className="p-6 overflow-auto">
+        <div className="p-4 md:p-6 overflow-auto">
           {/* Search and Filter */}
           <div className="mb-6 space-y-4">
             <div className="relative">
@@ -134,12 +134,12 @@ export default function NetworkPage() {
               />
             </div>
 
-            <div className="flex gap-3 flex-wrap">
+            <div className="flex gap-2 md:gap-3 flex-wrap">
               {['all', 'buyer', 'supplier', 'trader'].map((type) => (
                 <button
                   key={type}
                   onClick={() => setFilterType(type)}
-                  className={`px-4 py-2 rounded-lg font-bold transition-colors ${
+                  className={`px-3 md:px-4 py-2 rounded-lg font-bold text-sm transition-colors ${
                     filterType === type
                       ? 'bg-primary text-white'
                       : 'bg-surface-container text-on-surface hover:border-primary border border-outline-variant'
@@ -154,16 +154,16 @@ export default function NetworkPage() {
           </div>
 
           {/* Network Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {filteredContacts.map((contact) => (
               <div
                 key={contact.id}
-                className="bg-white rounded-xl border border-outline-variant hover:border-primary hover:shadow-lg transition-all p-6"
+                className="bg-white rounded-xl border border-outline-variant hover:border-primary hover:shadow-lg transition-all p-4 md:p-6"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <div className="text-3xl mb-2">{getTypeIcon(contact.type)}</div>
-                    <h3 className="text-lg font-headline font-bold text-on-surface">
+                    <h3 className="text-base md:text-lg font-headline font-bold text-on-surface">
                       {contact.name}
                     </h3>
                   </div>
@@ -204,10 +204,10 @@ export default function NetworkPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <button className="flex-1 px-4 py-2 border border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors">
+                  <button className="flex-1 px-3 md:px-4 py-2 border border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors text-sm">
                     View Profile
                   </button>
-                  <button className="flex-1 px-4 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary-dark transition-colors">
+                  <button className="flex-1 px-3 md:px-4 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary-dark transition-colors text-sm">
                     Connect
                   </button>
                 </div>

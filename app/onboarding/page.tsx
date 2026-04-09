@@ -1,105 +1,114 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import OnboardingLayout from '@/components/OnboardingLayout';
 
-export default function OnboardingPage() {
+const roles = [
+  {
+    id: 'buyer',
+    icon: 'package_2',
+    title: 'Buyer',
+    desc: 'Access the global supply network, manage procurement pipelines, and execute high-volume institutional orders with automated risk mitigation.',
+    features: ['Automated RFQ Management', 'Global Logistics Integration'],
+    color: 'primary',
+  },
+  {
+    id: 'seller',
+    icon: 'factory',
+    title: 'Seller',
+    desc: 'List production capacity, optimize inventory distribution, and secure multi-year contracts through the sovereign credit-linked marketplace.',
+    features: ['Production Monitoring', 'Direct Channel Liquidity'],
+    color: 'secondary',
+  },
+];
+
+export default function OnboardingRoleSelectionPage() {
   const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
 
-  const roles = [
-    {
-      id: 'buyer',
-      title: 'Buyer / Importer',
-      description: 'Looking to source products and materials globally',
-      icon: '🛒',
-      features: ['Find suppliers', 'Compare prices', 'Manage RFQs'],
-    },
-    {
-      id: 'supplier',
-      title: 'Supplier / Exporter',
-      description: 'Offering products and services to global market',
-      icon: '📦',
-      features: ['List products', 'Manage orders', 'Track shipments'],
-    },
-    {
-      id: 'trader',
-      title: 'Trader / Agent',
-      description: 'Connecting buyers and suppliers for mutual benefit',
-      icon: '💼',
-      features: ['Build network', 'Broker deals', 'Earn commissions'],
-    },
-  ];
-
-  const handleContinue = () => {
-    if (selectedRole) {
-      router.push(`/onboarding/account?role=${selectedRole}`);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-4xl">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-headline font-black text-on-surface mb-4">
-            Welcome to KARM BABA
-          </h1>
-          <p className="text-lg text-on-surface-variant">
-            Let's get you started. Who are you?
+    <OnboardingLayout>
+      <div className="max-w-5xl mx-auto p-8 md:p-12">
+        {/* Header Section */}
+        <div className="mb-12">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-4">
+            <div>
+              <span className="text-primary font-bold text-xs uppercase tracking-[0.2em] mb-2 block">Identity Protocol</span>
+              <h1 className="font-headline text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface">Role Selection</h1>
+            </div>
+            <div className="text-right">
+              <span className="text-on-surface-variant text-sm">Step 1 of 5</span>
+              <div className="w-48 h-1.5 bg-surface-container mt-2 rounded-full overflow-hidden">
+                <div className="bg-primary h-full w-1/5 transition-all"></div>
+              </div>
+            </div>
+          </div>
+          <p className="text-on-surface-variant text-lg max-w-2xl leading-relaxed">
+            Define your position within the ecosystem. This selection tailors your interface, data feeds, and execution tools.
           </p>
         </div>
 
-        {/* Role Selection Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* Selection Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {roles.map((role) => (
             <button
               key={role.id}
               onClick={() => setSelectedRole(role.id)}
-              className={`p-8 rounded-xl border-2 transition-all text-left ${
+              className={`group relative flex flex-col text-left p-8 md:p-10 bg-white rounded-xl transition-all duration-300 hover:scale-[1.02] border-2 ${
                 selectedRole === role.id
-                  ? 'border-primary bg-primary/5'
-                  : 'border-outline-variant hover:border-primary'
+                  ? 'border-primary shadow-lg shadow-primary/10'
+                  : 'border-transparent hover:border-primary/30'
               }`}
             >
-              <div className="text-4xl mb-4">{role.icon}</div>
-              <h3 className="text-xl font-headline font-bold text-on-surface mb-2">
-                {role.title}
-              </h3>
-              <p className="text-on-surface-variant mb-4">{role.description}</p>
-              <ul className="space-y-2">
-                {role.features.map((feature, i) => (
-                  <li key={i} className="text-sm text-on-surface-variant flex items-center gap-2">
-                    <span className="text-primary">✓</span> {feature}
-                  </li>
-                ))}
-              </ul>
+              {/* Selected Check */}
+              <div className={`absolute top-6 right-6 transition-opacity ${selectedRole === role.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}>
+                <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+              </div>
+
+              {/* Icon */}
+              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-8 ${
+                role.color === 'primary' ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'
+              } group-hover:scale-110 transition-transform`}>
+                <span className="material-symbols-outlined text-4xl">{role.icon}</span>
+              </div>
+
+              <h3 className="font-headline text-2xl font-bold text-on-surface mb-3">{role.title}</h3>
+              <p className="text-on-surface-variant mb-6 leading-relaxed">{role.desc}</p>
+
+              <div className="mt-auto pt-6 border-t border-outline-variant/10">
+                <ul className="space-y-3">
+                  {role.features.map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-sm text-on-surface-variant">
+                      <span className={`material-symbols-outlined text-sm ${role.color === 'primary' ? 'text-primary' : 'text-secondary'}`}>token</span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </button>
           ))}
         </div>
 
-        {/* Continue Button */}
-        <div className="flex gap-4 justify-center">
-          <Link
-            href="/"
-            className="px-8 py-3 border-2 border-primary text-primary font-headline font-bold rounded-lg hover:bg-primary hover:text-white transition-colors"
-          >
-            Back
-          </Link>
+        {/* Action Area */}
+        <div className="mt-16 flex flex-col items-center">
           <button
-            onClick={handleContinue}
+            onClick={() => selectedRole && router.push('/onboarding/industry')}
             disabled={!selectedRole}
-            className={`px-8 py-3 font-headline font-bold rounded-lg transition-colors ${
+            className={`px-12 py-4 font-headline font-bold text-lg rounded-full transition-all duration-200 shadow-lg ${
               selectedRole
-                ? 'bg-primary text-white hover:bg-primary-dark'
-                : 'bg-surface-container text-on-surface-variant cursor-not-allowed'
+                ? 'text-white hover:scale-105 shadow-primary/20'
+                : 'bg-surface-container text-on-surface-variant cursor-not-allowed shadow-none'
             }`}
+            style={selectedRole ? { background: 'linear-gradient(135deg, #e55a24, #ff6b35)' } : {}}
           >
-            Continue
+            Continue with Selection
           </button>
+          <p className="mt-6 text-on-surface-variant text-sm">
+            You can refine your organizational profile in the next step.
+          </p>
         </div>
       </div>
-    </div>
+    </OnboardingLayout>
   );
 }

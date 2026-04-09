@@ -2,223 +2,305 @@
 
 import Link from 'next/link';
 import TopNavbar from '@/components/TopNavbar';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+
+/* ─── hook: fires once when element enters viewport ─── */
+function useInView(threshold = 0.15) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, visible };
+}
+
+/* ─── fade-in wrapper ─── */
+function FadeIn({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
+  const { ref, visible } = useInView();
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(28px)',
+        transition: `opacity 0.65s ease ${delay}ms, transform 0.65s ease ${delay}ms`,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
 export default function PricingPage() {
   const [activeNav, setActiveNav] = useState('pricing');
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const plans = [
     {
-      name: 'Starter',
-      price: '$99',
-      period: '/month',
-      description: 'Perfect for getting started',
-      features: [
-        '✓ Up to 5 active deals',
-        '✓ Basic network access',
-        '✓ Email support',
-        '✓ Standard verification',
-        '✗ API access',
-        '✗ Custom integration',
-      ],
-      cta: 'Get Started',
-      highlighted: false,
+      name: 'Trial',
+      subtitle: 'Entry-level for testing',
+      price: '₹999',
+      period: '/mo',
+      features: ['10 Leads', '3 Listings', 'Basic CRM access'],
+      cta: 'Start Free',
+      featured: false,
+      dark: false,
     },
     {
-      name: 'Professional',
-      price: '$299',
-      period: '/month',
-      description: 'Ideal for growing businesses',
-      features: [
-        '✓ Unlimited active deals',
-        '✓ Full network access',
-        '✓ Priority support',
-        '✓ Advanced verification',
-        '✓ API access',
-        '✗ Custom integration',
-      ],
-      cta: 'Start Free Trial',
-      highlighted: true,
+      name: 'Smart Growth',
+      subtitle: 'For growing businesses',
+      price: '₹9,999',
+      period: '/mo',
+      features: ['120 Leads', 'Priority listing', 'Buyer visibility', 'Insights access'],
+      cta: 'Select Plan',
+      featured: false,
+      dark: false,
+    },
+    {
+      name: 'Pro Trade Boost',
+      subtitle: 'Core premium plan',
+      price: '₹19,999',
+      period: '/mo',
+      features: ['250+ Leads', 'Verified network access', 'RM assigned', 'Executive connections'],
+      cta: 'Get Started Now',
+      featured: true,
+      dark: false,
+    },
+    {
+      name: 'Business Boost',
+      subtitle: 'High-touch service',
+      price: '₹35,999',
+      period: '/mo',
+      features: ['330+ Leads', 'Dedicated account manager', 'Matchmaking support', 'Campaign integration'],
+      cta: 'Scale Up',
+      featured: false,
+      dark: false,
     },
     {
       name: 'Enterprise',
-      price: 'Custom',
-      period: 'pricing',
-      description: 'For large organizations',
-      features: [
-        '✓ Everything in Professional',
-        '✓ Unlimited everything',
-        '✓ Dedicated support',
-        '✓ Custom workflows',
-        '✓ Custom integration',
-        '✓ SLA guarantee',
-      ],
+      subtitle: 'Top-tier solution',
+      price: '₹60,000',
+      period: '/mo',
+      features: ['500 Leads', 'International consulting', 'Offline matchmaking', 'Custom integrations', 'Dedicated manager'],
       cta: 'Contact Sales',
-      highlighted: false,
+      featured: false,
+      dark: true,
     },
   ];
 
   const faqs = [
     {
-      q: 'Can I change my plan anytime?',
-      a: 'Yes, you can upgrade or downgrade your plan at any time. Changes take effect at the start of your next billing cycle.',
+      q: 'How does billing work?',
+      a: 'We bill monthly or annually. Annual plans come with a 20% discount. All payments are processed securely through our encrypted payment gateway.',
     },
     {
-      q: 'What payment methods do you accept?',
-      a: 'We accept all major credit cards, bank transfers, and digital payment methods.',
+      q: 'Can I change plans at any time?',
+      a: 'Yes, you can upgrade or downgrade your plan at any time. Changes take effect at the start of your next billing cycle, and you\'ll be prorated if upgrading mid-cycle.',
     },
     {
-      q: 'Is there a free trial available?',
-      a: 'Yes, all paid plans include a 14-day free trial with full features.',
-    },
-    {
-      q: 'Do you offer refunds?',
-      a: 'We offer a 30-day money-back guarantee if you&apos;re not satisfied.',
+      q: 'What are GST verification checks?',
+      a: 'GST verification checks are automated compliance checks that verify your trading counterparty\'s GST registration, filing history, and legitimacy before executing any deal.',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background font-sans overflow-x-hidden">
+      <style>{`
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+        @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+        .shimmer-btn { background-size:200% auto; background-image:linear-gradient(90deg,#ea580c 0%,#f97316 40%,#fb923c 60%,#ea580c 100%); animation:shimmer 2.5s linear infinite; }
+        .bg-primary-gradient { background: linear-gradient(135deg, #e55a24 0%, #ff6b35 50%, #ff9500 100%); }
+        .pricing-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .pricing-card:hover { transform: translateY(-4px) scale(1.02); }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s ease; }
+        .faq-answer.open { max-height: 200px; }
+        .featured-card { transform: scale(1.05); }
+        .featured-card:hover { transform: scale(1.07); }
+      `}</style>
+
       <TopNavbar activeNav={activeNav} setActiveNav={setActiveNav} />
 
-      <main className="pt-20 px-6 md:px-12 max-w-7xl mx-auto py-12">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-5xl font-headline font-black text-on-surface mb-4">
-            Simple, Transparent Pricing
-          </h1>
-          <p className="text-xl text-on-surface-variant max-w-2xl mx-auto">
-            Choose the perfect plan for your business. Scale as you grow.
-          </p>
-        </div>
+      <main className="pt-32 pb-24">
+        {/* ══ HERO SECTION ══ */}
+        <FadeIn>
+          <section className="max-w-7xl mx-auto px-8 text-center mb-20">
+            <h1 className="font-headline text-5xl md:text-6xl font-extrabold tracking-tight mb-6 text-on-surface">
+              Flexible Plans for <span className="text-primary">Global Trade Leaders.</span>
+            </h1>
+            <p className="text-xl text-on-surface-variant max-w-2xl mx-auto">
+              Select a plan tailored to your execution scale. All plans include 256-bit encryption and GST verification checks as standard.
+            </p>
+          </section>
+        </FadeIn>
 
-        {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        {/* ══ PRICING GRID ══ */}
+        <section className="max-w-[1400px] mx-auto px-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 items-stretch">
           {plans.map((plan, i) => (
-            <div
-              key={i}
-              className={`rounded-xl border-2 transition-all ${
-                plan.highlighted
-                  ? 'border-primary bg-primary/5 shadow-lg md:scale-105'
-                  : 'border-outline-variant hover:border-primary'
-              } p-8`}
-            >
-              {plan.highlighted && (
-                <div className="mb-4 inline-block px-4 py-1 bg-primary text-white text-xs font-bold rounded-full">
-                  Most Popular
+            <FadeIn key={plan.name} delay={i * 80}>
+              <div
+                className={`p-8 rounded-xl flex flex-col justify-between h-full ${
+                  plan.featured
+                    ? 'featured-card relative bg-white shadow-2xl ring-2 ring-primary z-10'
+                    : 'pricing-card bg-white border border-outline-variant'
+                }`}
+                style={plan.featured ? { boxShadow: '0 25px 50px rgba(255,107,53,.2)' } : {}}
+              >
+                {/* Recommended badge */}
+                {plan.featured && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-widest whitespace-nowrap">
+                    Recommended
+                  </div>
+                )}
+
+                <div>
+                  <h3 className="font-headline text-lg font-bold text-on-surface mb-1">{plan.name}</h3>
+                  <p className="text-[10px] text-primary font-bold uppercase tracking-wider mb-2">{plan.subtitle}</p>
+                  <div className="flex items-baseline gap-1 mb-6">
+                    <span className="text-3xl font-extrabold text-on-surface">{plan.price}</span>
+                    <span className="text-on-surface-variant text-sm">{plan.period}</span>
+                  </div>
+
+                  <ul className="space-y-4 mb-8">
+                    {plan.features.map((feature, j) => (
+                      <li key={j} className={`flex items-center gap-2 text-sm ${plan.featured ? (j === 0 ? 'text-on-surface font-semibold' : 'text-on-surface') : 'text-on-surface-variant'}`}>
+                        {plan.featured && j === 0 ? (
+                          <span className="material-symbols-outlined text-primary text-lg filled" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
+                        ) : (
+                          <span className="material-symbols-outlined text-primary text-lg">check_circle</span>
+                        )}
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              )}
-              <h3 className="text-2xl font-headline font-bold text-on-surface mb-2">
-                {plan.name}
-              </h3>
-              <p className="text-on-surface-variant mb-6">{plan.description}</p>
-              <div className="mb-6">
-                <span className="text-4xl font-headline font-black text-primary">
-                  {plan.price}
-                </span>
-                {plan.period !== 'pricing' && (
-                  <span className="text-on-surface-variant ml-2">{plan.period}</span>
+
+                {/* CTA Button */}
+                {plan.featured ? (
+                  <button className="w-full py-4 px-4 rounded-full bg-primary-gradient text-white font-headline font-bold shadow-lg hover:scale-[1.03] transition-transform"
+                    style={{ boxShadow: '0 8px 24px rgba(255,107,53,.3)' }}>
+                    {plan.cta}
+                  </button>
+                ) : plan.dark ? (
+                  <button className="w-full py-3 px-4 rounded-full text-white font-bold hover:opacity-90 transition-opacity"
+                    style={{ background: '#131b2e' }}>
+                    {plan.cta}
+                  </button>
+                ) : (
+                  <button className="w-full py-3 px-4 rounded-full border border-outline-variant text-primary font-bold hover:bg-orange-50 transition-colors">
+                    {plan.cta}
+                  </button>
                 )}
               </div>
-              <button
-                className={`w-full py-3 font-headline font-bold rounded-lg transition-colors mb-8 ${
-                  plan.highlighted
-                    ? 'bg-primary text-white hover:bg-primary-dark'
-                    : 'border-2 border-primary text-primary hover:bg-primary hover:text-white'
-                }`}
-              >
-                {plan.cta}
-              </button>
-              <ul className="space-y-3">
-                {plan.features.map((feature, j) => (
-                  <li key={j} className="text-on-surface-variant">
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            </FadeIn>
           ))}
-        </div>
+        </section>
 
-        {/* Comparison Table */}
-        <div className="mb-16 bg-white rounded-xl border border-outline-variant p-8 overflow-x-auto">
-          <h2 className="text-2xl font-headline font-black text-on-surface mb-8">
-            Feature Comparison
-          </h2>
-          <table className="w-full">
-            <thead>
-              <tr className="border-b-2 border-outline-variant">
-                <th className="px-4 py-4 text-left font-headline font-bold text-on-surface">
-                  Feature
-                </th>
-                <th className="px-4 py-4 text-left font-headline font-bold text-on-surface">
-                  Starter
-                </th>
-                <th className="px-4 py-4 text-left font-headline font-bold text-on-surface">
-                  Professional
-                </th>
-                <th className="px-4 py-4 text-left font-headline font-bold text-on-surface">
-                  Enterprise
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                { feature: 'Active Deals', starter: '5', pro: 'Unlimited', ent: 'Unlimited' },
-                { feature: 'Network Access', starter: 'Basic', pro: 'Full', ent: 'Full' },
-                { feature: 'Support', starter: 'Email', pro: 'Priority', ent: 'Dedicated' },
-                { feature: 'API Access', starter: '✗', pro: '✓', ent: '✓' },
-                { feature: 'Custom Integration', starter: '✗', pro: '✗', ent: '✓' },
-                { feature: 'SLA', starter: '✗', pro: '✗', ent: '✓' },
-              ].map((row, i) => (
-                <tr key={i} className="border-b border-outline-variant hover:bg-surface-container">
-                  <td className="px-4 py-4 font-bold text-on-surface">{row.feature}</td>
-                  <td className="px-4 py-4 text-on-surface-variant">{row.starter}</td>
-                  <td className="px-4 py-4 text-on-surface-variant">{row.pro}</td>
-                  <td className="px-4 py-4 text-on-surface-variant">{row.ent}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {/* ══ SECURITY / TRUST HIGHLIGHTS ══ */}
+        <section className="mt-24 max-w-5xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+          <FadeIn>
+            <div className="bg-orange-50/60 border border-orange-100 p-8 rounded-2xl flex items-start gap-4">
+              <div className="p-3 bg-white rounded-xl shadow-sm flex-shrink-0">
+                <span className="material-symbols-outlined text-primary text-3xl">shield</span>
+              </div>
+              <div>
+                <h4 className="font-headline font-bold text-on-surface text-lg mb-1">Institutional Security</h4>
+                <p className="text-on-surface-variant text-sm leading-relaxed">Enterprise-grade 256-bit AES encryption protecting every byte of your trade data.</p>
+              </div>
+            </div>
+          </FadeIn>
+          <FadeIn delay={100}>
+            <div className="bg-orange-50/60 border border-orange-100 p-8 rounded-2xl flex items-start gap-4">
+              <div className="p-3 bg-white rounded-xl shadow-sm flex-shrink-0">
+                <span className="material-symbols-outlined text-primary text-3xl">verified_user</span>
+              </div>
+              <div>
+                <h4 className="font-headline font-bold text-on-surface text-lg mb-1">Compliance Guaranteed</h4>
+                <p className="text-on-surface-variant text-sm leading-relaxed">Integrated GST and KYC verification checks for every counterparty on the platform.</p>
+              </div>
+            </div>
+          </FadeIn>
+        </section>
 
-        {/* FAQs */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-headline font-black text-on-surface text-center mb-12">
-            Frequently Asked Questions
-          </h2>
-          <div className="space-y-4 max-w-3xl mx-auto">
+        {/* ══ FAQ ACCORDION ══ */}
+        <section className="mt-32 max-w-3xl mx-auto px-8">
+          <FadeIn>
+            <h2 className="font-headline text-3xl font-extrabold text-center mb-12">Frequently Asked Questions</h2>
+          </FadeIn>
+          <div className="space-y-4">
             {faqs.map((faq, i) => (
-              <details
-                key={i}
-                className="group bg-white rounded-lg border border-outline-variant p-6 cursor-pointer hover:border-primary transition-colors"
-              >
-                <summary className="font-headline font-bold text-on-surface flex justify-between items-center">
-                  {faq.q}
-                  <span className="text-primary group-open:rotate-180 transition-transform">
-                    ▼
-                  </span>
-                </summary>
-                <p className="mt-4 text-on-surface-variant">{faq.a}</p>
-              </details>
+              <FadeIn key={i} delay={i * 80}>
+                <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-outline-variant hover:border-primary/40 transition-colors">
+                  <div
+                    className="px-8 py-5 flex justify-between items-center cursor-pointer hover:bg-orange-50/50 transition-colors"
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  >
+                    <span className="font-bold text-on-surface">{faq.q}</span>
+                    <span
+                      className="material-symbols-outlined text-on-surface-variant transition-transform duration-300"
+                      style={{ transform: openFaq === i ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                    >
+                      expand_more
+                    </span>
+                  </div>
+                  <div className={`faq-answer ${openFaq === i ? 'open' : ''}`}
+                    style={{ maxHeight: openFaq === i ? '200px' : '0', padding: openFaq === i ? '0 2rem 1.5rem 2rem' : '0 2rem' }}>
+                    <p className="text-on-surface-variant text-sm leading-relaxed">{faq.a}</p>
+                  </div>
+                </div>
+              </FadeIn>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* CTA */}
-        <div className="bg-primary text-white rounded-xl p-6 md:p-12 text-center">
-          <h2 className="text-3xl font-headline font-bold mb-4">Ready to get started?</h2>
-          <p className="mb-8 max-w-2xl mx-auto">
-            Join thousands of traders and suppliers using KARM BABA. Start your free trial today.
-          </p>
-          <Link
-            href="/onboarding"
-            className="inline-block px-8 py-3 bg-white text-primary font-headline font-bold rounded-lg hover:bg-opacity-90 transition-colors"
-          >
-            Start Free Trial
-          </Link>
-        </div>
+        {/* ══ FINAL CTA BANNER ══ */}
+        <section className="mt-32 max-w-7xl mx-auto px-8">
+          <FadeIn>
+            <div className="relative overflow-hidden rounded-3xl py-20 px-12 text-center text-white" style={{ background: '#111827' }}>
+              {/* Ambient glow */}
+              <div className="absolute inset-0 pointer-events-none"
+                style={{ backgroundImage: 'radial-gradient(ellipse at 20% 50%, rgba(249,115,22,.15) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(255,149,0,.12) 0%, transparent 60%)' }} />
+
+              <div className="relative z-10">
+                <h2 className="font-headline text-4xl font-extrabold mb-6">Start closing deals today.</h2>
+                <p className="text-white/50 text-lg mb-10 max-w-xl mx-auto">Join the 10,000+ trade leaders executing global transactions with Karm Baba.</p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link
+                    href="/onboarding"
+                    className="shimmer-btn text-white px-10 py-4 rounded-full font-headline font-bold text-lg hover:scale-105 transition-transform shadow-xl shadow-orange-900/30"
+                  >
+                    Get Started Now
+                  </Link>
+                  <button className="backdrop-blur-md border border-white/20 text-white px-10 py-4 rounded-full font-headline font-bold text-lg hover:bg-white/20 transition-colors"
+                    style={{ background: 'rgba(255,255,255,0.1)' }}>
+                    View Enterprise Demo
+                  </button>
+                </div>
+              </div>
+            </div>
+          </FadeIn>
+        </section>
       </main>
+
+      {/* ══ FOOTER ══ */}
+      <footer className="w-full py-12 border-t border-white/5" style={{ background: '#0f172a' }}>
+        <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-4">
+          <div className="text-lg font-bold text-primary font-headline">KARM BABA</div>
+          <div className="flex gap-8">
+            <Link className="text-white/40 hover:text-primary transition-colors text-sm" href="#">Privacy</Link>
+            <Link className="text-white/40 hover:text-primary transition-colors text-sm" href="#">Terms</Link>
+            <Link className="text-white/40 hover:text-primary transition-colors text-sm" href="#">Support</Link>
+          </div>
+          <div className="text-white/25 text-sm">&copy; 2024 KARM BABA. All rights reserved.</div>
+        </div>
+      </footer>
     </div>
   );
 }

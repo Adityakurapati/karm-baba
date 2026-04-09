@@ -1,10 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import Sidebar from '@/components/Sidebar';
+import DashboardLayout from '@/components/DashboardLayout';
+import TopHeader from '@/components/TopHeader';
+
+const languages = [
+  { code: 'en', name: 'English', native: 'English', region: 'Global', coverage: 100, status: 'primary' },
+  { code: 'hi', name: 'Hindi', native: 'हिन्दी', region: 'South Asia', coverage: 95, status: 'active' },
+  { code: 'zh', name: 'Chinese (Simplified)', native: '简体中文', region: 'East Asia', coverage: 88, status: 'active' },
+  { code: 'ar', name: 'Arabic', native: 'العربية', region: 'MENA', coverage: 82, status: 'active' },
+  { code: 'es', name: 'Spanish', native: 'Español', region: 'LATAM / Europe', coverage: 76, status: 'active' },
+  { code: 'pt', name: 'Portuguese', native: 'Português', region: 'Brazil / Africa', coverage: 68, status: 'partial' },
+  { code: 'fr', name: 'French', native: 'Français', region: 'Europe / Africa', coverage: 62, status: 'partial' },
+  { code: 'de', name: 'German', native: 'Deutsch', region: 'DACH', coverage: 54, status: 'partial' },
+  { code: 'ja', name: 'Japanese', native: '日本語', region: 'East Asia', coverage: 45, status: 'beta' },
+  { code: 'ko', name: 'Korean', native: '한국어', region: 'East Asia', coverage: 38, status: 'beta' },
+];
 
 export default function SettingsPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
   const [formData, setFormData] = useState({
     firstName: 'John',
@@ -14,6 +27,8 @@ export default function SettingsPage() {
     company: 'Tech Corp USA',
     country: 'USA',
   });
+  const [primaryLang, setPrimaryLang] = useState('en');
+  const [searchLang, setSearchLang] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -21,276 +36,348 @@ export default function SettingsPage() {
   };
 
   const handleSave = () => {
-    // Mock save
     alert('Settings saved successfully!');
   };
 
+  const filteredLanguages = languages.filter(
+    (l) =>
+      l.name.toLowerCase().includes(searchLang.toLowerCase()) ||
+      l.native.toLowerCase().includes(searchLang.toLowerCase()) ||
+      l.region.toLowerCase().includes(searchLang.toLowerCase())
+  );
+
+  const tabs = ['profile', 'security', 'notifications', 'billing', 'languages'];
+
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <DashboardLayout>
+      <TopHeader title="Settings" searchPlaceholder="Search settings..." />
 
-      {/* Main Content */}
-      <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}>
-        {/* Header */}
-        <header className="bg-white border-b border-outline-variant p-4 md:p-6 flex justify-between items-center">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-on-surface hover:text-primary transition-colors"
-          >
-            <span className="material-symbols-outlined">menu</span>
-          </button>
-          <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface flex-1 ml-4">
-            Settings
-          </h1>
-        </header>
+      <main className="flex-1 overflow-auto p-4 md:p-8 max-w-6xl mx-auto w-full">
+        {/* Tabs */}
+        <div className="mb-8 flex gap-2 md:gap-4 border-b border-outline-variant overflow-x-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-3 md:px-4 py-3 font-headline font-bold border-b-2 transition-colors text-sm md:text-base whitespace-nowrap ${
+                activeTab === tab
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-on-surface-variant hover:text-primary'
+              }`}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
+        </div>
 
-        {/* Content */}
-        <div className="p-4 md:p-6 overflow-auto max-w-4xl">
-          {/* Tabs */}
-          <div className="mb-6 flex gap-2 md:gap-4 border-b border-outline-variant overflow-x-auto">
-            {['profile', 'security', 'notifications', 'billing'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-3 md:px-4 py-3 font-headline font-bold border-b-2 transition-colors text-sm md:text-base whitespace-nowrap ${
-                  activeTab === tab
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-on-surface-variant hover:text-primary'
-                }`}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+        {/* Profile Tab */}
+        {activeTab === 'profile' && (
+          <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
+            <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">
+              Profile Information
+            </h2>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-headline font-bold text-on-surface mb-2">First Name</label>
+                  <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary" />
+                </div>
+                <div>
+                  <label className="block text-sm font-headline font-bold text-on-surface mb-2">Last Name</label>
+                  <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-headline font-bold text-on-surface mb-2">Email</label>
+                <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary" />
+              </div>
+              <div>
+                <label className="block text-sm font-headline font-bold text-on-surface mb-2">Phone</label>
+                <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary" />
+              </div>
+              <div>
+                <label className="block text-sm font-headline font-bold text-on-surface mb-2">Company</label>
+                <input type="text" name="company" value={formData.company} onChange={handleChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary" />
+              </div>
+              <div>
+                <label className="block text-sm font-headline font-bold text-on-surface mb-2">Country</label>
+                <select name="country" value={formData.country} onChange={handleChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary">
+                  <option value="USA">United States</option>
+                  <option value="China">China</option>
+                  <option value="India">India</option>
+                  <option value="Germany">Germany</option>
+                </select>
+              </div>
+              <button onClick={handleSave} className="w-full md:w-auto px-8 py-3 bg-primary text-white font-headline font-bold rounded-lg hover:bg-primary-dark transition-colors">
+                Save Changes
               </button>
-            ))}
+            </div>
           </div>
+        )}
 
-          {/* Tab Content */}
-          {activeTab === 'profile' && (
-            <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
-              <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">
-                Profile Information
-              </h2>
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-headline font-bold text-on-surface mb-2">
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-headline font-bold text-on-surface mb-2">
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
-                    />
+        {/* Security Tab */}
+        {activeTab === 'security' && (
+          <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
+            <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">Security Settings</h2>
+            <div className="space-y-6">
+              <div className="pb-6 border-b border-outline-variant">
+                <h3 className="font-headline font-bold text-on-surface mb-2">Change Password</h3>
+                <p className="text-on-surface-variant text-sm mb-4">Update your password regularly to keep your account secure</p>
+                <button className="w-full sm:w-auto px-6 py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors">Change Password</button>
+              </div>
+              <div className="pb-6 border-b border-outline-variant">
+                <h3 className="font-headline font-bold text-on-surface mb-2">Two-Factor Authentication</h3>
+                <p className="text-on-surface-variant text-sm mb-4">Add an extra layer of security to your account</p>
+                <button className="w-full sm:w-auto px-6 py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors">Enable 2FA</button>
+              </div>
+              <div>
+                <h3 className="font-headline font-bold text-on-surface mb-2">Active Sessions</h3>
+                <p className="text-on-surface-variant text-sm mb-4">Manage your active login sessions</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center p-3 bg-surface-container rounded">
+                    <span className="text-on-surface font-bold text-sm md:text-base">Current Session</span>
+                    <span className="text-sm text-on-surface-variant">Active</span>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
 
-                <div>
-                  <label className="block text-sm font-headline font-bold text-on-surface mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
-                  />
+        {/* Notifications Tab */}
+        {activeTab === 'notifications' && (
+          <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
+            <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">Notification Preferences</h2>
+            <div className="space-y-6">
+              {[
+                { title: 'Deal Updates', desc: 'Get notified about deal status changes' },
+                { title: 'New Matches', desc: 'Receive notifications for potential trade partners' },
+                { title: 'Messages', desc: 'Get alerts for new messages' },
+                { title: 'Account Updates', desc: 'Notifications about account security' },
+              ].map((notif, i) => (
+                <div key={i} className="flex items-center justify-between py-4 border-b border-outline-variant last:border-b-0 gap-4">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-headline font-bold text-on-surface text-sm md:text-base">{notif.title}</p>
+                    <p className="text-xs md:text-sm text-on-surface-variant">{notif.desc}</p>
+                  </div>
+                  <input type="checkbox" defaultChecked className="w-5 h-5 flex-shrink-0 accent-primary" />
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-                <div>
-                  <label className="block text-sm font-headline font-bold text-on-surface mb-2">
-                    Phone
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
-                  />
+        {/* Billing Tab */}
+        {activeTab === 'billing' && (
+          <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
+            <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">Billing & Subscription</h2>
+            <div className="space-y-6">
+              <div className="p-4 md:p-6 bg-surface-container rounded-lg">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                  <h3 className="font-headline font-bold text-on-surface">Current Plan: Professional</h3>
+                  <span className="text-sm font-bold text-on-surface-variant">Renews on Feb 15, 2024</span>
                 </div>
+                <p className="text-on-surface-variant mb-4">$299/month</p>
+                <button className="w-full sm:w-auto px-6 py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors">Change Plan</button>
+              </div>
+              <div>
+                <h3 className="font-headline font-bold text-on-surface mb-4">Billing History</h3>
+                <div className="space-y-2">
+                  {[
+                    { date: 'Jan 15, 2024', amount: '$299.00', status: 'Paid' },
+                    { date: 'Dec 15, 2023', amount: '$299.00', status: 'Paid' },
+                  ].map((invoice, i) => (
+                    <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 border border-outline-variant rounded gap-2">
+                      <span className="text-on-surface font-bold text-sm">{invoice.date}</span>
+                      <div className="flex items-center gap-3 md:gap-4">
+                        <span className="text-on-surface-variant text-sm">{invoice.amount}</span>
+                        <span className="text-sm font-bold text-green-700 bg-green-50 px-3 py-1 rounded">{invoice.status}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
-                <div>
-                  <label className="block text-sm font-headline font-bold text-on-surface mb-2">
-                    Company
-                  </label>
+        {/* Languages Tab — Global Language Adaptation */}
+        {activeTab === 'languages' && (
+          <div className="space-y-8">
+            {/* Hero Section */}
+            <div className="bg-orange-50/50 border border-orange-100 rounded-3xl p-6 md:p-8 relative overflow-hidden">
+              <div className="relative z-10">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="material-symbols-outlined text-primary text-2xl">translate</span>
+                      <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Global Language Adaptation</span>
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-extrabold font-headline tracking-tight text-on-surface mb-2">
+                      Multi-Language Trade System
+                    </h2>
+                    <p className="text-on-surface-variant text-sm max-w-xl">
+                      Manage translations, regional adaptations, and AI-powered localization across all KARM BABA interfaces for seamless global trade.
+                    </p>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="text-center">
+                      <p className="text-3xl font-black text-primary">10</p>
+                      <p className="text-[10px] font-bold text-on-surface-variant uppercase">Languages</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-3xl font-black text-green-600">72%</p>
+                      <p className="text-[10px] font-bold text-on-surface-variant uppercase">Avg. Coverage</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute -bottom-16 -right-16 w-48 h-48 bg-primary opacity-5 rounded-full blur-3xl"></div>
+            </div>
+
+            {/* Search & Primary Language */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white rounded-2xl border border-outline-variant p-6">
+                <label className="text-sm font-headline font-bold text-on-surface mb-3 block">Primary Language</label>
+                <select
+                  value={primaryLang}
+                  onChange={(e) => setPrimaryLang(e.target.value)}
+                  className="w-full px-4 py-3 border border-outline-variant rounded-xl focus:outline-none focus:border-primary text-sm font-medium"
+                >
+                  {languages.map((l) => (
+                    <option key={l.code} value={l.code}>{l.native} ({l.name})</option>
+                  ))}
+                </select>
+                <p className="text-xs text-on-surface-variant mt-2">This will be used as the default interface language.</p>
+              </div>
+              <div className="bg-white rounded-2xl border border-outline-variant p-6">
+                <label className="text-sm font-headline font-bold text-on-surface mb-3 block">Search Languages</label>
+                <div className="relative">
+                  <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
                   <input
                     type="text"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
+                    value={searchLang}
+                    onChange={(e) => setSearchLang(e.target.value)}
+                    placeholder="Filter by name or region..."
+                    className="w-full px-4 py-3 pl-10 border border-outline-variant rounded-xl focus:outline-none focus:border-primary text-sm"
                   />
                 </div>
-
-                <div>
-                  <label className="block text-sm font-headline font-bold text-on-surface mb-2">
-                    Country
-                  </label>
-                  <select
-                    name="country"
-                    value={formData.country}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary"
-                  >
-                    <option value="USA">United States</option>
-                    <option value="China">China</option>
-                    <option value="India">India</option>
-                    <option value="Germany">Germany</option>
-                  </select>
-                </div>
-
-                <button
-                  onClick={handleSave}
-                  className="w-full md:w-auto px-8 py-3 bg-primary text-white font-headline font-bold rounded-lg hover:bg-primary-dark transition-colors"
-                >
-                  Save Changes
-                </button>
+                <p className="text-xs text-on-surface-variant mt-2">Find and manage specific language packs.</p>
               </div>
             </div>
-          )}
 
-          {activeTab === 'security' && (
-            <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
-              <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">
-                Security Settings
-              </h2>
-              <div className="space-y-6">
-                <div className="pb-6 border-b border-outline-variant">
-                  <h3 className="font-headline font-bold text-on-surface mb-2">
-                    Change Password
-                  </h3>
-                  <p className="text-on-surface-variant text-sm mb-4">
-                    Update your password regularly to keep your account secure
-                  </p>
-                  <button className="w-full sm:w-auto px-6 py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors">
-                    Change Password
-                  </button>
-                </div>
-
-                <div className="pb-6 border-b border-outline-variant">
-                  <h3 className="font-headline font-bold text-on-surface mb-2">
-                    Two-Factor Authentication
-                  </h3>
-                  <p className="text-on-surface-variant text-sm mb-4">
-                    Add an extra layer of security to your account
-                  </p>
-                  <button className="w-full sm:w-auto px-6 py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors">
-                    Enable 2FA
-                  </button>
-                </div>
-
-                <div>
-                  <h3 className="font-headline font-bold text-on-surface mb-2">
-                    Active Sessions
-                  </h3>
-                  <p className="text-on-surface-variant text-sm mb-4">
-                    Manage your active login sessions
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center p-3 bg-surface-container rounded">
-                      <span className="text-on-surface font-bold text-sm md:text-base">Current Session</span>
-                      <span className="text-sm text-on-surface-variant">Active</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'notifications' && (
-            <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
-              <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">
-                Notification Preferences
-              </h2>
-              <div className="space-y-6">
-                {[
-                  { title: 'Deal Updates', desc: 'Get notified about deal status changes' },
-                  { title: 'New Matches', desc: 'Receive notifications for potential trade partners' },
-                  { title: 'Messages', desc: 'Get alerts for new messages' },
-                  { title: 'Account Updates', desc: 'Notifications about account security' },
-                ].map((notif, i) => (
+            {/* Languages Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredLanguages.map((lang) => {
+                const statusColors: Record<string, string> = {
+                  primary: 'bg-primary text-white',
+                  active: 'bg-green-100 text-green-700',
+                  partial: 'bg-amber-100 text-amber-700',
+                  beta: 'bg-blue-100 text-blue-700',
+                };
+                return (
                   <div
-                    key={i}
-                    className="flex items-center justify-between py-4 border-b border-outline-variant last:border-b-0 gap-4"
+                    key={lang.code}
+                    className={`bg-white rounded-2xl border transition-all hover:shadow-md hover:border-primary/30 p-5 ${
+                      primaryLang === lang.code ? 'border-primary ring-2 ring-primary/10' : 'border-outline-variant'
+                    }`}
                   >
-                    <div className="flex-1 min-w-0">
-                      <p className="font-headline font-bold text-on-surface text-sm md:text-base">
-                        {notif.title}
-                      </p>
-                      <p className="text-xs md:text-sm text-on-surface-variant">{notif.desc}</p>
-                    </div>
-                    <input type="checkbox" defaultChecked className="w-5 h-5 flex-shrink-0" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'billing' && (
-            <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
-              <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">
-                Billing & Subscription
-              </h2>
-              <div className="space-y-6">
-                <div className="p-4 md:p-6 bg-surface-container rounded-lg">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
-                    <h3 className="font-headline font-bold text-on-surface">
-                      Current Plan: Professional
-                    </h3>
-                    <span className="text-sm font-bold text-on-surface-variant">
-                      Renews on Feb 15, 2024
-                    </span>
-                  </div>
-                  <p className="text-on-surface-variant mb-4">$299/month</p>
-                  <button className="w-full sm:w-auto px-6 py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors">
-                    Change Plan
-                  </button>
-                </div>
-
-                <div>
-                  <h3 className="font-headline font-bold text-on-surface mb-4">
-                    Billing History
-                  </h3>
-                  <div className="space-y-2">
-                    {[
-                      { date: 'Jan 15, 2024', amount: '$299.00', status: 'Paid' },
-                      { date: 'Dec 15, 2023', amount: '$299.00', status: 'Paid' },
-                    ].map((invoice, i) => (
-                      <div
-                        key={i}
-                        className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 border border-outline-variant rounded gap-2"
-                      >
-                        <span className="text-on-surface font-bold text-sm">{invoice.date}</span>
-                        <div className="flex items-center gap-3 md:gap-4">
-                          <span className="text-on-surface-variant text-sm">{invoice.amount}</span>
-                          <span className="text-sm font-bold text-green-700 bg-green-50 px-3 py-1 rounded">
-                            {invoice.status}
-                          </span>
-                        </div>
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="text-lg font-bold font-headline">{lang.native}</h3>
+                        <p className="text-xs text-on-surface-variant">{lang.name} — {lang.region}</p>
                       </div>
-                    ))}
+                      <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase ${statusColors[lang.status]}`}>
+                        {lang.status}
+                      </span>
+                    </div>
+                    <div className="mb-3">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-[10px] font-bold text-on-surface-variant uppercase">Translation Coverage</span>
+                        <span className="text-sm font-black text-on-surface">{lang.coverage}%</span>
+                      </div>
+                      <div className="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${lang.coverage}%`,
+                            background: lang.coverage >= 90 ? '#16a34a' : lang.coverage >= 70 ? '#ff6b35' : '#f59e0b',
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                      <button className="flex-1 py-2 text-primary border border-primary/20 rounded-lg text-xs font-bold hover:bg-orange-50 transition-colors">
+                        Edit
+                      </button>
+                      {lang.status !== 'primary' && (
+                        <button
+                          onClick={() => setPrimaryLang(lang.code)}
+                          className="flex-1 py-2 bg-primary/5 text-primary rounded-lg text-xs font-bold hover:bg-primary/10 transition-colors"
+                        >
+                          Set Primary
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* AI Translation & Regional Intelligence */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-white rounded-3xl p-6 border border-outline-variant shadow-sm">
+                <div className="flex items-center gap-2 mb-6">
+                  <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                  <h3 className="font-bold font-headline">AI Translation Hub</h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="bg-orange-50 p-4 rounded-2xl">
+                    <p className="text-[10px] font-bold text-primary uppercase mb-1">Auto-Translate</p>
+                    <p className="text-xs text-on-surface-variant leading-relaxed">
+                      KARM AI can auto-translate <span className="font-bold text-primary">1,240 untranslated strings</span> across Portuguese, French, and German with 94% accuracy.
+                    </p>
+                    <button className="mt-3 bg-primary text-white px-4 py-2 rounded-lg text-xs font-bold hover:opacity-90 transition-colors">
+                      Start AI Translation
+                    </button>
+                  </div>
+                  <div className="bg-green-50 p-4 rounded-2xl">
+                    <p className="text-[10px] font-bold text-green-700 uppercase mb-1">Quality Score</p>
+                    <p className="text-xs text-on-surface-variant leading-relaxed">
+                      Human-reviewed translations have a <span className="font-bold text-green-700">98.5%</span> accuracy score. AI-generated content at <span className="font-bold text-green-700">94.2%</span>.
+                    </p>
                   </div>
                 </div>
               </div>
+              <div className="bg-orange-50/50 border border-orange-100 rounded-3xl p-6">
+                <div className="flex items-center gap-2 mb-6">
+                  <span className="material-symbols-outlined text-primary">public</span>
+                  <h3 className="font-bold font-headline">Regional Adaptation</h3>
+                </div>
+                <div className="space-y-4">
+                  {[
+                    { region: 'South Asia', langs: 'Hindi, Tamil, Bengali', users: '12K+', growth: '+34%' },
+                    { region: 'East Asia', langs: 'Chinese, Japanese, Korean', users: '8.4K', growth: '+22%' },
+                    { region: 'MENA', langs: 'Arabic, Persian', users: '5.2K', growth: '+45%' },
+                    { region: 'LATAM', langs: 'Spanish, Portuguese', users: '6.8K', growth: '+28%' },
+                  ].map((r) => (
+                    <div key={r.region} className="bg-white/60 p-4 rounded-2xl flex justify-between items-start">
+                      <div>
+                        <h4 className="text-sm font-bold text-on-surface">{r.region}</h4>
+                        <p className="text-[10px] text-on-surface-variant mt-0.5">{r.langs}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-black text-on-surface">{r.users}</p>
+                        <p className="text-[10px] font-bold text-green-600">{r.growth}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </main>
-    </div>
+    </DashboardLayout>
   );
 }

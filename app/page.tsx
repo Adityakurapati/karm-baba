@@ -7,6 +7,7 @@ import TopNavbar from '@/components/TopNavbar';
 /* ─── hook: fires once when element enters viewport ─── */
 function useInView(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null);
+  const [currency, setCurrency] = useState<'INR' | 'USD'>('INR');
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const el = ref.current;
@@ -378,96 +379,257 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ══ PRICING TIERS ══ */}
+      {/* ══ ENTERPRISE TIERS ══ */}
       <section className="py-20 px-6 md:px-12 bg-white">
         <div className="max-w-5xl mx-auto">
-          <FadeIn className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-headline font-black text-on-surface mb-2">Enterprise Tiers</h2>
-            <p className="text-on-surface-variant">Select the level of intelligence required for your operations</p>
+          <FadeIn className="text-center mb-4">
+            <p className="text-primary text-xs font-bold uppercase tracking-widest mb-2">Membership Plans</p>
+            <h2 className="text-3xl md:text-4xl font-headline font-black text-on-surface mb-2">
+              Your Karm Baba Growth Ladder
+            </h2>
+            <p className="text-on-surface-variant text-sm">Start free. Grow at your pace. Every plan builds on the last.</p>
           </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-            {/* Standard */}
+          {/* Currency toggle */}
+          <FadeIn className="flex justify-center mb-10">
+            <div className="flex items-center gap-1 p-1 rounded-xl border border-outline-variant bg-slate-50">
+              <button
+                onClick={() => setCurrency('INR')}
+                className={`px-5 py-2 rounded-lg text-sm font-headline font-bold transition-all ${currency === 'INR' ? 'bg-primary text-white shadow-md shadow-orange-200' : 'text-on-surface-variant hover:text-primary'}`}
+              >
+                🇮🇳 INR
+              </button>
+              <button
+                onClick={() => setCurrency('USD')}
+                className={`px-5 py-2 rounded-lg text-sm font-headline font-bold transition-all ${currency === 'USD' ? 'bg-primary text-white shadow-md shadow-orange-200' : 'text-on-surface-variant hover:text-primary'}`}
+              >
+                🌍 USD
+              </button>
+            </div>
+          </FadeIn>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+            {/* FREE */}
             <FadeIn delay={0}>
-              <div className="tier-card p-8 bg-white rounded-2xl border border-outline-variant cursor-default h-full"
-                onMouseEnter={() => setHoveredTier(0)} onMouseLeave={() => setHoveredTier(null)}
-                style={{ boxShadow: hoveredTier === 0 ? '0 20px 40px rgba(249,115,22,.12)' : '0 2px 8px rgba(0,0,0,.04)' }}>
-                <p className="text-on-surface-variant text-sm font-semibold mb-1">Standard</p>
-                <div className="text-4xl font-headline font-black text-on-surface mb-1">
-                  $499<span className="text-base font-normal text-on-surface-variant">/mo</span>
-                </div>
-                <div className="w-8 h-1 rounded-full bg-orange-200 my-4" />
-                <ul className="space-y-3 text-sm text-on-surface-variant mb-8">
-                  {['Verified Business Profile', 'Access to Public Deals', 'AI Market Insights'].map((f) => (
-                    <li key={f} className="flex items-center gap-2">
-                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 text-primary flex items-center justify-center flex-shrink-0">
-                        <span className="material-symbols-outlined text-[10px] font-bold">check</span>
+              <div className="tier-card p-7 bg-white rounded-2xl border border-outline-variant h-full flex flex-col"
+                style={{ boxShadow: '0 2px 8px rgba(0,0,0,.04)' }}>
+                <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1">Free Forever</p>
+                <div className="text-4xl font-headline font-black text-on-surface mb-1">₹0 <span className="text-base font-normal text-on-surface-variant">/ $0</span></div>
+                <p className="text-xs text-on-surface-variant mb-4">3 Products · No card needed · No expiry</p>
+                <div className="w-8 h-1 rounded-full bg-orange-200 mb-5" />
+                <ul className="space-y-2.5 text-sm text-on-surface-variant mb-8 flex-1">
+                  {['List 3 Products — Free Forever', 'Verified Business Profile', 'Receive Real Buyer Inquiries', 'WhatsApp & Email Trade Alerts', 'Taste of Karm AI', 'CRM Access at ₹99 / $1.11'].map((f) => (
+                    <li key={f} className="flex items-start gap-2">
+                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
                       </span>
                       {f}
                     </li>
                   ))}
                 </ul>
-                <button className="w-full py-2.5 border-2 border-primary text-primary font-headline font-bold rounded-xl hover:bg-primary hover:text-white transition-all">
-                  Select Tier
+                <button className="w-full py-2.5 border-2 border-primary text-primary font-headline font-bold rounded-xl hover:bg-primary hover:text-white transition-all text-sm">
+                  Start Free →
                 </button>
               </div>
             </FadeIn>
 
-            {/* Executive */}
-            <FadeIn delay={120}>
-              <div className="tier-card relative p-8 rounded-2xl cursor-default"
-                onMouseEnter={() => setHoveredTier(1)} onMouseLeave={() => setHoveredTier(null)}
-                style={{ background: '#f97316', boxShadow: '0 24px 50px rgba(249,115,22,.38)' }}>
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full whitespace-nowrap flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[12px] text-accent">star</span> Most Popular
+            {/* TRIAL */}
+            <FadeIn delay={80}>
+              <div className="tier-card p-7 bg-white rounded-2xl border border-outline-variant h-full flex flex-col"
+                style={{ boxShadow: '0 2px 8px rgba(0,0,0,.04)' }}>
+                <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1">Trial Plan</p>
+                <div className="text-4xl font-headline font-black text-on-surface mb-1">
+                  {currency === 'INR' ? '₹999' : '$12'} <span className="text-base font-normal text-on-surface-variant">/mo</span>
                 </div>
-                <p className="text-white/70 text-sm font-semibold mb-1">Executive</p>
-                <div className="text-4xl font-headline font-black text-white mb-1">
-                  $1,499<span className="text-base font-normal text-white/70">/mo</span>
-                </div>
-                <div className="w-8 h-1 rounded-full bg-white/30 my-4" />
-                <ul className="space-y-3 text-sm text-white/90 mb-8">
-                  {['Priority Deal Matching', 'Advanced Risk Assessment', 'Dedicated Account Manager'].map((f) => (
-                    <li key={f} className="flex items-center gap-2">
-                      <span className="w-4 h-4 rounded-full bg-white/20 text-white flex items-center justify-center flex-shrink-0">
-                        <span className="material-symbols-outlined text-[10px] font-bold">check</span>
+                <p className="text-xs text-green-600 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹9,990 — Save ₹1,998' : 'Yearly $119 — Save $25'}</p>
+                <div className="w-8 h-1 rounded-full bg-orange-200 mb-5" />
+                <ul className="space-y-2.5 text-sm text-on-surface-variant mb-8 flex-1">
+                  {['Unlimited Product Listings', 'Premium CRM Access', 'Priority Business Listing', 'Real-Time Trade Alerts', 'Monthly Trade Insights Report', 'Cancel Anytime — No Questions'].map((f) => (
+                    <li key={f} className="flex items-start gap-2">
+                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
                       </span>
                       {f}
                     </li>
                   ))}
                 </ul>
-                <button className="w-full py-2.5 bg-white text-primary font-headline font-bold rounded-xl hover:bg-orange-50 transition-all hover:shadow-lg active:scale-95">
+                <button className="w-full py-2.5 border-2 border-primary text-primary font-headline font-bold rounded-xl hover:bg-primary hover:text-white transition-all text-sm">
+                  Try Full Platform →
+                </button>
+              </div>
+            </FadeIn>
+
+            {/* BASIC CONNECT */}
+            <FadeIn delay={160}>
+              <div className="tier-card p-7 bg-white rounded-2xl border border-outline-variant h-full flex flex-col"
+                style={{ boxShadow: '0 2px 8px rgba(0,0,0,.04)' }}>
+                <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1">Basic Connect</p>
+                <div className="text-4xl font-headline font-black text-on-surface mb-1">
+                  {currency === 'INR' ? '₹3,999' : '$49'} <span className="text-base font-normal text-on-surface-variant">/mo</span>
+                </div>
+                <p className="text-xs text-green-600 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹39,999 — Save ₹7,989' : 'Yearly $444 — Save $144'}</p>
+                <div className="w-8 h-1 rounded-full bg-orange-200 mb-5" />
+                <ul className="space-y-2.5 text-sm text-on-surface-variant mb-8 flex-1">
+                  {['Verified Business Listing', 'Premium CRM — Full Access', 'Karm AI Access', 'WhatsApp & Email Trade Alerts', 'Monthly Trade Insights Report', 'Dedicated Digital Trade Support'].map((f) => (
+                    <li key={f} className="flex items-start gap-2">
+                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
+                      </span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <button className="w-full py-2.5 border-2 border-primary text-primary font-headline font-bold rounded-xl hover:bg-primary hover:text-white transition-all text-sm">
+                  Start Growing →
+                </button>
+              </div>
+            </FadeIn>
+
+            {/* SMART GROWTH — MOST POPULAR */}
+            <FadeIn delay={0}>
+              <div className="tier-card relative p-7 rounded-2xl h-full flex flex-col"
+                style={{ background: '#f97316', boxShadow: '0 24px 50px rgba(249,115,22,.38)' }}>
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full whitespace-nowrap flex items-center gap-1">
+                  <span className="material-symbols-outlined text-accent" style={{ fontSize: '12px' }}>star</span> Most Popular
+                </div>
+                <p className="text-white/70 text-xs font-bold uppercase tracking-widest mb-1">Smart Growth</p>
+                <div className="text-4xl font-headline font-black text-white mb-1">
+                  {currency === 'INR' ? '₹9,999' : '$119'} <span className="text-base font-normal text-white/70">/mo</span>
+                </div>
+                <p className="text-xs text-white/80 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹94,999 — Save ₹24,989' : 'Yearly $1,111 — Save $317'}</p>
+                <div className="w-8 h-1 rounded-full bg-white/30 mb-5" />
+                <ul className="space-y-2.5 text-sm text-white/90 mb-8 flex-1">
+                  {['150 Verified Leads Every Month', 'Priority Search Placement', 'Premium CRM — Convert Leads', 'SEO-Optimised Trade Listing', 'Buyer & Shipment History Access', '1:1 Trade Strategy Onboarding Call'].map((f) => (
+                    <li key={f} className="flex items-start gap-2">
+                      <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="material-symbols-outlined text-white" style={{ fontSize: '10px' }}>check</span>
+                      </span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <button className="w-full py-2.5 bg-white text-primary font-headline font-bold rounded-xl hover:bg-orange-50 transition-all hover:shadow-lg active:scale-95 text-sm">
                   Start Execution →
                 </button>
               </div>
             </FadeIn>
 
-            {/* Institutional */}
-            <FadeIn delay={240}>
-              <div className="tier-card p-8 bg-white rounded-2xl border border-outline-variant cursor-default h-full"
-                onMouseEnter={() => setHoveredTier(2)} onMouseLeave={() => setHoveredTier(null)}
-                style={{ boxShadow: hoveredTier === 2 ? '0 20px 40px rgba(249,115,22,.12)' : '0 2px 8px rgba(0,0,0,.04)' }}>
-                <p className="text-on-surface-variant text-sm font-semibold mb-1">Institutional</p>
-                <div className="text-4xl font-headline font-black text-on-surface mb-1">Custom</div>
-                <div className="w-8 h-1 rounded-full bg-outline-variant my-4" />
-                <ul className="space-y-3 text-sm text-on-surface-variant mb-8">
-                  {['Global Market Integration', 'API Access & Automation', 'White-glove Onboarding'].map((f) => (
-                    <li key={f} className="flex items-center gap-2">
-                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 text-primary flex items-center justify-center flex-shrink-0">
-                        <span className="material-symbols-outlined text-[10px] font-bold">check</span>
+            {/* PRO TRADE BOOST — BEST VALUE */}
+            <FadeIn delay={80}>
+              <div className="tier-card relative p-7 bg-white rounded-2xl border-2 border-primary h-full flex flex-col"
+                style={{ boxShadow: '0 8px 24px rgba(249,115,22,.15)' }}>
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full whitespace-nowrap">
+                  Best Value — 60%+ Off
+                </div>
+                <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1">Pro Trade Boost</p>
+                <div className="text-4xl font-headline font-black text-on-surface mb-1">
+                  {currency === 'INR' ? '₹19,999' : '$250'} <span className="text-base font-normal text-on-surface-variant">/mo</span>
+                </div>
+                <p className="text-xs text-green-600 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹79,999 — Save ₹1,59,989 (60%+ off)' : 'Yearly $999 — Save $2,001 (60%+ off)'}</p>
+                <div className="w-8 h-1 rounded-full bg-orange-200 mb-5" />
+                <ul className="space-y-2.5 text-sm text-on-surface-variant mb-8 flex-1">
+                  {['250 Deeply Verified Leads Monthly', '300+ Direct Buyer Phone Numbers', 'Monthly Bulk Shipment Records', 'Competitor Intelligence Access', 'Direct Access to Trade Executives', 'Your Own 1-on-1 Relationship Manager', 'Karm AI Trade Intelligence'].map((f) => (
+                    <li key={f} className="flex items-start gap-2">
+                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
                       </span>
                       {f}
                     </li>
                   ))}
                 </ul>
-                <button className="w-full py-2.5 border-2 border-outline text-on-surface font-headline font-bold rounded-xl hover:border-primary hover:text-primary transition-all">
-                  Contact Sales
+                <button className="w-full py-2.5 bg-primary text-white font-headline font-bold rounded-xl hover:bg-primary-dark transition-all shadow-md shadow-orange-200 text-sm">
+                  Go Pro →
                 </button>
               </div>
             </FadeIn>
+
+            {/* BUSINESS BOOST */}
+            <FadeIn delay={160}>
+              <div className="tier-card p-7 bg-white rounded-2xl border border-outline-variant h-full flex flex-col"
+                style={{ boxShadow: '0 2px 8px rgba(0,0,0,.04)' }}>
+                <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1">Business Boost</p>
+                <div className="text-4xl font-headline font-black text-on-surface mb-1">
+                  {currency === 'INR' ? '₹35,999' : '$444'} <span className="text-base font-normal text-on-surface-variant">/mo</span>
+                </div>
+                <p className="text-xs text-green-600 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹2,97,500 — Save ₹1,34,488' : 'Yearly $4,444 — Save $888'}</p>
+                <div className="w-8 h-1 rounded-full bg-orange-200 mb-5" />
+                <ul className="space-y-2.5 text-sm text-on-surface-variant mb-8 flex-1">
+                  {['330 Precision-Matched Leads Monthly', 'Dedicated Senior Account Manager', 'Premium Profile + Product Video', 'Human-Intelligence Buyer Matching', '300+ Direct Executive Contacts', 'Sample Coordination & Buyer Follow-Up', 'Quarterly Targeted Marketing Campaign', 'Custom Integrations & API Access'].map((f) => (
+                    <li key={f} className="flex items-start gap-2">
+                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
+                      </span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <button className="w-full py-2.5 border-2 border-primary text-primary font-headline font-bold rounded-xl hover:bg-primary hover:text-white transition-all text-sm">
+                  Boost Business →
+                </button>
+              </div>
+            </FadeIn>
+
+            {/* ENTERPRISE — full width */}
+            <FadeIn delay={0} className="md:col-span-3">
+              <div className="tier-card p-8 rounded-2xl flex flex-col md:flex-row md:items-center gap-8"
+                style={{ background: '#0f172a' }}>
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="px-2.5 py-1 bg-primary/20 border border-primary/30 text-primary text-[10px] font-black uppercase tracking-widest rounded-full">Full Power</span>
+                    <span className="text-white/40 text-xs font-bold uppercase tracking-widest">Enterprise Plan</span>
+                  </div>
+                  <div className="text-4xl font-headline font-black text-white mb-1">
+                    {currency === 'INR' ? '₹60,000' : '$777'} <span className="text-base font-normal text-white/50">/mo</span>
+                  </div>
+                  <p className="text-xs text-green-400 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹4,80,000 — Save ₹2,40,000' : 'Yearly $7,777 — Save $1,547'}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
+                    {[
+                      '500 High-Intent Verified Leads Monthly',
+                      'Unlimited 4B+ Global Shipment Records',
+                      '4 Million+ Verified Business Contacts',
+                      'Advanced Weekly Analytics & Custom Reports',
+                      'On-Demand International Trade Consulting',
+                      'Exclusive In-Person Buyer Matchmaking Events',
+                      'Custom Integrations, API & White-Label Options',
+                      'Priority 1-on-1 Relationship Manager',
+                      'Dedicated Customer Success Manager',
+                      'Karm AI — Full Intelligence Suite',
+                    ].map((f) => (
+                      <div key={f} className="flex items-start gap-2 text-sm text-white/70">
+                        <span className="w-4 h-4 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
+                        </span>
+                        {f}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-3 md:min-w-[200px] text-center">
+                  <button className="w-full py-3 bg-primary text-white font-headline font-bold rounded-xl hover:bg-primary-dark transition-all shadow-lg shadow-orange-900/40 text-sm shimmer-btn">
+                    Contact Sales →
+                  </button>
+                  <button className="w-full py-3 border-2 border-white/15 text-white/60 font-headline font-bold rounded-xl hover:border-primary hover:text-primary transition-all text-sm">
+                    View Full Details
+                  </button>
+                  <p className="text-white/25 text-xs">Custom plans available</p>
+                  <p className="text-white/25 text-xs">hello@karmbaba.com</p>
+                </div>
+              </div>
+            </FadeIn>
+
           </div>
+
+          {/* Promise strip */}
+          <FadeIn delay={200} className="mt-8 text-center">
+            <p className="text-on-surface-variant text-xs leading-relaxed max-w-2xl mx-auto italic">
+              "We do not sell you a subscription. We invest in your growth." — <span className="text-primary font-bold not-italic">The Karm Baba Promise</span>
+            </p>
+            <p className="text-on-surface-variant/60 text-xs mt-2">USD pricing at ₹84 = $1 · All prices exclusive of applicable taxes · Free plan never expires</p>
+          </FadeIn>
         </div>
       </section>
+
 
       {/* ══ TESTIMONIALS ══ */}
       <section className="py-20 px-6 md:px-12 overflow-hidden" style={{ background: '#0f172a' }}>

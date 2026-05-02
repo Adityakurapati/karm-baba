@@ -32,6 +32,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Check for persisted mock admin first
+    if (typeof window !== 'undefined') {
+      const persistedMock = sessionStorage.getItem('mock_admin');
+      console.log('[AuthContext] Persisted Mock Check:', persistedMock ? 'Found' : 'Not Found');
+      if (persistedMock) {
+        const mockAdmin = JSON.parse(persistedMock);
+        console.log('[AuthContext] Restoring Mock Admin:', mockAdmin.email);
+        // Convert dates back
+        mockAdmin.createdAt = new Date(mockAdmin.createdAt);
+        mockAdmin.updatedAt = new Date(mockAdmin.updatedAt);
+        setUser(mockAdmin);
+        setSession({
+          userId: mockAdmin.id,
+          email: mockAdmin.email,
+          role: mockAdmin.role,
+          companyName: mockAdmin.company?.name || 'KARM BABA',
+          token: 'mock_token',
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        });
+        setIsLoading(false);
+        return; // Skip Firebase listener if mock is active
+      }
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         // Fetch user profile from Realtime Database
@@ -85,6 +109,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
+      // Admin bypass for requested credentials
+      if (email === 'admin@karmbaba.com' && password === 'karmbaba2026') {
+        const mockAdmin: User = {
+          id: 'admin_mock_id',
+          email: 'admin@karmbaba.com',
+          firstName: 'Executive',
+          lastName: 'Admin',
+          role: 'admin',
+          company: {
+            id: 'admin_comp_id',
+            name: 'KARM BABA',
+            registrationNumber: 'KB-2026',
+            industry: 'Executive Intelligence',
+            location: 'Global',
+            employees: 100,
+            yearEstablished: 2026,
+          },
+          phone: '+1 234 567 890',
+          credibilityScore: 100,
+          verificationStatus: 'verified',
+          verificationBadges: [],
+          riskLevel: 'low',
+          isOnboarded: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        
+        setUser(mockAdmin);
+        setSession({
+          userId: mockAdmin.id,
+          email: mockAdmin.email,
+          role: mockAdmin.role,
+          companyName: 'KARM BABA',
+          token: 'mock_token',
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        });
+        
+        // Persist mock admin for page reloads
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('mock_admin', JSON.stringify(mockAdmin));
+        }
+        
+        return true;
+      }
+
       await signInWithEmailAndPassword(auth, email, password);
       return true;
     } catch (err) {
@@ -144,7 +213,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('mock_admin');
+      }
       await signOut(auth);
+      setUser(null);
+      setSession(null);
     } catch (err) {
       console.error('Logout error:', err);
     }

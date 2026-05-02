@@ -15,15 +15,28 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   const router = useRouter();
 
   useEffect(() => {
+    console.log('[ProtectedRoute] Check:', { 
+      path: typeof window !== 'undefined' ? window.location.pathname : '', 
+      isAuthenticated, 
+      isLoading, 
+      userRole: user?.role, 
+      isOnboarded: user?.isOnboarded,
+      allowedRoles 
+    });
+
     if (!isLoading && !isAuthenticated) {
-      router.push('/login');
+      const isAdminPath = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
+      console.log('[ProtectedRoute] Redirecting to login. AdminPath:', isAdminPath);
+      router.push(isAdminPath ? '/admin/login' : '/login');
     } else if (!isLoading && isAuthenticated && user && !user.isOnboarded) {
-      // Check if current path is NOT onboarding
-      if (!window.location.pathname.startsWith('/onboarding')) {
+      if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/onboarding')) {
+        console.log('[ProtectedRoute] Redirecting to onboarding');
         router.push('/onboarding');
       }
     } else if (!isLoading && allowedRoles && user && !allowedRoles.includes(user.role)) {
-      router.push('/dashboard');
+      const target = user.role === 'admin' ? '/admin' : '/dashboard';
+      console.log('[ProtectedRoute] Role mismatch. Redirecting to:', target);
+      router.push(target);
     }
   }, [isLoading, isAuthenticated, user, allowedRoles, router]);
 

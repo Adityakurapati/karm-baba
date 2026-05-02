@@ -57,6 +57,36 @@ function FadeIn({ children, delay = 0, className = '' }: { children: React.React
   );
 }
 
+function TestiCard({ name, role, content, company, country }: { name: string; role: string; content: string; company: string; country: string }) {
+  return (
+    <div className="w-[320px] bg-slate-800/40 border border-white/5 p-6 rounded-2xl backdrop-blur-sm hover:border-primary/30 transition-colors">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">{name.charAt(0)}</div>
+        <div>
+          <p className="text-white font-bold text-sm">{name}</p>
+          <p className="text-white/40 text-[10px] uppercase tracking-wider">{role} @ {company}</p>
+        </div>
+        <span className="ml-auto text-lg">🇮🇳</span>
+      </div>
+      <p className="text-white/70 text-sm leading-relaxed italic">&quot;{content}&quot;</p>
+    </div>
+  );
+}
+
+const row1 = [
+  { name: "Rahul Sharma", role: "CEO", company: "IndoGlobal", country: "IN", content: "KARM BABA transformed our export pipeline. The verification speed is unmatched." },
+  { name: "Ahmed Al-Farsi", role: "Director", company: "Zion Trade", country: "AE", content: "Finally, a platform that understands the complexity of cross-border logistics." },
+  { name: "Sarah Jenkins", role: "Procurement", company: "ScaleUp Ltd", country: "UK", content: "The AI matching saved us weeks of manual supplier vetting. Exceptional tool." },
+  { name: "Vikram Mehta", role: "Founder", company: "Mehta Ornaments", country: "IN", content: "Secure, fast, and transparent. The only way we do international business now." },
+];
+
+const row2 = [
+  { name: "Chen Wei", role: "Supply Chain", company: "Nexus Mfg", country: "CN", content: "Integration with our existing ERP was seamless. Highly recommended for enterprise." },
+  { name: "Elena Petrova", role: "COO", company: "EuroTrans", country: "RU", content: "The risk assessment modules are a game changer for high-value contracts." },
+  { name: "Kofi Mensah", role: "Manager", company: "AgroFlow", country: "GH", content: "Connecting with verified buyers in Europe has never been this straightforward." },
+  { name: "Anil Kapoor", role: "VP Trade", company: "Reliance Group", country: "IN", content: "Efficiency and trust are the core of KARM BABA. It's the gold standard." },
+];
+
 export default function Home() {
   const [activeNav, setActiveNav] = useState('deals');
   const [hoveredTier, setHoveredTier] = useState<number | null>(null);
@@ -437,6 +467,74 @@ export default function Home() {
             </FadeIn>
           </div>
         </div>
+      </section>
+
+      {/* ══ TESTIMONIALS ══ */}
+      <section className="py-20 px-6 md:px-12 overflow-hidden" style={{ background: '#0f172a' }}>
+        <style>{`
+    @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .testi-track { display: flex; gap: 1.25rem; animation: ticker 48s linear infinite; width: max-content; }
+    .testi-track-reverse { display: flex; gap: 1.25rem; animation: ticker 52s linear infinite reverse; width: max-content; }
+    .testi-track:hover, .testi-track-reverse:hover { animation-play-state: paused; }
+    .testi-track-wrap { position: relative; overflow: hidden; }
+    .testi-track-wrap::before, .testi-track-wrap::after { content: ''; position: absolute; top: 0; bottom: 0; width: 8rem; z-index: 10; pointer-events: none; }
+    .testi-track-wrap::before { left: 0; background: linear-gradient(90deg, #0f172a, transparent); }
+    .testi-track-wrap::after { right: 0; background: linear-gradient(-90deg, #0f172a, transparent); }
+  `}</style>
+
+        {/* Header */}
+        <FadeIn className="max-w-5xl mx-auto mb-12">
+          <p className="text-orange-400 text-xs font-bold uppercase tracking-widest mb-2">Trusted by 500+ Businesses</p>
+          <h2 className="text-3xl md:text-4xl font-headline font-black text-white mb-3">
+            Real Businesses. Real Growth.<br />Real Results.
+          </h2>
+          <p className="text-white/50 text-base leading-relaxed max-w-xl">
+            From Iraq to Africa, from ornaments to drones — KARM BABA powers global trade for every industry.
+          </p>
+        </FadeIn>
+
+        {/* Row 1 — scrolls left */}
+        <div className="testi-track-wrap mb-5">
+          <div className="testi-track">
+            {[...row1, ...row1].map((t, i) => (
+              <TestiCard key={i} {...t} />
+            ))}
+          </div>
+        </div>
+
+        {/* Row 2 — scrolls right */}
+        <div className="testi-track-wrap">
+          <div className="testi-track-reverse">
+            {[...row2, ...row2].map((t, i) => (
+              <TestiCard key={i} {...t} />
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom strip */}
+        <FadeIn className="max-w-5xl mx-auto mt-10">
+          <div className="flex items-center justify-between gap-4 flex-wrap px-6 py-5 rounded-2xl border border-orange-500/20"
+            style={{ background: 'rgba(249,115,22,0.08)' }}>
+            <div>
+              <p className="font-headline font-bold text-white text-base">
+                Join <span className="text-primary">500+ Businesses</span> Already Growing with Karm Baba
+              </p>
+              <p className="text-white/40 text-sm mt-1">From India to international markets — Karm Baba powers real trade, everywhere.</p>
+            </div>
+            <div className="flex gap-5 flex-wrap">
+              {[
+                { icon: 'mail', label: 'karm@karmbaba.com' },
+                { icon: 'call', label: '+91 9034975500' },
+                { icon: 'language', label: 'karmbaba.com' },
+              ].map((c) => (
+                <span key={c.label} className="flex items-center gap-1.5 text-sm text-white/40">
+                  <span className="material-symbols-outlined text-primary" style={{ fontSize: '1rem' }}>{c.icon}</span>
+                  {c.label}
+                </span>
+              ))}
+            </div>
+          </div>
+        </FadeIn>
       </section>
 
       {/* ══ CTA BANNER ══ */}

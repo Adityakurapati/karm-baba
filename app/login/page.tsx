@@ -18,7 +18,9 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && !authLoading) {
-      if (user?.isOnboarded) {
+      if (user?.role === 'admin') {
+        router.push('/admin');
+      } else if (user?.isOnboarded) {
         router.push('/dashboard');
       } else {
         router.push('/onboarding');

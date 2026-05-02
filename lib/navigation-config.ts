@@ -76,7 +76,7 @@ export const navigationConfig: Record<UserRole, NavSection[]> = {
     {
       title: 'Admin Panel',
       items: [
-        { icon: 'dashboard', label: 'Dashboard', href: '/dashboard', roles: ['admin'] },
+        { icon: 'dashboard', label: 'Dashboard', href: '/admin', roles: ['admin'] },
         { icon: 'people', label: 'User Management', href: '/admin/users', roles: ['admin'] },
         { icon: 'handshake', label: 'Deal Pipeline', href: '/admin/deals', roles: ['admin'] },
         { icon: 'trending_up', label: 'Analytics', href: '/admin/analytics', roles: ['admin'] },

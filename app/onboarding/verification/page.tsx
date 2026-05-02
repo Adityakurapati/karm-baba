@@ -3,9 +3,11 @@
 import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 
 function VerificationContent() {
   const router = useRouter();
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const role = searchParams.get('role') || 'buyer';
 
@@ -25,7 +27,7 @@ function VerificationContent() {
   };
 
   const handleCompleteVerification = () => {
-    router.push('/dashboard');
+    router.push(user?.role === 'admin' ? '/admin' : '/dashboard');
   };
 
   return (

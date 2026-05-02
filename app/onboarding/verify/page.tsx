@@ -7,14 +7,14 @@ import { useAuth } from '@/lib/auth-context';
 
 export default function VerificationCompletePage() {
   const router = useRouter();
-  const { updateUserProfile } = useAuth();
+  const { updateUserProfile, user } = useAuth();
   const [isFinishing, setIsFinishing] = useState(false);
 
   const handleFinish = async () => {
     setIsFinishing(true);
     try {
       await updateUserProfile({ isOnboarded: true });
-      router.push('/dashboard');
+      router.push(user?.role === 'admin' ? '/admin' : '/dashboard');
     } catch (error) {
       console.error('Error finishing onboarding:', error);
       setIsFinishing(false);

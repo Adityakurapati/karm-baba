@@ -7,7 +7,6 @@ import TopNavbar from '@/components/TopNavbar';
 /* ─── hook: fires once when element enters viewport ─── */
 function useInView(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null);
-  const [currency, setCurrency] = useState<'INR' | 'USD'>('INR');
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const el = ref.current;
@@ -92,6 +91,7 @@ export default function Home() {
   const [activeNav, setActiveNav] = useState('deals');
   const [hoveredTier, setHoveredTier] = useState<number | null>(null);
   const [activePill, setActivePill] = useState(0);
+  const [currency, setCurrency] = useState<'INR' | 'USD'>('INR');
 
   /* hero typewriter */
   const words = ['They Close.', 'They Deliver.', 'They Scale.'];

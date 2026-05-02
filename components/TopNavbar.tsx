@@ -59,12 +59,12 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
           >
             Log In
           </Link>
-          <Link
-            href="/onboarding"
-            className="px-6 py-2 bg-primary text-white font-headline font-bold rounded hover:bg-primary-dark transition-colors"
-          >
-            Sign Up
-          </Link>
+            <Link
+              href="/register"
+              className="px-6 py-2 bg-primary text-white font-headline font-bold rounded hover:bg-primary-dark transition-colors"
+            >
+              Sign Up
+            </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -102,7 +102,7 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
               Log In
             </Link>
             <Link
-              href="/onboarding"
+              href="/register"
               className="flex-1 px-4 py-2 bg-primary text-white font-headline font-bold rounded text-center"
             >
               Sign Up

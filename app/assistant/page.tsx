@@ -3,6 +3,8 @@
 import DashboardLayout from '@/components/DashboardLayout';
 import TopHeader from '@/components/TopHeader';
 import { useState } from 'react';
+import { useAuth } from '@/lib/auth-context';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 export default function AIAssistantPage() {
   const [messages, setMessages] = useState<{ role: 'user' | 'assistant'; text: string }[]>([
@@ -43,7 +45,8 @@ export default function AIAssistantPage() {
   ];
 
   return (
-    <DashboardLayout>
+    <ProtectedRoute>
+      <DashboardLayout>
       <TopHeader />
       
       <div className="flex-1 overflow-auto flex flex-col">
@@ -134,7 +137,8 @@ export default function AIAssistantPage() {
             </div>
           </div>
         </div>
-      </div>
-    </DashboardLayout>
-  );
-}
+        </div>
+      </DashboardLayout>
+    </ProtectedRoute>
+    );
+  }

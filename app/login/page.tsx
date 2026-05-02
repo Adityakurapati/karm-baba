@@ -1,17 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login, isLoading: authLoading, isAuthenticated, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && !authLoading) {
+      if (user?.isOnboarded) {
+        router.push('/dashboard');
+      } else {
+        router.push('/onboarding');
+      }
+    }
+  }, [isAuthenticated, authLoading, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,16 +36,19 @@ export default function LoginPage() {
     }
 
     setLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setLoading(false);
-
-    // Demo credentials
-    if (email === 'demo@example.com' && password === 'password') {
-      localStorage.setItem('isLoggedIn', 'true');
-      router.push('/dashboard');
-    } else {
-      setError('Invalid email or password');
+    try {
+      const success = await login(email, password);
+      if (success) {
+        // useAuth will handle user state update, but we might need to wait or fetch again
+        // However, the useEffect already handles redirection for authenticated users.
+        // We'll let the useEffect handle it.
+      } else {
+        setError('Invalid email or password');
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -69,9 +85,22 @@ export default function LoginPage() {
 
           {/* Demo Credentials Note */}
           <div className="p-4 bg-primary/10 border border-primary rounded-lg text-sm">
-            <p className="font-bold text-primary mb-2">Demo Credentials:</p>
-            <p className="text-on-surface-variant">Email: demo@example.com</p>
-            <p className="text-on-surface-variant">Password: password</p>
+            <p className="font-bold text-primary mb-3">Demo Accounts:</p>
+            <div className="space-y-2">
+              <div>
+                <p className="text-xs font-bold text-on-surface">Buyer:</p>
+                <p className="text-on-surface-variant">arun@techcorp.com</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-on-surface">Seller:</p>
+                <p className="text-on-surface-variant">rajesh@automotiveparts.com</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-on-surface">Admin:</p>
+                <p className="text-on-surface-variant">admin@karmbaba.com</p>
+              </div>
+              <p className="text-xs text-on-surface-variant pt-2">Any password works for demo accounts</p>
+            </div>
           </div>
 
           {/* Email */}
@@ -133,7 +162,7 @@ export default function LoginPage() {
           {/* Sign Up Link */}
           <p className="text-center text-on-surface-variant">
             Don&apos;t have an account?{' '}
-            <Link href="/onboarding" className="text-primary hover:underline font-bold">
+            <Link href="/register" className="text-primary hover:underline font-bold">
               Sign Up
             </Link>
           </p>

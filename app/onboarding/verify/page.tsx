@@ -1,9 +1,26 @@
 'use client';
 
-import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import OnboardingLayout from '@/components/OnboardingLayout';
+import { useAuth } from '@/lib/auth-context';
 
 export default function VerificationCompletePage() {
+  const router = useRouter();
+  const { updateUserProfile } = useAuth();
+  const [isFinishing, setIsFinishing] = useState(false);
+
+  const handleFinish = async () => {
+    setIsFinishing(true);
+    try {
+      await updateUserProfile({ isOnboarded: true });
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Error finishing onboarding:', error);
+      setIsFinishing(false);
+    }
+  };
+
   return (
     <OnboardingLayout>
       <div className="max-w-6xl mx-auto p-8 md:p-12">
@@ -89,14 +106,15 @@ export default function VerificationCompletePage() {
 
         {/* CTA */}
         <div className="mt-12 flex justify-center">
-          <Link
-            href="/dashboard"
-            className="px-12 py-4 rounded-full font-headline font-bold text-lg text-white hover:scale-105 transition-transform duration-200 shadow-xl shadow-primary/20 flex items-center gap-3"
+          <button
+            onClick={handleFinish}
+            disabled={isFinishing}
+            className="px-12 py-4 rounded-full font-headline font-bold text-lg text-white hover:scale-105 transition-transform duration-200 shadow-xl shadow-primary/20 flex items-center gap-3 disabled:opacity-50"
             style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}
           >
-            Go to Dashboard
+            {isFinishing ? 'Finishing...' : 'Go to Dashboard'}
             <span className="material-symbols-outlined">arrow_forward</span>
-          </Link>
+          </button>
         </div>
       </div>
     </OnboardingLayout>

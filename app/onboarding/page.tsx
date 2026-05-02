@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import OnboardingLayout from '@/components/OnboardingLayout';
+import { useAuth } from '@/lib/auth-context';
+import { UserRole } from '@/lib/types';
 
 const roles = [
   {
@@ -25,7 +27,31 @@ const roles = [
 
 export default function OnboardingRoleSelectionPage() {
   const router = useRouter();
+  const { user, updateUserProfile } = useAuth();
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (user?.role) {
+      setSelectedRole(user.role);
+    }
+  }, [user]);
+
+  const handleContinue = async () => {
+    if (!selectedRole) return;
+    
+    setIsSaving(true);
+    try {
+      if (selectedRole !== user?.role) {
+        await updateUserProfile({ role: selectedRole as UserRole });
+      }
+      router.push('/onboarding/industry');
+    } catch (error) {
+      console.error('Error saving role:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <OnboardingLayout>
@@ -93,16 +119,16 @@ export default function OnboardingRoleSelectionPage() {
         {/* Action Area */}
         <div className="mt-16 flex flex-col items-center">
           <button
-            onClick={() => selectedRole && router.push('/onboarding/industry')}
-            disabled={!selectedRole}
+            onClick={handleContinue}
+            disabled={!selectedRole || isSaving}
             className={`px-12 py-4 font-headline font-bold text-lg rounded-full transition-all duration-200 shadow-lg ${
-              selectedRole
+              selectedRole && !isSaving
                 ? 'text-white hover:scale-105 shadow-primary/20'
                 : 'bg-surface-container text-on-surface-variant cursor-not-allowed shadow-none'
             }`}
             style={selectedRole ? { background: 'linear-gradient(135deg, #e55a24, #ff6b35)' } : {}}
           >
-            Continue with Selection
+            {isSaving ? 'Saving...' : 'Continue with Selection'}
           </button>
           <p className="mt-6 text-on-surface-variant text-sm">
             You can refine your organizational profile in the next step.

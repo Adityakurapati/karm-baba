@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import OnboardingLayout from '@/components/OnboardingLayout';
+import { useAuth } from '@/lib/auth-context';
 
 const industries = [
   { id: 'agriculture', icon: 'agriculture', title: 'Agriculture', match: 3, tags: ['AgriTech', 'Logistics'], span: 1 },
@@ -14,12 +15,43 @@ const industries = [
 
 export default function IndustryTargetingPage() {
   const router = useRouter();
+  const { user, updateUserProfile } = useAuth();
   const [selected, setSelected] = useState<string[]>(['pharma']);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (user?.company?.industry) {
+      if (Array.isArray(user.company.industry)) {
+        setSelected(user.company.industry);
+      } else if (typeof user.company.industry === 'string' && user.company.industry !== '') {
+        setSelected([user.company.industry]);
+      }
+    }
+  }, [user]);
 
   const toggle = (id: string) => {
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
     );
+  };
+
+  const handleContinue = async () => {
+    if (selected.length === 0) return;
+    
+    setIsSaving(true);
+    try {
+      await updateUserProfile({
+        company: {
+          ...user!.company,
+          industry: selected,
+        }
+      });
+      router.push('/onboarding/discovery');
+    } catch (error) {
+      console.error('Error saving industry:', error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -37,11 +69,14 @@ export default function IndustryTargetingPage() {
             <div className="flex gap-4">
               <button className="px-6 py-2 rounded-full border border-outline-variant/30 text-on-surface-variant font-semibold hover:bg-surface-container-low transition-colors text-sm">Save Draft</button>
               <button
-                onClick={() => router.push('/onboarding/discovery')}
-                className="px-8 py-2 rounded-full text-white font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform text-sm"
+                onClick={handleContinue}
+                disabled={selected.length === 0 || isSaving}
+                className={`px-8 py-2 rounded-full text-white font-bold shadow-lg transition-all text-sm ${
+                  selected.length > 0 && !isSaving ? 'hover:scale-[1.02] shadow-primary/20' : 'opacity-50 cursor-not-allowed'
+                }`}
                 style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}
               >
-                Continue
+                {isSaving ? 'Saving...' : 'Continue'}
               </button>
             </div>
           </div>
@@ -143,11 +178,14 @@ export default function IndustryTargetingPage() {
             </div>
           </div>
           <button
-            onClick={() => router.push('/onboarding/discovery')}
-            className="px-10 py-3 rounded-full text-white font-bold shadow-xl hover:scale-105 transition-all"
+            onClick={handleContinue}
+            disabled={selected.length === 0 || isSaving}
+            className={`px-10 py-3 rounded-full text-white font-bold shadow-xl transition-all ${
+              selected.length > 0 && !isSaving ? 'hover:scale-105' : 'opacity-50 cursor-not-allowed'
+            }`}
             style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}
           >
-            Proceed to Discovery
+            {isSaving ? 'Saving...' : 'Proceed to Discovery'}
           </button>
         </div>
       </div>

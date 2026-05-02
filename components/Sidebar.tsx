@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
+import { getNavigationForRole } from '@/lib/navigation-config';
 
 interface SidebarProps {
   open?: boolean;
@@ -11,18 +13,19 @@ interface SidebarProps {
 
 export default function Sidebar({ open = true, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout, isLoading } = useAuth();
 
-  const menuItems = [
-    { icon: 'dashboard', label: 'Dashboard', href: '/dashboard' },
-    { icon: 'person_add', label: 'Onboarding', href: '/onboarding' },
-    { icon: 'person_search', label: 'Leads', href: '/leads' },
-    { icon: 'handshake', label: 'Deals', href: '/deals' },
-    { icon: 'group', label: 'Network', href: '/network' },
-    { icon: 'trending_up', label: 'Analytics', href: '/analytics' },
-    { icon: 'assignment', label: 'Requirements', href: '/requirements' },
-    { icon: 'verified', label: 'Verification', href: '/verification' },
-    { icon: 'settings', label: 'Settings', href: '/settings' },
-  ];
+  if (isLoading || !user) {
+    return null;
+  }
+
+  const sections = getNavigationForRole(user.role);
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
 
   return (
     <>
@@ -59,64 +62,73 @@ export default function Sidebar({ open = true, onClose }: SidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-2 px-4">
-          {menuItems.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onClose}
-                className={`flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${
-                  isActive
-                    ? 'text-primary bg-primary/10 border-r-2 border-primary'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                } ${!open ? 'md:justify-center' : ''}`}
-                title={!open ? item.label : undefined}
-              >
-                <span className="material-symbols-outlined" style={{fontSize: '20px'}}>
-                  {item.icon}
-                </span>
-                <span className={`font-headline ${!open ? 'md:hidden' : ''}`}>{item.label}</span>
-              </Link>
-            );
-          })}
+        <nav className="flex-1 space-y-6 px-4">
+          {sections.map((section, sectionIdx) => (
+            <div key={sectionIdx}>
+              {section.title && (
+                <h3 className={`text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 ${!open ? 'md:hidden' : ''}`}>
+                  {section.title}
+                </h3>
+              )}
+              <div className="space-y-2">
+                {section.items.map((item) => {
+                  const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={onClose}
+                      className={`flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${
+                        isActive
+                          ? 'text-primary bg-primary/10 border-r-2 border-primary'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      } ${!open ? 'md:justify-center' : ''}`}
+                      title={!open ? item.label : undefined}
+                    >
+                      <span className="material-symbols-outlined" style={{fontSize: '20px'}}>
+                        {item.icon}
+                      </span>
+                      <span className={`font-headline ${!open ? 'md:hidden' : ''}`}>{item.label}</span>
+                      {item.badge && !open && (
+                        <span className="absolute right-2 top-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         {/* Footer */}
-        <div className={`mt-auto space-y-6 ${open ? 'px-6' : 'md:px-2 px-6'}`}>
-          <Link
-            href="/deals/new"
-            onClick={onClose}
-            className={`w-full py-4 bg-gradient-to-br from-primary to-primary-container text-white rounded-full font-headline font-bold text-sm shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all inline-block text-center ${
-              !open ? 'md:px-2' : ''
-            }`}
-            title={!open ? "New Deal" : undefined}
-          >
-            {open ? 'New Deal' : <span className="md:inline hidden">+</span>}
-            {!open && <span className="md:hidden">New Deal</span>}
-          </Link>
+        <div className={`mt-auto space-y-4 border-t border-slate-200 pt-4 ${open ? 'px-6' : 'md:px-2 px-6'}`}>
+          {/* User Profile */}
+          <div className={`flex items-center gap-3 p-3 rounded-lg bg-slate-100 ${!open ? 'md:justify-center' : ''}`}>
+            <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+              {user.firstName.charAt(0).toUpperCase()}
+            </div>
+            {open && (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-slate-900 truncate">{user.firstName} {user.lastName}</p>
+                <p className="text-xs text-slate-600 capitalize">{user.role}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Action Buttons */}
           <div className="space-y-1">
-            <Link
-              href="#help"
-              className={`flex items-center gap-3 p-2 text-slate-600 hover:text-slate-900 transition-all text-sm ${
-                !open ? 'md:justify-center' : ''
-              }`}
-              title={!open ? "Help Center" : undefined}
-            >
-              <span className="material-symbols-outlined" style={{fontSize: '20px'}}>help</span>
-              <span className={!open ? 'md:hidden' : ''}>Help Center</span>
-            </Link>
-            <Link
-              href="/logout"
-              className={`flex items-center gap-3 p-2 text-slate-600 hover:text-slate-900 transition-all text-sm ${
+            <button
+              onClick={handleLogout}
+              className={`flex items-center gap-3 w-full p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all text-sm ${
                 !open ? 'md:justify-center' : ''
               }`}
               title={!open ? "Logout" : undefined}
             >
               <span className="material-symbols-outlined" style={{fontSize: '20px'}}>logout</span>
               <span className={!open ? 'md:hidden' : ''}>Logout</span>
-            </Link>
+            </button>
           </div>
         </div>
       </aside>

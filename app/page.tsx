@@ -156,7 +156,7 @@ export default function Home() {
 
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
-              href="/onboarding"
+              href="/register"
               className="shimmer-btn px-8 py-3.5 text-white font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition-transform shadow-lg shadow-orange-200"
             >
               Start Selling →
@@ -175,14 +175,14 @@ export default function Home() {
       <section className="border-y border-orange-100 bg-white py-5 px-6 md:px-12">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { icon: '🌐', label: 'Global Trade' },
-            { icon: '📦', label: 'Exporters Union' },
-            { icon: '🏭', label: 'Manufacturers' },
-            { icon: '🏦', label: 'Bank Secure' },
+            { icon: 'public', label: 'Global Trade' },
+            { icon: 'package_2', label: 'Exporters Union' },
+            { icon: 'factory', label: 'Manufacturers' },
+            { icon: 'account_balance', label: 'Bank Secure' },
           ].map((item) => (
             <div key={item.label}
               className="flex items-center justify-center gap-2 text-on-surface-variant text-sm font-semibold py-2.5 px-3 rounded-xl hover:bg-orange-50 hover:text-primary transition-colors cursor-default">
-              <span className="text-xl">{item.icon}</span>
+              <span className="material-symbols-outlined text-xl">{item.icon}</span>
               {item.label}
             </div>
           ))}
@@ -190,8 +190,8 @@ export default function Home() {
         <div className="flex justify-center gap-3 mt-4 flex-wrap">
           {['GST Verified', 'Trusted Network', 'AI Screening'].map((badge) => (
             <span key={badge}
-              className="px-3 py-1 bg-orange-50 border border-orange-200 rounded-full text-xs font-bold text-primary hover:bg-primary hover:text-white hover:border-primary transition-all cursor-default">
-              ✓ {badge}
+              className="px-3 py-1 bg-orange-50 border border-orange-200 rounded-full text-xs font-bold text-primary hover:bg-primary hover:text-white hover:border-primary transition-all cursor-default flex items-center gap-1">
+              <span className="material-symbols-outlined text-[14px]">check</span> {badge}
             </span>
           ))}
         </div>
@@ -212,13 +212,13 @@ export default function Home() {
               style={{ background: 'linear-gradient(90deg,transparent,#f97316,transparent)' }} />
 
             {[
-              { step: '01', emoji: '🛡️', title: 'Get Verified', desc: 'Identity and business validation through our rigorous trust protocol to ensure high-intent participation.', bg: 'bg-blue-50', border: 'border-blue-200', num: 'text-blue-600' },
-              { step: '02', emoji: '🔗', title: 'Get Matched', desc: 'Our execution engine matches your requirements with verified suppliers or buyers within minutes.', bg: 'bg-orange-50', border: 'border-orange-200', num: 'text-primary' },
-              { step: '03', emoji: '🤝', title: 'Close Deals', desc: 'Facilitate secure negotiations, documentation, and payments all within the KARM BABA workspace.', bg: 'bg-violet-50', border: 'border-violet-200', num: 'text-violet-600' },
+              { step: '01', icon: 'verified', title: 'Get Verified', desc: 'Identity and business validation through our rigorous trust protocol to ensure high-intent participation.', bg: 'bg-blue-50', border: 'border-blue-200', num: 'text-blue-600' },
+              { step: '02', icon: 'hub', title: 'Get Matched', desc: 'Our execution engine matches your requirements with verified suppliers or buyers within minutes.', bg: 'bg-orange-50', border: 'border-orange-200', num: 'text-primary' },
+              { step: '03', icon: 'handshake', title: 'Close Deals', desc: 'Facilitate secure negotiations, documentation, and payments all within the KARM BABA workspace.', bg: 'bg-violet-50', border: 'border-violet-200', num: 'text-violet-600' },
             ].map((item, i) => (
               <FadeIn key={item.step} delay={i * 120} className="flex flex-col items-center text-center p-8 group">
-                <div className={`relative w-20 h-20 rounded-2xl flex items-center justify-center text-3xl mb-5 border-2 ${item.bg} ${item.border} group-hover:scale-110 transition-transform duration-300`}>
-                  {item.emoji}
+                <div className={`relative w-20 h-20 rounded-2xl flex items-center justify-center mb-5 border-2 ${item.bg} ${item.border} group-hover:scale-110 transition-transform duration-300`}>
+                  <span className="material-symbols-outlined text-3xl">{item.icon}</span>
                   <span className={`absolute -top-3 -right-3 w-6 h-6 rounded-full bg-white border-2 ${item.border} text-xs font-black flex items-center justify-center ${item.num}`}>
                     {item.step}
                   </span>
@@ -252,14 +252,14 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             {[
-              { icon: '🌾', title: 'Agriculture', desc: 'Global supply chains for bulk grains, oils, and sustainable produce.', tag: 'Commodities' },
-              { icon: '🚗', title: 'Automotive', desc: 'Precision parts and heavy vehicle trade across continents.', tag: 'Manufacturing' },
-              { icon: '🧵', title: 'Textile', desc: 'Industrial fabric and luxury garment sourcing at scale.', tag: 'Sourcing' },
+              { icon: 'agriculture', title: 'Agriculture', desc: 'Global supply chains for bulk grains, oils, and sustainable produce.', tag: 'Commodities' },
+              { icon: 'directions_car', title: 'Automotive', desc: 'Precision parts and heavy vehicle trade across continents.', tag: 'Manufacturing' },
+              { icon: 'apparel', title: 'Textile', desc: 'Industrial fabric and luxury garment sourcing at scale.', tag: 'Sourcing' },
             ].map((item, i) => (
               <FadeIn key={item.title} delay={i * 100}>
                 <div className="industry-card p-6 bg-white rounded-2xl border border-outline-variant cursor-pointer h-full">
                   <div className="flex items-start justify-between mb-3">
-                    <span className="text-3xl">{item.icon}</span>
+                    <span className="material-symbols-outlined text-3xl">{item.icon}</span>
                     <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-orange-50 text-primary border border-orange-100">{item.tag}</span>
                   </div>
                   <h3 className="font-headline font-bold text-on-surface mb-1">{item.title}</h3>
@@ -272,7 +272,7 @@ export default function Home() {
           <FadeIn delay={300}>
             <div className="industry-card p-6 bg-white rounded-2xl border border-outline-variant flex items-center justify-between flex-wrap gap-4 cursor-default">
               <div className="flex items-center gap-4">
-                <span className="text-3xl">🚢</span>
+                <span className="material-symbols-outlined text-3xl">ship</span>
                 <div>
                   <h3 className="font-headline font-bold text-on-surface mb-0.5">Import-Export Services</h3>
                   <p className="text-on-surface-variant text-sm">Complete logistics, customs clearance, and trade financing for global commerce.</p>
@@ -327,17 +327,17 @@ export default function Home() {
           </FadeIn>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {[
-              { icon: '✅', title: 'Smart Deal Matching', desc: 'AI-powered algorithm connects you with the right trade partners based on requirements.' },
-              { icon: '🔒', title: 'Verified Network', desc: 'All traders and suppliers go through rigorous verification for security and trust.' },
-              { icon: '📊', title: 'Real-time Analytics', desc: 'Track market trends, deal progress, and performance metrics in one dashboard.' },
-              { icon: '🤖', title: 'AI Assistant', desc: 'Get intelligent recommendations and automated workflow suggestions.' },
-              { icon: '⚡', title: 'Fast Execution', desc: 'Streamlined processes to close deals faster than traditional methods.' },
-              { icon: '🌍', title: 'Global Reach', desc: 'Connect with suppliers in 150+ countries with multi-language support.' },
+              { icon: 'task_alt', title: 'Smart Deal Matching', desc: 'AI-powered algorithm connects you with the right trade partners based on requirements.' },
+              { icon: 'verified_user', title: 'Verified Network', desc: 'All traders and suppliers go through rigorous verification for security and trust.' },
+              { icon: 'monitoring', title: 'Real-time Analytics', desc: 'Track market trends, deal progress, and performance metrics in one dashboard.' },
+              { icon: 'smart_toy', title: 'AI Assistant', desc: 'Get intelligent recommendations and automated workflow suggestions.' },
+              { icon: 'bolt', title: 'Fast Execution', desc: 'Streamlined processes to close deals faster than traditional methods.' },
+              { icon: 'language', title: 'Global Reach', desc: 'Connect with suppliers in 150+ countries with multi-language support.' },
             ].map((f, i) => (
               <FadeIn key={i} delay={i * 80}>
                 <div className="feature-card p-6 bg-white rounded-2xl border border-outline-variant h-full">
-                  <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-2xl mb-4 group-hover:scale-110">
-                    {f.icon}
+                  <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center mb-4 group-hover:scale-110">
+                    <span className="material-symbols-outlined text-2xl">{f.icon}</span>
                   </div>
                   <h3 className="font-headline font-bold text-on-surface mb-2">{f.title}</h3>
                   <p className="text-on-surface-variant text-sm leading-relaxed">{f.desc}</p>
@@ -370,7 +370,9 @@ export default function Home() {
                 <ul className="space-y-3 text-sm text-on-surface-variant mb-8">
                   {['Verified Business Profile', 'Access to Public Deals', 'AI Market Insights'].map((f) => (
                     <li key={f} className="flex items-center gap-2">
-                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 text-primary flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span>
+                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 text-primary flex items-center justify-center flex-shrink-0">
+                        <span className="material-symbols-outlined text-[10px] font-bold">check</span>
+                      </span>
                       {f}
                     </li>
                   ))}
@@ -386,8 +388,8 @@ export default function Home() {
               <div className="tier-card relative p-8 rounded-2xl cursor-default"
                 onMouseEnter={() => setHoveredTier(1)} onMouseLeave={() => setHoveredTier(null)}
                 style={{ background: '#f97316', boxShadow: '0 24px 50px rgba(249,115,22,.38)' }}>
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full whitespace-nowrap">
-                  ⭐ Most Popular
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full whitespace-nowrap flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[12px] text-accent">star</span> Most Popular
                 </div>
                 <p className="text-white/70 text-sm font-semibold mb-1">Executive</p>
                 <div className="text-4xl font-headline font-black text-white mb-1">
@@ -397,7 +399,9 @@ export default function Home() {
                 <ul className="space-y-3 text-sm text-white/90 mb-8">
                   {['Priority Deal Matching', 'Advanced Risk Assessment', 'Dedicated Account Manager'].map((f) => (
                     <li key={f} className="flex items-center gap-2">
-                      <span className="w-4 h-4 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span>
+                      <span className="w-4 h-4 rounded-full bg-white/20 text-white flex items-center justify-center flex-shrink-0">
+                        <span className="material-symbols-outlined text-[10px] font-bold">check</span>
+                      </span>
                       {f}
                     </li>
                   ))}
@@ -419,7 +423,9 @@ export default function Home() {
                 <ul className="space-y-3 text-sm text-on-surface-variant mb-8">
                   {['Global Market Integration', 'API Access & Automation', 'White-glove Onboarding'].map((f) => (
                     <li key={f} className="flex items-center gap-2">
-                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 text-primary flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span>
+                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 text-primary flex items-center justify-center flex-shrink-0">
+                        <span className="material-symbols-outlined text-[10px] font-bold">check</span>
+                      </span>
                       {f}
                     </li>
                   ))}
@@ -445,7 +451,7 @@ export default function Home() {
             Join the elite network of global businesses executing high-value trade with absolute certainty.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <Link href="/create-account"
+            <Link href="/register"
               className="shimmer-btn px-8 py-3.5 text-white font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition-transform shadow-xl shadow-orange-900/30">
               Create Your Account →
             </Link>

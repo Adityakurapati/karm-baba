@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
+import { useAuth } from '@/lib/auth-context';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { getDealById, mockUsers } from '@/lib/mockData';
 
 // Update the props type to match Next.js 15 expectations
 interface PageProps {
@@ -10,6 +13,7 @@ interface PageProps {
 }
 
 export default function DealDetailPage({ params }: PageProps) {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [dealId, setDealId] = useState<string | null>(null);
@@ -21,34 +25,36 @@ export default function DealDetailPage({ params }: PageProps) {
     });
   }, [params]);
 
-  // Mock deal data - use dealId once it's available
-  const deal = dealId ? {
-    id: dealId,
-    title: 'Electronics Import Deal',
-    buyer: 'Tech Corp USA',
-    supplier: 'TechManufacture Ltd',
-    value: '$250,000',
-    status: 'In Negotiation',
-    progress: 60,
-    date: '2024-01-15',
-    description: 'Large scale import of electronic components and finished products',
-    timeline: [
-      { date: '2024-01-15', status: 'Deal Created', completed: true },
-      { date: '2024-01-18', status: 'Verification Started', completed: true },
-      { date: '2024-02-01', status: 'Negotiation Phase', completed: false },
-      { date: '2024-02-15', status: 'Contract Review', completed: false },
-      { date: '2024-03-01', status: 'Completion', completed: false },
-    ],
-    documents: [
-      { name: 'Quotation.pdf', size: '2.4 MB', date: '2024-01-15' },
-      { name: 'Product_Specs.xlsx', size: '1.2 MB', date: '2024-01-16' },
-      { name: 'Terms_Conditions.docx', size: '856 KB', date: '2024-01-17' },
-    ],
-    messages: [
-      { from: 'Tech Corp USA', text: 'Can you provide volume discounts?', date: '2024-01-20' },
-      { from: 'You', text: 'Yes, 10% discount for orders above $200K', date: '2024-01-20' },
-      { from: 'Tech Corp USA', text: 'Perfect! Let\'s move forward', date: '2024-01-21' },
-    ],
+  // Get deal from mock data
+  const dealData = dealId ? getDealById(dealId) : null;
+  const buyerInfo = dealData ? mockUsers.find(u => u.id === dealData.buyerId) : null;
+  const sellerInfo = dealData ? mockUsers.find(u => u.id === dealData.sellerId) : null;
+
+  const deal = dealData ? {
+    id: dealData.id,
+    title: dealData.title,
+    buyer: buyerInfo?.company.name || dealData.buyerId,
+    supplier: sellerInfo?.company.name || dealData.sellerId,
+    value: `$${dealData.expectedValue.toLocaleString()}`,
+    status: dealData.status.replace('_', ' ').charAt(0).toUpperCase() + dealData.status.slice(1).replace('_', ' '),
+    progress: (['new_supplier', 'quote_received'].includes(dealData.status) ? 25 : ['negotiation'].includes(dealData.status) ? 50 : ['sample_requested'].includes(dealData.status) ? 75 : 100),
+    date: new Date(dealData.createdAt).toLocaleDateString(),
+    description: dealData.description,
+    timeline: dealData.timeline.map(event => ({
+      date: new Date(event.createdAt).toLocaleDateString(),
+      status: event.title,
+      completed: !['negotiation', 'sample_requested'].includes(dealData.status),
+    })),
+    documents: dealData.documents.map((doc, idx) => ({
+      name: doc.name,
+      size: '0 KB',
+      date: new Date(doc.uploadedAt).toLocaleDateString(),
+    })),
+    messages: dealData.conversations.map((msg, idx) => ({
+      from: msg.senderId === user?.id ? 'You' : msg.senderName,
+      text: msg.content,
+      date: new Date(msg.createdAt).toLocaleDateString(),
+    })),
   } : null;
 
   // Show loading state while params are being resolved
@@ -67,12 +73,13 @@ export default function DealDetailPage({ params }: PageProps) {
   }
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <ProtectedRoute>
+      <div className="flex h-screen bg-background">
+        {/* Sidebar */}
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Main Content */}
-      <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}>
+        {/* Main Content */}
+        <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}>
         {/* Header */}
         <header className="bg-white border-b border-outline-variant p-4 md:p-6 flex justify-between items-center">
           <button
@@ -303,5 +310,6 @@ export default function DealDetailPage({ params }: PageProps) {
         </div>
       </main>
     </div>
+    </ProtectedRoute>
   );
 }

@@ -222,3 +222,18 @@ export interface PlatformMetrics {
   totalRevenue: number;
   dealsPipeline: DealPipelineMetrics;
 }
+
+// ========================================
+// NOTIFICATION TYPES
+// ========================================
+
+export interface Notification {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: 'requirement_accepted' | 'deal_initiated' | 'message_received' | 'general';
+  link?: string;
+  read: boolean;
+  createdAt: Date;
+}

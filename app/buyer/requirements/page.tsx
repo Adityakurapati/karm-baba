@@ -1,17 +1,49 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/lib/auth-context';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { getRequirementsByBuyerId } from '@/lib/mockData';
+import { database } from '@/lib/firebase';
+import { ref, onValue, query, orderByChild, equalTo } from 'firebase/database';
 
 export default function RequirementsPage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
+  const [requirements, setRequirements] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (isLoading || !user) return null;
+  useEffect(() => {
+    if (!user) return;
 
-  const requirements = getRequirementsByBuyerId(user.id);
+    const requirementsRef = ref(database, 'requirements');
+    const q = query(requirementsRef, orderByChild('buyerId'), equalTo(user.id));
+
+    const unsubscribe = onValue(q, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const list = Object.values(data);
+        // Sort by createdAt desc
+        list.sort((a: any, b: any) => (b.createdAt || 0) - (a.createdAt || 0));
+        setRequirements(list);
+      } else {
+        setRequirements([]);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  if (authLoading || loading) return (
+    <DashboardLayout>
+      <div className="flex-1 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    </DashboardLayout>
+  );
+
+  if (!user) return null;
 
   const getStatusColor = (status: string) => {
     switch (status) {

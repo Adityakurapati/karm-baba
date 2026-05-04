@@ -1,31 +1,109 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/lib/auth-context';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { getAllDeals, mockUsers } from '@/lib/mockData';
+import { database } from '@/lib/firebase';
+import { ref, onValue, query, orderByChild, equalTo, push, set, serverTimestamp } from 'firebase/database';
 
 export default function MessagesPage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
+  const [userDeals, setUserDeals] = useState<any[]>([]);
   const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<any[]>([]);
   const [messageText, setMessageText] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  if (isLoading || !user) return null;
+  // Fetch user's deals
+  useEffect(() => {
+    if (!user) return;
 
-  // Get all conversations from deals
-  const allDeals = getAllDeals();
-  const userDeals = user.role === 'buyer' ? allDeals.filter(d => d.buyerId === user.id) : allDeals.filter(d => d.sellerId === user.id);
-  const selectedDeal = selectedDealId ? allDeals.find(d => d.id === selectedDealId) : null;
+    const dealsRef = ref(database, 'deals');
+    const field = user.role === 'buyer' ? 'buyerId' : 'sellerId';
+    const q = query(dealsRef, orderByChild(field), equalTo(user.id));
 
-  const handleSendMessage = () => {
-    if (messageText.trim() && selectedDeal) {
-      // In a real app, this would be sent to the server
-      console.log('Sending message:', messageText);
+    const unsubscribe = onValue(q, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const list = Object.values(data);
+        list.sort((a: any, b: any) => (b.createdAt || 0) - (a.createdAt || 0));
+        setUserDeals(list);
+      } else {
+        setUserDeals([]);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  // Fetch messages for selected deal
+  useEffect(() => {
+    if (!selectedDealId) {
+      setMessages([]);
+      return;
+    }
+
+    const messagesRef = ref(database, `messages/${selectedDealId}`);
+    const unsubscribe = onValue(messagesRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const list = Object.values(data);
+        list.sort((a: any, b: any) => (a.createdAt || 0) - (b.createdAt || 0));
+        setMessages(list);
+      } else {
+        setMessages([]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [selectedDealId]);
+
+  const selectedDeal = userDeals.find(d => d.id === selectedDealId);
+
+  const handleSendMessage = async () => {
+    if (!messageText.trim() || !selectedDeal || !user) return;
+
+    try {
+      const msgRef = push(ref(database, `messages/${selectedDealId}`));
+      const msgData = {
+        id: msgRef.key,
+        senderId: user.id,
+        senderName: `${user.firstName} ${user.lastName}`,
+        content: messageText,
+        createdAt: serverTimestamp(),
+      };
+
+      await set(msgRef, msgData);
       setMessageText('');
+
+      // Create notification for recipient
+      const recipientId = user.id === selectedDeal.buyerId ? selectedDeal.sellerId : selectedDeal.buyerId;
+      const notificationsRef = push(ref(database, 'notifications'));
+      await set(notificationsRef, {
+        id: notificationsRef.key,
+        userId: recipientId,
+        title: 'New Message',
+        message: `${user.firstName} sent you a message regarding "${selectedDeal.title}"`,
+        type: 'message_received',
+        link: `/deals/${selectedDealId}`,
+        read: false,
+        createdAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error('Error sending message:', error);
     }
   };
+
+  if (authLoading || loading) return (
+    <DashboardLayout>
+      <div className="flex-1 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    </DashboardLayout>
+  );
 
   return (
     <ProtectedRoute>
@@ -56,10 +134,7 @@ export default function MessagesPage() {
                 </div>
               ) : (
                 userDeals.map((deal) => {
-                  const otherUser = deal.buyerId === user.id ? mockUsers.find(u => u.id === deal.sellerId) : mockUsers.find(u => u.id === deal.buyerId);
                   const isSelected = selectedDealId === deal.id;
-                  const lastMessage = deal.conversations[deal.conversations.length - 1];
-
                   return (
                     <button
                       key={deal.id}
@@ -67,9 +142,11 @@ export default function MessagesPage() {
                       className={`w-full p-4 text-left hover:bg-gray-50 transition-colors border-l-4 ${isSelected ? 'bg-primary/5 border-primary' : 'border-transparent'}`}
                     >
                       <p className="font-bold text-on-surface text-sm mb-1">{deal.title}</p>
-                      <p className="text-xs text-on-surface-variant mb-2">{otherUser?.company.name}</p>
-                      <p className="text-xs text-on-surface-variant truncate">
-                        {lastMessage ? lastMessage.content : 'No messages yet'}
+                      <p className="text-xs text-on-surface-variant mb-1">
+                        {user?.role === 'buyer' ? `Seller: ${deal.sellerId}` : `Buyer: ${deal.buyerId}`}
+                      </p>
+                      <p className="text-xs text-on-surface-light truncate italic">
+                        {deal.status.replace('_', ' ').toUpperCase()}
                       </p>
                     </button>
                   );
@@ -90,7 +167,7 @@ export default function MessagesPage() {
                         {selectedDeal.title}
                       </h3>
                       <p className="text-on-surface-variant text-sm">
-                        {user.role === 'buyer' ? mockUsers.find(u => u.id === selectedDeal.sellerId)?.company.name : mockUsers.find(u => u.id === selectedDeal.buyerId)?.company.name}
+                        {user?.role === 'buyer' ? `Seller ID: ${selectedDeal.sellerId}` : `Buyer ID: ${selectedDeal.buyerId}`}
                       </p>
                     </div>
                     <Link
@@ -103,29 +180,29 @@ export default function MessagesPage() {
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-auto p-6 space-y-4">
-                  {selectedDeal.conversations.length === 0 ? (
+                <div className="flex-1 overflow-auto p-6 space-y-4 flex flex-col-reverse">
+                  {messages.length === 0 ? (
                     <div className="text-center py-8">
                       <p className="text-on-surface-variant">No messages yet. Start a conversation!</p>
                     </div>
                   ) : (
-                    selectedDeal.conversations.map((msg, idx) => (
+                    messages.map((msg, idx) => (
                       <div
                         key={idx}
-                        className={`flex ${msg.senderId === user.id ? 'justify-end' : 'justify-start'}`}
+                        className={`flex ${msg.senderId === user?.id ? 'justify-end' : 'justify-start'}`}
                       >
                         <div
-                          className={`max-w-sm p-4 rounded-lg ${
-                            msg.senderId === user.id
-                              ? 'bg-primary text-white'
-                              : 'bg-white border border-outline-variant text-on-surface'
+                          className={`max-w-sm p-4 rounded-2xl ${
+                            msg.senderId === user?.id
+                              ? 'bg-primary text-white rounded-tr-none'
+                              : 'bg-white border border-outline-variant text-on-surface rounded-tl-none'
                           }`}
                         >
-                          <p className="text-sm mb-1 font-bold">
-                            {msg.senderName}
+                          <p className={`text-[10px] font-bold uppercase mb-1 ${msg.senderId === user?.id ? 'text-white/70' : 'text-on-surface-variant'}`}>
+                            {msg.senderId === user?.id ? 'You' : msg.senderName}
                           </p>
                           <p className="text-sm mb-1">{msg.content}</p>
-                          <p className={`text-xs ${msg.senderId === user.id ? 'text-white/70' : 'text-on-surface-variant'}`}>
+                          <p className={`text-[9px] ${msg.senderId === user?.id ? 'text-white/60' : 'text-on-surface-light'} text-right`}>
                             {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>

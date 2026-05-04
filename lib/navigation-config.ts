@@ -22,6 +22,8 @@ export const navigationConfig: Record<UserRole, NavSection[]> = {
         { icon: 'assignment', label: 'Requirements', href: '/buyer/requirements', roles: ['buyer'] },
         { icon: 'person_search', label: 'Find Suppliers', href: '/buyer/matches', roles: ['buyer'] },
         { icon: 'handshake', label: 'My Deals', href: '/buyer/deals', roles: ['buyer'] },
+        { icon: 'storefront', label: 'Product Marketplace', href: '/buyer/marketplace/products', roles: ['buyer'] },
+        { icon: 'shopping_cart', label: 'My Purchases', href: '/buyer/purchases', roles: ['buyer'] },
       ],
     },
     {
@@ -57,7 +59,7 @@ export const navigationConfig: Record<UserRole, NavSection[]> = {
       title: 'Tools',
       items: [
         { icon: 'group', label: 'Network', href: '/network', roles: ['seller'] },
-        { icon: 'assignment', label: 'Requirements Board', href: '/requirements', roles: ['seller'] },
+        { icon: 'storefront', label: 'Marketplace', href: '/seller/marketplace', roles: ['seller'] },
         { icon: 'smart_toy', label: 'AI Assistant', href: '/assistant', roles: ['seller'] },
         { icon: 'mail', label: 'Messages', href: '/messages', roles: ['seller'] },
       ],

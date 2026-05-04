@@ -1,29 +1,19 @@
 import React from 'react';
 
-interface ModernInputProps {
+interface ModernInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  type?: string;
   icon?: React.ReactNode;
   error?: string;
   fullWidth?: boolean;
-  className?: string;
-  disabled?: boolean;
 }
 
 export const ModernInput = ({
   label,
-  placeholder,
-  value,
-  onChange,
-  type = 'text',
   icon,
   error,
   fullWidth = false,
   className = '',
-  disabled = false,
+  ...props
 }: ModernInputProps) => {
   return (
     <div className={fullWidth ? 'w-full' : ''}>
@@ -39,11 +29,7 @@ export const ModernInput = ({
           </span>
         )}
         <input
-          type={type}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          disabled={disabled}
+          {...props}
           className={`
             w-full bg-surface-container-low border border-outline-variant
             rounded-xl py-3 px-4 text-sm

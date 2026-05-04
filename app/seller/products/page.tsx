@@ -1,17 +1,48 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/lib/auth-context';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { getProductsBySellerId } from '@/lib/mockData';
+import { database } from '@/lib/firebase';
+import { ref, onValue, query, orderByChild, equalTo } from 'firebase/database';
 
 export default function SellerProductsPage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (isLoading || !user) return null;
+  useEffect(() => {
+    if (!user) return;
 
-  const products = getProductsBySellerId(user.id);
+    const productsRef = ref(database, 'products');
+    const q = query(productsRef, orderByChild('sellerId'), equalTo(user.id));
+
+    const unsubscribe = onValue(q, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const list = Object.values(data);
+        list.sort((a: any, b: any) => (b.createdAt || 0) - (a.createdAt || 0));
+        setProducts(list);
+      } else {
+        setProducts([]);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  if (authLoading || loading) return (
+    <DashboardLayout>
+      <div className="flex-1 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    </DashboardLayout>
+  );
+
+  if (!user) return null;
 
   return (
     <ProtectedRoute allowedRoles={['seller']}>
@@ -88,19 +119,19 @@ export default function SellerProductsPage() {
                       <div className="flex justify-between">
                         <span className="text-on-surface-variant text-sm">Price</span>
                         <span className="font-bold text-on-surface">
-                          ${product.basePrice.toLocaleString()} {product.currency}
+                          {product.currency || '$'}{product.price?.toLocaleString()}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-on-surface-variant text-sm">MOQ</span>
                         <span className="font-bold text-on-surface">
-                          {product.minimumOrderQuantity}
+                          {product.moq}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-on-surface-variant text-sm">Available</span>
                         <span className="font-bold text-on-surface">
-                          {product.availableQuantity}
+                          {product.stock}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -111,22 +142,12 @@ export default function SellerProductsPage() {
                       </div>
                     </div>
 
-                    {/* Certifications */}
-                    {product.certifications.length > 0 && (
-                      <div className="mb-4">
-                        <p className="text-xs text-on-surface-variant mb-2">Certifications:</p>
-                        <div className="flex flex-wrap gap-2">
-                          {product.certifications.map((cert, idx) => (
-                            <span
-                              key={idx}
-                              className="px-2 py-1 bg-primary/10 text-primary rounded text-xs font-bold"
-                            >
-                              {cert}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    {/* Category Badge */}
+                    <div className="mb-4">
+                      <span className="px-2 py-1 bg-surface-container text-on-surface-variant rounded text-xs font-bold uppercase tracking-wider">
+                        {product.category}
+                      </span>
+                    </div>
 
                     {/* Actions */}
                     <div className="flex gap-2">

@@ -7,7 +7,7 @@ import { useAuth } from '@/lib/auth-context';
 
 export default function VerificationCompletePage() {
   const router = useRouter();
-  const { updateUserProfile, user } = useAuth();
+  const { updateUserProfile, user, isLoading: authLoading } = useAuth();
   const [isFinishing, setIsFinishing] = useState(false);
 
   const handleFinish = async () => {
@@ -111,11 +111,11 @@ export default function VerificationCompletePage() {
         <div className="mt-12 flex justify-center">
           <button
             onClick={handleFinish}
-            disabled={isFinishing}
+            disabled={isFinishing || authLoading || !user}
             className="px-12 py-4 rounded-full font-headline font-bold text-lg text-white hover:scale-105 transition-transform duration-200 shadow-xl shadow-primary/20 flex items-center gap-3 disabled:opacity-50"
             style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}
           >
-            {isFinishing ? 'Finishing...' : 'Go to Dashboard'}
+            {isFinishing ? 'Finishing...' : authLoading ? 'Loading...' : 'Go to Dashboard'}
             <span className="material-symbols-outlined">arrow_forward</span>
           </button>
         </div>

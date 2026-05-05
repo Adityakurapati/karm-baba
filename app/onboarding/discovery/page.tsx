@@ -7,7 +7,7 @@ import { useAuth } from '@/lib/auth-context';
 
 export default function DynamicDiscoveryPage() {
   const router = useRouter();
-  const { updateUserProfile } = useAuth();
+  const { user, updateUserProfile, isLoading: authLoading } = useAuth();
   const [businessModel, setBusinessModel] = useState('dtc');
   const [isSaving, setIsSaving] = useState(false);
   const [exportMarket, setExportMarket] = useState('eu');
@@ -130,11 +130,11 @@ export default function DynamicDiscoveryPage() {
                       setIsSaving(false);
                     }
                   }}
-                  disabled={isSaving}
+                  disabled={isSaving || authLoading || !user}
                   className="text-white font-bold px-10 py-3 rounded-full hover:scale-105 transition-all text-sm uppercase tracking-widest shadow-xl shadow-primary/20 disabled:opacity-50"
                   style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}
                 >
-                  {isSaving ? 'Saving...' : 'Analyze & Proceed'}
+                  {isSaving ? 'Saving...' : authLoading ? 'Loading Profile...' : 'Analyze & Proceed'}
                 </button>
               </div>
             </div>

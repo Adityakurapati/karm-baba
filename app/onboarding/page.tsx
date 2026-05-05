@@ -27,7 +27,7 @@ const roles = [
 
 export default function OnboardingRoleSelectionPage() {
   const router = useRouter();
-  const { user, updateUserProfile } = useAuth();
+  const { user, updateUserProfile, isLoading: authLoading } = useAuth();
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -132,15 +132,15 @@ export default function OnboardingRoleSelectionPage() {
         <div className="mt-16 flex flex-col items-center">
           <button
             onClick={handleContinue}
-            disabled={!selectedRole || isSaving}
-            className={`px-12 py-4 font-headline font-bold text-lg rounded-full transition-all duration-200 shadow-lg ${
-              selectedRole && !isSaving
+            disabled={!selectedRole || isSaving || authLoading || !user}
+            className={`px-12 py-4 font-headline font-bold text-lg rounded-full transition-all duration-200 shadow-lg relative z-10 ${
+              selectedRole && !isSaving && !authLoading && user
                 ? 'text-white hover:scale-105 shadow-primary/20'
                 : 'bg-surface-container text-on-surface-variant cursor-not-allowed shadow-none'
             }`}
-            style={selectedRole ? { background: 'linear-gradient(135deg, #e55a24, #ff6b35)' } : {}}
+            style={selectedRole && !authLoading && user ? { background: 'linear-gradient(135deg, #e55a24, #ff6b35)' } : {}}
           >
-            {isSaving ? 'Saving...' : 'Continue with Selection'}
+            {isSaving ? 'Saving...' : authLoading ? 'Loading Profile...' : 'Continue with Selection'}
           </button>
           <p className="mt-6 text-on-surface-variant text-sm">
             You can refine your organizational profile in the next step.

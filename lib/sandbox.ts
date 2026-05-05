@@ -58,7 +58,16 @@ export interface GSTVerificationResult {
     status:           string;
     address:          string;
     type:             string;
+    stateCode:        string;
+    pan:              string;
   };
+  error?: string;
+}
+
+export interface PanAadhaarStatusResult {
+  success: boolean;
+  aadhaarSeedingStatus?: string;
+  message?: string;
   error?: string;
 }
 
@@ -86,6 +95,8 @@ async function mockVerifyGST(gstin: string): Promise<GSTVerificationResult> {
       status:           'Active',
       address:          '123, Executive Plaza, Mumbai, Maharashtra, 400001',
       type:             'Private Limited Company',
+      stateCode:        gstin.substring(0, 2),
+      pan:              gstin.substring(2, 12),
     },
   };
 }
@@ -138,6 +149,8 @@ export async function verifyGST(gstin: string): Promise<GSTVerificationResult> {
           status:           d.sts,
           address:          buildAddress(d.pradr),
           type:             d.ctb,
+          stateCode:        d.pradr?.addr?.stcd || d.gstin.substring(0, 2),
+          pan:              d.gstin.substring(2, 12),
         },
       };
     }
@@ -154,5 +167,78 @@ export async function verifyGST(gstin: string): Promise<GSTVerificationResult> {
       success: false,
       error: 'Network or server error during verification. Please try again.',
     };
+  }
+}
+
+// ─── PAN Helpers ──────────────────────────────────────────────────────────────
+
+export function extractPANFromGSTIN(gstin: string): string {
+  if (gstin.length < 12) return '';
+  return gstin.substring(2, 12);
+}
+
+/**
+ * MOCK: Simulates extraction of PAN from a document.
+ * In production, this would call an OCR API.
+ */
+export async function extractPANFromDocument(file: File, expectedPan?: string): Promise<{ pan: string | null; error?: string }> {
+  await new Promise(r => setTimeout(r, 1500)); // simulate OCR processing
+  
+  // For demo/mock purposes, we'll "extract" the correct PAN if it's provided as expected
+  // In a real scenario, this would use Tesseract.js or a cloud OCR service.
+  if (file.name.toLowerCase().includes('fail')) {
+    return { pan: 'ABCDE1234F', error: 'OCR mismatch: Extracted PAN does not match records.' };
+  }
+  
+  return { pan: expectedPan || 'ABCDE1234F' };
+}
+
+/**
+ * Verifies if a PAN is seeded with Aadhaar.
+ */
+export async function verifyPanAadhaarStatus(pan: string, aadhaar: string): Promise<PanAadhaarStatusResult> {
+  const apiKey    = process.env.QUICKO_API_KEY;
+  const apiSecret = process.env.QUICKO_API_SECRET;
+
+  if (!apiKey || !apiSecret) {
+    console.warn('[sandbox-pan-aadhaar] Credentials not set — using mock data.');
+    await new Promise(r => setTimeout(r, 1000));
+    return { 
+      success: true, 
+      aadhaarSeedingStatus: 'y', 
+      message: 'Mocked: PAN is linked to Aadhaar Number XXXX XXXX 9999.' 
+    };
+  }
+
+  try {
+    const authToken = await getAuthToken();
+    const res = await fetch(`${BASE_URL}/kyc/pan-aadhaar/status`, {
+      method: 'POST',
+      headers: {
+        'Authorization':  authToken,
+        'x-api-key':      apiKey,
+        'Content-Type':   'application/json',
+      },
+      body: JSON.stringify({
+        "@entity": "in.co.sandbox.kyc.pan_aadhaar.status",
+        "pan": pan,
+        "aadhaar_number": aadhaar,
+        "consent": "y",
+        "reason": "KARM BABA Verification"
+      }),
+    });
+
+    const json = await res.json();
+    if (res.ok && json.code === 200) {
+      return {
+        success: true,
+        aadhaarSeedingStatus: json.data?.aadhaar_seeding_status,
+        message: json.data?.message
+      };
+    }
+    return { success: false, error: json.message || 'PAN-Aadhaar verification failed.' };
+  } catch (err: any) {
+    console.error('[sandbox-pan-aadhaar] Error:', err?.message ?? err);
+    return { success: false, error: 'Network error during PAN-Aadhaar verification.' };
   }
 }

@@ -32,6 +32,7 @@ export interface User {
   isOnboarded: boolean;
   onboardingStep?: number;
   isAuthorized?: boolean;
+  isGstVerified?: boolean;
   gstDetails?: {
     gstin: string;
     legalName: string;
@@ -40,6 +41,7 @@ export interface User {
     status: string;
     address: string;
     type: string;
+    pan: string;
   };
   createdAt: Date;
   updatedAt: Date;

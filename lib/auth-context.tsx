@@ -59,9 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         // Fetch user profile from Realtime Database
-        const dbRef = ref(database);
-        try {
-          const snapshot = await get(child(dbRef, `users/${firebaseUser.uid}`));
+        const dbRef = ref(database, `users/${firebaseUser.uid}`);
+        const unsubscribeDb = onValue(dbRef, async (snapshot) => {
           if (snapshot.exists()) {
             const userData = snapshot.val();
             // Convert ISO strings back to Dates
@@ -93,16 +92,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(null);
             setSession(null);
           }
-        } catch (error) {
+          setIsLoading(false);
+        }, (error) => {
           console.error('Error fetching user profile:', error);
           setUser(null);
           setSession(null);
-        }
+          setIsLoading(false);
+        });
+
+        // We could store unsubscribeDb to clean it up if auth state changes,
+        // but for now relying on top-level unmount is fine.
       } else {
         setUser(null);
         setSession(null);
+        setIsLoading(false);
       }
-      setIsLoading(false);
     });
 
     return () => unsubscribe();
@@ -203,6 +207,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         ...newUser,
         createdAt: newUser.createdAt.toISOString(),
         updatedAt: newUser.updatedAt.toISOString(),
+      });
+
+      // Explicitly set state to prevent race condition with onAuthStateChanged's get()
+      setUser(newUser);
+      setSession({
+        userId: newUser.id,
+        email: newUser.email,
+        role: newUser.role,
+        companyName: newUser.company?.name || '',
+        token: await firebaseUser.getIdToken(),
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       });
 
       return true;

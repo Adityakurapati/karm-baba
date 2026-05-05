@@ -15,7 +15,7 @@ const industries = [
 
 export default function IndustryTargetingPage() {
   const router = useRouter();
-  const { user, updateUserProfile } = useAuth();
+  const { user, updateUserProfile, isLoading: authLoading } = useAuth();
   const [selected, setSelected] = useState<string[]>(['pharma']);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -77,13 +77,13 @@ export default function IndustryTargetingPage() {
               <button className="px-6 py-2 rounded-full border border-outline-variant/30 text-on-surface-variant font-semibold hover:bg-surface-container-low transition-colors text-sm">Save Draft</button>
               <button
                 onClick={handleContinue}
-                disabled={selected.length === 0 || isSaving}
+                disabled={selected.length === 0 || isSaving || authLoading || !user}
                 className={`px-8 py-2 rounded-full text-white font-bold shadow-lg transition-all text-sm ${
-                  selected.length > 0 && !isSaving ? 'hover:scale-[1.02] shadow-primary/20' : 'opacity-50 cursor-not-allowed'
+                  selected.length > 0 && !isSaving && !authLoading && user ? 'hover:scale-[1.02] shadow-primary/20' : 'opacity-50 cursor-not-allowed'
                 }`}
                 style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}
               >
-                {isSaving ? 'Saving...' : 'Continue'}
+                {isSaving ? 'Saving...' : authLoading ? 'Loading Profile...' : 'Continue'}
               </button>
             </div>
           </div>
@@ -186,13 +186,13 @@ export default function IndustryTargetingPage() {
           </div>
           <button
             onClick={handleContinue}
-            disabled={selected.length === 0 || isSaving}
+            disabled={selected.length === 0 || isSaving || authLoading || !user}
             className={`px-10 py-3 rounded-full text-white font-bold shadow-xl transition-all ${
-              selected.length > 0 && !isSaving ? 'hover:scale-105' : 'opacity-50 cursor-not-allowed'
+              selected.length > 0 && !isSaving && !authLoading && user ? 'hover:scale-105' : 'opacity-50 cursor-not-allowed'
             }`}
             style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}
           >
-            {isSaving ? 'Saving...' : 'Proceed to Discovery'}
+            {isSaving ? 'Saving...' : authLoading ? 'Loading Profile...' : 'Proceed to Discovery'}
           </button>
         </div>
       </div>

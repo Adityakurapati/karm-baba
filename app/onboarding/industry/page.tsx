@@ -36,19 +36,26 @@ export default function IndustryTargetingPage() {
   };
 
   const handleContinue = async () => {
-    if (selected.length === 0) return;
+    if (selected.length === 0 || !user) return;
     
     setIsSaving(true);
     try {
-      await updateUserProfile({
+      const success = await updateUserProfile({
         company: {
-          ...user!.company,
+          ...(user.company || {}),
           industry: selected,
-        }
+        },
+        onboardingStep: 3
       });
-      router.push('/onboarding/discovery');
+      
+      if (success) {
+        router.push('/onboarding/discovery');
+      } else {
+        alert('Failed to save your selection. Please try again.');
+      }
     } catch (error) {
       console.error('Error saving industry:', error);
+      alert('An error occurred while saving. Please check your connection.');
     } finally {
       setIsSaving(false);
     }

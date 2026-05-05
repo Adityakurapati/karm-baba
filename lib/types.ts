@@ -30,6 +30,17 @@ export interface User {
   verificationBadges: VerificationBadge[];
   riskLevel: 'low' | 'medium' | 'high';
   isOnboarded: boolean;
+  onboardingStep?: number;
+  isAuthorized?: boolean;
+  gstDetails?: {
+    gstin: string;
+    legalName: string;
+    tradeName: string;
+    registrationDate: string;
+    status: string;
+    address: string;
+    type: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }

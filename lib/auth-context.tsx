@@ -67,6 +67,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // Convert ISO strings back to Dates
             const formattedUser: User = {
               ...userData,
+              isOnboarded: !!userData.isOnboarded,
+              onboardingStep: userData.onboardingStep || 1,
               createdAt: new Date(userData.createdAt),
               updatedAt: new Date(userData.updatedAt),
               verificationBadges: userData.verificationBadges?.map((b: any) => ({
@@ -191,6 +193,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         verificationBadges: [],
         riskLevel: 'medium',
         isOnboarded: false,
+        onboardingStep: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -229,21 +232,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const updates: any = { ...data };
       updates.updatedAt = new Date().toISOString();
-      if (data.createdAt) updates.createdAt = data.createdAt.toISOString();
+      if (data.createdAt) updates.createdAt = (data.createdAt as Date).toISOString();
       
       // Handle nested serialization if necessary
       if (data.verificationBadges) {
-        updates.verificationBadges = data.verificationBadges.map(b => ({
-          ...b,
-          issuedDate: b.issuedDate.toISOString(),
-          expiryDate: b.expiryDate?.toISOString(),
-        }));
+        updates.verificationBadges = data.verificationBadges.map(b => {
+          const badge: any = { ...b };
+          if (b.issuedDate instanceof Date) badge.issuedDate = b.issuedDate.toISOString();
+          if (b.expiryDate instanceof Date) badge.expiryDate = b.expiryDate.toISOString();
+          // Remove undefined fields to prevent Firebase update errors
+          Object.keys(badge).forEach(key => badge[key] === undefined && delete badge[key]);
+          return badge;
+        });
       }
 
-      await update(ref(database, `users/${user.id}`), updates);
+      // Remove all undefined fields from top-level updates
+      Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key]);
+
+      // If mock admin, skip database update to prevent hanging
+      if (user.id === 'admin_mock_id') {
+        console.log('[AuthContext] Mock admin profile update (skipping DB):', updates);
+      } else {
+        await update(ref(database, `users/${user.id}`), updates);
+      }
       
       // Update local state
-      setUser(prev => prev ? { ...prev, ...data, updatedAt: new Date() } : null);
+      setUser(prev => {
+        if (!prev) return null;
+        const updated = { ...prev, ...data, updatedAt: new Date() };
+        
+        // Persist mock admin update in session storage if applicable
+        if (prev.id === 'admin_mock_id' && typeof window !== 'undefined') {
+          sessionStorage.setItem('mock_admin', JSON.stringify(updated));
+        }
+        
+        return updated;
+      });
       return true;
     } catch (err) {
       console.error('Update profile error:', err);

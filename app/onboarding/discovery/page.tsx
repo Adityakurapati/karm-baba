@@ -3,10 +3,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import OnboardingLayout from '@/components/OnboardingLayout';
+import { useAuth } from '@/lib/auth-context';
 
 export default function DynamicDiscoveryPage() {
   const router = useRouter();
+  const { updateUserProfile } = useAuth();
   const [businessModel, setBusinessModel] = useState('dtc');
+  const [isSaving, setIsSaving] = useState(false);
   const [exportMarket, setExportMarket] = useState('eu');
   const [capacity, setCapacity] = useState(4500);
 
@@ -111,11 +114,27 @@ export default function DynamicDiscoveryPage() {
                   Previous
                 </button>
                 <button
-                  onClick={() => router.push('/onboarding/documents')}
-                  className="text-white font-bold px-10 py-3 rounded-full hover:scale-105 transition-all text-sm uppercase tracking-widest shadow-xl shadow-primary/20"
+                  onClick={async () => {
+                    setIsSaving(true);
+                    try {
+                      const success = await updateUserProfile({ onboardingStep: 4 });
+                      if (success) {
+                        router.push('/onboarding/documents');
+                      } else {
+                        alert('Failed to save progress. Please try again.');
+                      }
+                    } catch (error) {
+                      console.error('Error saving discovery progress:', error);
+                      alert('An error occurred. Please try again.');
+                    } finally {
+                      setIsSaving(false);
+                    }
+                  }}
+                  disabled={isSaving}
+                  className="text-white font-bold px-10 py-3 rounded-full hover:scale-105 transition-all text-sm uppercase tracking-widest shadow-xl shadow-primary/20 disabled:opacity-50"
                   style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}
                 >
-                  Analyze &amp; Proceed
+                  {isSaving ? 'Saving...' : 'Analyze & Proceed'}
                 </button>
               </div>
             </div>

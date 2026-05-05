@@ -13,7 +13,10 @@ export default function VerificationCompletePage() {
   const handleFinish = async () => {
     setIsFinishing(true);
     try {
-      await updateUserProfile({ isOnboarded: true });
+      await updateUserProfile({ 
+        isOnboarded: true,
+        onboardingStep: 6
+      });
       router.push(user?.role === 'admin' ? '/admin' : '/dashboard');
     } catch (error) {
       console.error('Error finishing onboarding:', error);

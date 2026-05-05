@@ -38,16 +38,28 @@ export default function OnboardingRoleSelectionPage() {
   }, [user]);
 
   const handleContinue = async () => {
-    if (!selectedRole) return;
+    if (!selectedRole || !user) return;
     
     setIsSaving(true);
     try {
-      if (selectedRole !== user?.role) {
-        await updateUserProfile({ role: selectedRole as UserRole });
+      let success = false;
+      if (selectedRole !== user.role) {
+        success = await updateUserProfile({ 
+          role: selectedRole as UserRole,
+          onboardingStep: 2 
+        });
+      } else {
+        success = await updateUserProfile({ onboardingStep: 2 });
       }
-      router.push('/onboarding/industry');
+      
+      if (success) {
+        router.push('/onboarding/industry');
+      } else {
+        alert('Failed to save your selection. Please try again.');
+      }
     } catch (error) {
       console.error('Error saving role:', error);
+      alert('An error occurred. Please try again.');
     } finally {
       setIsSaving(false);
     }

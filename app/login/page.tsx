@@ -20,10 +20,21 @@ export default function LoginPage() {
     if (isAuthenticated && !authLoading) {
       if (user?.role === 'admin') {
         router.push('/admin');
-      } else if (user?.isOnboarded) {
+      } else if (user?.isOnboarded && user?.isAuthorized) {
         router.push('/dashboard');
+      } else if (user?.isOnboarded && !user?.isAuthorized) {
+        // If they are onboarded but not authorized, send them back to documents for verification
+        router.push('/onboarding/documents');
       } else {
-        router.push('/onboarding');
+        const step = user?.onboardingStep || 1;
+        switch (step) {
+          case 1: router.push('/onboarding'); break;
+          case 2: router.push('/onboarding/industry'); break;
+          case 3: router.push('/onboarding/discovery'); break;
+          case 4: router.push('/onboarding/documents'); break;
+          case 5: router.push('/onboarding/verify'); break;
+          default: router.push('/onboarding');
+        }
       }
     }
   }, [isAuthenticated, authLoading, user, router]);

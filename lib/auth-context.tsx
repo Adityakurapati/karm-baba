@@ -9,7 +9,7 @@ import {
   createUserWithEmailAndPassword, 
   signOut
 } from 'firebase/auth';
-import { ref, get, set, child, update } from 'firebase/database';
+import { ref, get, set, child, update, onValue } from 'firebase/database';
 
 interface AuthContextType {
   user: User | null;

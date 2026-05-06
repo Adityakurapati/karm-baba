@@ -33,17 +33,13 @@ export default function DocumentUploadPage() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(null);
 
-  // Aadhaar State
-  const [aadhaarNumber, setAadhaarNumber] = useState('');
-  const [isAadhaarVerifying, setIsAadhaarVerifying] = useState(false);
-  const [aadhaarError, setAadhaarError] = useState<string | null>(null);
+  const [companyName, setCompanyName] = useState('');
 
   const isGstVerified = user?.isGstVerified || user?.verificationBadges?.some(b => b.type === 'gst');
-  const isAadhaarVerified = user?.verificationBadges?.some(b => b.type === 'pan');
 
   const handleVerifyGST = async () => {
-    if (!gstin || !selectedState) {
-      setVerificationError('Please enter GST Number and select a state.');
+    if (!gstin || !selectedState || !companyName) {
+      setVerificationError('Please enter GST Number, State, and Company/Trade Name.');
       return;
     }
 
@@ -100,6 +96,13 @@ export default function DocumentUploadPage() {
           return;
         }
 
+        // 2. Match Trade Name
+        if (d.tradeName?.toLowerCase() !== companyName.trim().toLowerCase()) {
+          setVerificationError(`Trade Name mismatch. Expected: ${d.tradeName}`);
+          setIsVerifying(false);
+          return;
+        }
+
         // Success -> Update Profile
         const newBadge = {
           id: `gst_${Date.now()}`,
@@ -114,6 +117,8 @@ export default function DocumentUploadPage() {
           verificationBadges: [...currentBadges, newBadge],
           gstDetails: { ...d },
           isGstVerified: true,
+          verificationStatus: 'verified',
+          isAuthorized: true,
           onboardingStep: 4 // Explicitly save step 4 to ensure they resume here
         });
       } else {
@@ -127,64 +132,7 @@ export default function DocumentUploadPage() {
     }
   };
 
-  // PAN Upload logic removed
 
-  const handleVerifyPanAadhaar = async () => {
-    if (!aadhaarNumber || aadhaarNumber.length !== 12) {
-      setAadhaarError('Please enter a valid 12-digit Aadhaar number.');
-      return;
-    }
-
-    setIsAadhaarVerifying(true);
-    setAadhaarError(null);
-
-    try {
-      const pan = user?.gstDetails?.pan;
-      if (!pan) {
-        setAadhaarError('GST details missing. Please verify GST first.');
-        setIsAadhaarVerifying(false);
-        return;
-      }
-
-      const res = await fetch('/api/verify-pan-aadhaar', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ pan, aadhaar: aadhaarNumber }),
-      });
-
-      if (!res.ok) {
-        throw new Error('GST API failed');
-      }
-
-      const result = await res.json();
-      if (result.success && result.aadhaarSeedingStatus === 'y') {
-        // Success -> Update Profile and Authorize
-        const currentBadges = user?.verificationBadges || [];
-        await updateUserProfile({
-          verificationBadges: [
-            ...currentBadges,
-            {
-              id: `aadhaar_link_${Date.now()}`,
-              type: 'pan' as const,
-              number: `linked_${aadhaarNumber.slice(-4)}`,
-              issuedDate: new Date(),
-              verifiedBy: 'SANDBOX KYC'
-            }
-          ],
-          verificationStatus: 'verified',
-          isAuthorized: true
-        });
-      } else {
-        setAadhaarError(result.error || result.message || 'PAN is not linked to this Aadhaar.');
-      }
-    } catch (error) {
-      setAadhaarError('Error verifying PAN-Aadhaar link.');
-    } finally {
-      setIsAadhaarVerifying(false);
-    }
-  };
 
 
   return (
@@ -267,88 +215,23 @@ export default function DocumentUploadPage() {
                         </div>
                       </div>
 
-                      {/* Step 2: Link PAN with Aadhaar */}
-                      <div className="border-t border-orange-100 pt-8 space-y-6">
-                        {!isAadhaarVerified ? (
-                          <div className="bg-white p-8 rounded-2xl border-2 border-orange-100 shadow-lg shadow-orange-100/20 space-y-6">
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-primary">
-                                <span className="material-symbols-outlined text-2xl">fingerprint</span>
-                              </div>
-                              <div>
-                                <h4 className="text-lg font-black text-on-surface font-headline uppercase tracking-tight">Identity Linking Protocol</h4>
-                                <p className="text-xs text-on-surface-variant">Match your digital signature with official tax records.</p>
-                              </div>
-                            </div>
 
-                            <div className="bg-orange-50/50 p-6 rounded-xl border border-orange-100/50">
-                              <p className="text-sm text-on-surface-variant leading-relaxed">
-                                We have successfully derived your PAN (<span className="font-bold text-primary">{user?.gstDetails?.pan}</span>) from your GST record. To complete your identity profile, please provide your 12-digit Aadhaar number.
-                              </p>
-                            </div>
-
-                            <div className="space-y-4">
-                              <div className="relative">
-                                <input
-                                  type="text"
-                                  maxLength={12}
-                                  value={aadhaarNumber}
-                                  onChange={(e) => setAadhaarNumber(e.target.value.replace(/\D/g, ''))}
-                                  placeholder="Enter 12-digit Aadhaar Number"
-                                  className="w-full bg-slate-50 border-2 border-outline-variant/30 rounded-xl px-6 py-4 text-lg font-bold tracking-[0.2em] focus:border-primary focus:outline-none transition-all placeholder:tracking-normal placeholder:text-sm placeholder:font-medium"
-                                />
-                                {aadhaarNumber.length === 12 && (
-                                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-500">
-                                    <span className="material-symbols-outlined">check_circle</span>
-                                  </div>
-                                )}
-                              </div>
-
-                              {aadhaarError && (
-                                <div className="flex items-center gap-2 text-red-500 px-2">
-                                  <span className="material-symbols-outlined text-sm">error</span>
-                                  <p className="text-xs font-bold">{aadhaarError}</p>
-                                </div>
-                              )}
-
-                              <button
-                                onClick={handleVerifyPanAadhaar}
-                                disabled={isAadhaarVerifying || aadhaarNumber.length !== 12}
-                                className="w-full py-5 bg-primary text-white rounded-xl font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3"
-                              >
-                                {isAadhaarVerifying ? (
-                                  <>
-                                    <span className="animate-spin material-symbols-outlined text-sm">sync</span>
-                                    <span>Verifying Secure Link...</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <span>Execute Identity Link</span>
-                                    <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                                  </>
-                                )}
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="bg-emerald-50 border-2 border-emerald-100 rounded-2xl p-8 flex items-center gap-6 animate-in zoom-in-95 duration-500">
-                            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-emerald-500 shadow-sm">
-                              <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
-                            </div>
-                            <div>
-                              <span className="text-xs font-black text-emerald-700 uppercase tracking-widest block mb-1">Security Status: CLEAR</span>
-                              <h4 className="text-xl font-bold text-emerald-900">Digital Identity Confirmed</h4>
-                              <p className="text-sm text-emerald-600 font-medium mt-1">Sovereign identity link established successfully.</p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
                     </div>
                   ) : (
                     <div className="space-y-6 animate-in fade-in duration-500">
                       <div className="space-y-4">
                         <label className="block text-xs font-black text-on-surface-variant uppercase tracking-widest ml-1">Company Credentials</label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="col-span-1 md:col-span-2 relative">
+                            <input
+                              type="text"
+                              value={companyName}
+                              onChange={(e) => setCompanyName(e.target.value)}
+                              placeholder="Exact Company / Trade Name"
+                              className="w-full bg-slate-50 border-2 border-outline-variant/30 rounded-2xl px-6 py-4 text-sm font-bold tracking-widest focus:border-primary focus:outline-none transition-all placeholder:tracking-normal placeholder:text-on-surface-variant/40"
+                            />
+                            <span className="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant/30">domain</span>
+                          </div>
                           <div className="relative">
                             <input
                               type="text"
@@ -384,7 +267,7 @@ export default function DocumentUploadPage() {
 
                       <button
                         onClick={handleVerifyGST}
-                        disabled={isVerifying || !gstin || !selectedState}
+                        disabled={isVerifying || !gstin || !selectedState || !companyName}
                         className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl hover:bg-primary transition-all disabled:opacity-50 disabled:bg-slate-300 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                       >
                         {isVerifying ? (
@@ -432,7 +315,7 @@ export default function DocumentUploadPage() {
                 setIsSaving(false);
               }
             }}
-            disabled={isSaving || !isGstVerified || !isAadhaarVerified || authLoading || !user}
+            disabled={isSaving || !isGstVerified || authLoading || !user}
             className="px-10 py-4 rounded-full font-headline text-sm font-bold text-white shadow-lg shadow-primary/20 hover:scale-105 transition-transform disabled:opacity-50"
             style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}
           >
@@ -443,9 +326,9 @@ export default function DocumentUploadPage() {
         {/* Floating HUD */}
         <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-white/70 backdrop-blur-md px-8 py-4 rounded-full flex items-center gap-12 border border-white/20 shadow-2xl z-50">
           <div className="flex items-center gap-3">
-            <div className={`w-3 h-3 rounded-full animate-pulse ${isGstVerified && isAadhaarVerified ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
+            <div className={`w-3 h-3 rounded-full animate-pulse ${isGstVerified ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
             <span className="text-xs font-bold font-headline text-on-surface">
-              {isGstVerified && isAadhaarVerified ? 'Verification Done' : (isGstVerified ? 'Aadhaar Link Pending' : 'GST Pending')}
+              {isGstVerified ? 'Verification Done' : 'GST Pending'}
             </span>
           </div>
           <div className="h-4 w-[1px] bg-outline-variant/30"></div>

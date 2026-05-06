@@ -3,19 +3,10 @@
 import { useRouter } from 'next/navigation';
 import OnboardingLayout from '@/components/OnboardingLayout';
 import { useAuth } from '@/lib/auth-context';
-import { useState, useRef } from 'react';
-import { verifyGST, GSTVerificationResult, extractPANFromDocument, verifyPanAadhaarStatus } from '@/lib/sandbox';
+import { useState } from 'react';
 import { GST_STATE_CODES, STATE_NAMES } from '@/lib/gst-codes';
 import { ref, query, orderByChild, equalTo, get } from 'firebase/database';
 import { database } from '@/lib/firebase';
-
-function fuzzyMatch(input: string, target: string): boolean {
-  const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
-  const nInput = normalize(input);
-  const nTarget = normalize(target);
-  if (!nInput || !nTarget) return false;
-  return nTarget.includes(nInput) || nInput.includes(nTarget);
-}
 
 
 const documentSlots = [
@@ -86,7 +77,19 @@ export default function DocumentUploadPage() {
         }
       }
 
-      const result = await verifyGST(gstin);
+      const res = await fetch('/api/verify-gst', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ gstin }),
+      });
+
+      if (!res.ok) {
+        throw new Error('GST API failed');
+      }
+
+      const result = await res.json();
       if (result.success && result.data) {
         const d = result.data;
 
@@ -143,8 +146,19 @@ export default function DocumentUploadPage() {
         return;
       }
 
-      const result = await verifyPanAadhaarStatus(pan, aadhaarNumber);
+      const res = await fetch('/api/verify-pan-aadhaar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ pan, aadhaar: aadhaarNumber }),
+      });
 
+      if (!res.ok) {
+        throw new Error('GST API failed');
+      }
+
+      const result = await res.json();
       if (result.success && result.aadhaarSeedingStatus === 'y') {
         // Success -> Update Profile and Authorize
         const currentBadges = user?.verificationBadges || [];

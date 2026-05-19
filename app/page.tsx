@@ -116,7 +116,7 @@ export default function Home() {
   const industries = ['Agriculture', 'Automotive', 'Textile', 'Import-Export'];
 
   return (
-    <div className="min-h-screen bg-background font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-background dark:bg-background-dark text-on-surface dark:text-white transition-colors duration-300 font-sans overflow-x-hidden">
       <style>{`
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
         @keyframes pulse-ring { 0%{transform:scale(1);opacity:.7} 100%{transform:scale(1.6);opacity:0} }
@@ -380,28 +380,28 @@ export default function Home() {
       </section>
 
       {/* ══ ENTERPRISE TIERS ══ */}
-      <section className="py-20 px-6 md:px-12 bg-white">
+      <section className="py-20 px-6 md:px-12 bg-white dark:bg-background-dark transition-colors duration-300">
         <div className="max-w-5xl mx-auto">
           <FadeIn className="text-center mb-4">
             <p className="text-primary text-xs font-bold uppercase tracking-widest mb-2">Membership Plans</p>
-            <h2 className="text-3xl md:text-4xl font-headline font-black text-on-surface mb-2">
+            <h2 className="text-3xl md:text-4xl font-headline font-black text-on-surface dark:text-white mb-2 transition-colors">
               Your Karm Baba Growth Ladder
             </h2>
-            <p className="text-on-surface-variant text-sm">Start free. Grow at your pace. Every plan builds on the last.</p>
+            <p className="text-on-surface-variant dark:text-slate-400 text-sm transition-colors">Start free. Grow at your pace. Every plan builds on the last.</p>
           </FadeIn>
 
           {/* Currency toggle */}
           <FadeIn className="flex justify-center mb-10">
-            <div className="flex items-center gap-1 p-1 rounded-xl border border-outline-variant bg-slate-50">
+            <div className="flex items-center gap-1 p-1 rounded-xl border border-outline-variant dark:border-slate-700 bg-slate-50 dark:bg-slate-900 transition-colors">
               <button
                 onClick={() => setCurrency('INR')}
-                className={`px-5 py-2 rounded-lg text-sm font-headline font-bold transition-all ${currency === 'INR' ? 'bg-primary text-white shadow-md shadow-orange-200' : 'text-on-surface-variant hover:text-primary'}`}
+                className={`px-5 py-2 rounded-lg text-sm font-headline font-bold transition-all ${currency === 'INR' ? 'bg-primary text-white shadow-md shadow-orange-200 dark:shadow-none' : 'text-on-surface-variant dark:text-slate-400 hover:text-primary dark:hover:text-primary'}`}
               >
                 🇮🇳 INR
               </button>
               <button
                 onClick={() => setCurrency('USD')}
-                className={`px-5 py-2 rounded-lg text-sm font-headline font-bold transition-all ${currency === 'USD' ? 'bg-primary text-white shadow-md shadow-orange-200' : 'text-on-surface-variant hover:text-primary'}`}
+                className={`px-5 py-2 rounded-lg text-sm font-headline font-bold transition-all ${currency === 'USD' ? 'bg-primary text-white shadow-md shadow-orange-200 dark:shadow-none' : 'text-on-surface-variant dark:text-slate-400 hover:text-primary dark:hover:text-primary'}`}
               >
                 🌍 USD
               </button>
@@ -412,16 +412,16 @@ export default function Home() {
 
             {/* FREE */}
             <FadeIn delay={0}>
-              <div className="tier-card p-7 bg-white rounded-2xl border border-outline-variant h-full flex flex-col"
+              <div className="tier-card p-7 bg-white dark:bg-slate-900 rounded-2xl border border-outline-variant dark:border-slate-700 h-full flex flex-col transition-colors"
                 style={{ boxShadow: '0 2px 8px rgba(0,0,0,.04)' }}>
-                <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1">Free Forever</p>
-                <div className="text-4xl font-headline font-black text-on-surface mb-1">₹0 <span className="text-base font-normal text-on-surface-variant">/ $0</span></div>
-                <p className="text-xs text-on-surface-variant mb-4">3 Products · No card needed · No expiry</p>
-                <div className="w-8 h-1 rounded-full bg-orange-200 mb-5" />
-                <ul className="space-y-2.5 text-sm text-on-surface-variant mb-8 flex-1">
+                <p className="text-on-surface-variant dark:text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Free Forever</p>
+                <div className="text-4xl font-headline font-black text-on-surface dark:text-white mb-1 transition-colors">₹0 <span className="text-base font-normal text-on-surface-variant dark:text-slate-400">/ $0</span></div>
+                <p className="text-xs text-on-surface-variant dark:text-slate-400 mb-4 transition-colors">3 Products · No card needed · No expiry</p>
+                <div className="w-8 h-1 rounded-full bg-orange-200 dark:bg-orange-900/50 mb-5 transition-colors" />
+                <ul className="space-y-2.5 text-sm text-on-surface-variant dark:text-slate-300 mb-8 flex-1 transition-colors">
                   {['List 3 Products — Free Forever', 'Verified Business Profile', 'Receive Real Buyer Inquiries', 'WhatsApp & Email Trade Alerts', 'Taste of Karm AI', 'CRM Access at ₹99 / $1.11'].map((f) => (
                     <li key={f} className="flex items-start gap-2">
-                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="w-4 h-4 rounded-full bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-900/50 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors">
                         <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
                       </span>
                       {f}
@@ -436,18 +436,18 @@ export default function Home() {
 
             {/* TRIAL */}
             <FadeIn delay={80}>
-              <div className="tier-card p-7 bg-white rounded-2xl border border-outline-variant h-full flex flex-col"
+              <div className="tier-card p-7 bg-white dark:bg-slate-900 rounded-2xl border border-outline-variant dark:border-slate-700 h-full flex flex-col transition-colors"
                 style={{ boxShadow: '0 2px 8px rgba(0,0,0,.04)' }}>
-                <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1">Trial Plan</p>
-                <div className="text-4xl font-headline font-black text-on-surface mb-1">
-                  {currency === 'INR' ? '₹999' : '$12'} <span className="text-base font-normal text-on-surface-variant">/mo</span>
+                <p className="text-on-surface-variant dark:text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Trial Plan</p>
+                <div className="text-4xl font-headline font-black text-on-surface dark:text-white mb-1 transition-colors">
+                  {currency === 'INR' ? '₹999' : '$12'} <span className="text-base font-normal text-on-surface-variant dark:text-slate-400">/mo</span>
                 </div>
-                <p className="text-xs text-green-600 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹9,990 — Save ₹1,998' : 'Yearly $119 — Save $25'}</p>
-                <div className="w-8 h-1 rounded-full bg-orange-200 mb-5" />
-                <ul className="space-y-2.5 text-sm text-on-surface-variant mb-8 flex-1">
+                <p className="text-xs text-green-600 dark:text-green-500 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹9,990 — Save ₹1,998' : 'Yearly $119 — Save $25'}</p>
+                <div className="w-8 h-1 rounded-full bg-orange-200 dark:bg-orange-900/50 mb-5 transition-colors" />
+                <ul className="space-y-2.5 text-sm text-on-surface-variant dark:text-slate-300 mb-8 flex-1 transition-colors">
                   {['Unlimited Product Listings', 'Premium CRM Access', 'Priority Business Listing', 'Real-Time Trade Alerts', 'Monthly Trade Insights Report', 'Cancel Anytime — No Questions'].map((f) => (
                     <li key={f} className="flex items-start gap-2">
-                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="w-4 h-4 rounded-full bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-900/50 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors">
                         <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
                       </span>
                       {f}
@@ -462,18 +462,18 @@ export default function Home() {
 
             {/* BASIC CONNECT */}
             <FadeIn delay={160}>
-              <div className="tier-card p-7 bg-white rounded-2xl border border-outline-variant h-full flex flex-col"
+              <div className="tier-card p-7 bg-white dark:bg-slate-900 rounded-2xl border border-outline-variant dark:border-slate-700 h-full flex flex-col transition-colors"
                 style={{ boxShadow: '0 2px 8px rgba(0,0,0,.04)' }}>
-                <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1">Basic Connect</p>
-                <div className="text-4xl font-headline font-black text-on-surface mb-1">
-                  {currency === 'INR' ? '₹3,999' : '$49'} <span className="text-base font-normal text-on-surface-variant">/mo</span>
+                <p className="text-on-surface-variant dark:text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Basic Connect</p>
+                <div className="text-4xl font-headline font-black text-on-surface dark:text-white mb-1 transition-colors">
+                  {currency === 'INR' ? '₹3,999' : '$49'} <span className="text-base font-normal text-on-surface-variant dark:text-slate-400">/mo</span>
                 </div>
-                <p className="text-xs text-green-600 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹39,999 — Save ₹7,989' : 'Yearly $444 — Save $144'}</p>
-                <div className="w-8 h-1 rounded-full bg-orange-200 mb-5" />
-                <ul className="space-y-2.5 text-sm text-on-surface-variant mb-8 flex-1">
+                <p className="text-xs text-green-600 dark:text-green-500 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹39,999 — Save ₹7,989' : 'Yearly $444 — Save $144'}</p>
+                <div className="w-8 h-1 rounded-full bg-orange-200 dark:bg-orange-900/50 mb-5 transition-colors" />
+                <ul className="space-y-2.5 text-sm text-on-surface-variant dark:text-slate-300 mb-8 flex-1 transition-colors">
                   {['Verified Business Listing', 'Premium CRM — Full Access', 'Karm AI Access', 'WhatsApp & Email Trade Alerts', 'Monthly Trade Insights Report', 'Dedicated Digital Trade Support'].map((f) => (
                     <li key={f} className="flex items-start gap-2">
-                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="w-4 h-4 rounded-full bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-900/50 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors">
                         <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
                       </span>
                       {f}
@@ -517,28 +517,28 @@ export default function Home() {
 
             {/* PRO TRADE BOOST — BEST VALUE */}
             <FadeIn delay={80}>
-              <div className="tier-card relative p-7 bg-white rounded-2xl border-2 border-primary h-full flex flex-col"
+              <div className="tier-card relative p-7 bg-white dark:bg-slate-800 rounded-2xl border-2 border-primary h-full flex flex-col transition-colors"
                 style={{ boxShadow: '0 8px 24px rgba(249,115,22,.15)' }}>
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full whitespace-nowrap">
                   Best Value — 60%+ Off
                 </div>
-                <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1">Pro Trade Boost</p>
-                <div className="text-4xl font-headline font-black text-on-surface mb-1">
-                  {currency === 'INR' ? '₹19,999' : '$250'} <span className="text-base font-normal text-on-surface-variant">/mo</span>
+                <p className="text-on-surface-variant dark:text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Pro Trade Boost</p>
+                <div className="text-4xl font-headline font-black text-on-surface dark:text-white mb-1 transition-colors">
+                  {currency === 'INR' ? '₹19,999' : '$250'} <span className="text-base font-normal text-on-surface-variant dark:text-slate-400">/mo</span>
                 </div>
-                <p className="text-xs text-green-600 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹79,999 — Save ₹1,59,989 (60%+ off)' : 'Yearly $999 — Save $2,001 (60%+ off)'}</p>
-                <div className="w-8 h-1 rounded-full bg-orange-200 mb-5" />
-                <ul className="space-y-2.5 text-sm text-on-surface-variant mb-8 flex-1">
+                <p className="text-xs text-green-600 dark:text-green-500 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹79,999 — Save ₹1,59,989 (60%+ off)' : 'Yearly $999 — Save $2,001 (60%+ off)'}</p>
+                <div className="w-8 h-1 rounded-full bg-orange-200 dark:bg-orange-900/50 mb-5 transition-colors" />
+                <ul className="space-y-2.5 text-sm text-on-surface-variant dark:text-slate-300 mb-8 flex-1 transition-colors">
                   {['250 Deeply Verified Leads Monthly', '300+ Direct Buyer Phone Numbers', 'Monthly Bulk Shipment Records', 'Competitor Intelligence Access', 'Direct Access to Trade Executives', 'Your Own 1-on-1 Relationship Manager', 'Karm AI Trade Intelligence'].map((f) => (
                     <li key={f} className="flex items-start gap-2">
-                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="w-4 h-4 rounded-full bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-900/50 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors">
                         <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
                       </span>
                       {f}
                     </li>
                   ))}
                 </ul>
-                <button className="w-full py-2.5 bg-primary text-white font-headline font-bold rounded-xl hover:bg-primary-dark transition-all shadow-md shadow-orange-200 text-sm">
+                <button className="w-full py-2.5 bg-primary text-white font-headline font-bold rounded-xl hover:bg-primary-dark transition-all shadow-md shadow-orange-200 dark:shadow-none text-sm">
                   Go Pro →
                 </button>
               </div>
@@ -546,18 +546,18 @@ export default function Home() {
 
             {/* BUSINESS BOOST */}
             <FadeIn delay={160}>
-              <div className="tier-card p-7 bg-white rounded-2xl border border-outline-variant h-full flex flex-col"
+              <div className="tier-card p-7 bg-white dark:bg-slate-900 rounded-2xl border border-outline-variant dark:border-slate-700 h-full flex flex-col transition-colors"
                 style={{ boxShadow: '0 2px 8px rgba(0,0,0,.04)' }}>
-                <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1">Business Boost</p>
-                <div className="text-4xl font-headline font-black text-on-surface mb-1">
-                  {currency === 'INR' ? '₹35,999' : '$444'} <span className="text-base font-normal text-on-surface-variant">/mo</span>
+                <p className="text-on-surface-variant dark:text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Business Boost</p>
+                <div className="text-4xl font-headline font-black text-on-surface dark:text-white mb-1 transition-colors">
+                  {currency === 'INR' ? '₹35,999' : '$444'} <span className="text-base font-normal text-on-surface-variant dark:text-slate-400">/mo</span>
                 </div>
-                <p className="text-xs text-green-600 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹2,97,500 — Save ₹1,34,488' : 'Yearly $4,444 — Save $888'}</p>
-                <div className="w-8 h-1 rounded-full bg-orange-200 mb-5" />
-                <ul className="space-y-2.5 text-sm text-on-surface-variant mb-8 flex-1">
+                <p className="text-xs text-green-600 dark:text-green-500 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹2,97,500 — Save ₹1,34,488' : 'Yearly $4,444 — Save $888'}</p>
+                <div className="w-8 h-1 rounded-full bg-orange-200 dark:bg-orange-900/50 mb-5 transition-colors" />
+                <ul className="space-y-2.5 text-sm text-on-surface-variant dark:text-slate-300 mb-8 flex-1 transition-colors">
                   {['330 Precision-Matched Leads Monthly', 'Dedicated Senior Account Manager', 'Premium Profile + Product Video', 'Human-Intelligence Buyer Matching', '300+ Direct Executive Contacts', 'Sample Coordination & Buyer Follow-Up', 'Quarterly Targeted Marketing Campaign', 'Custom Integrations & API Access'].map((f) => (
                     <li key={f} className="flex items-start gap-2">
-                      <span className="w-4 h-4 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="w-4 h-4 rounded-full bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-900/50 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors">
                         <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
                       </span>
                       {f}
@@ -622,10 +622,10 @@ export default function Home() {
 
           {/* Promise strip */}
           <FadeIn delay={200} className="mt-8 text-center">
-            <p className="text-on-surface-variant text-xs leading-relaxed max-w-2xl mx-auto italic">
+            <p className="text-on-surface-variant dark:text-slate-400 text-xs leading-relaxed max-w-2xl mx-auto italic transition-colors">
               "We do not sell you a subscription. We invest in your growth." — <span className="text-primary font-bold not-italic">The Karm Baba Promise</span>
             </p>
-            <p className="text-on-surface-variant/60 text-xs mt-2">USD pricing at ₹84 = $1 · All prices exclusive of applicable taxes · Free plan never expires</p>
+            <p className="text-on-surface-variant/60 dark:text-slate-500 text-xs mt-2 transition-colors">USD pricing at ₹84 = $1 · All prices exclusive of applicable taxes · Free plan never expires</p>
           </FadeIn>
         </div>
       </section>

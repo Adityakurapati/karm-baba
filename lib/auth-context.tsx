@@ -54,13 +54,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         
         // Sync mock session to server
-        fetch('/api/auth/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: 'mock_token', expiresIn: 86400 })
-        }).catch(err => console.error('Failed to sync mock session:', err));
-
-        setIsLoading(false);
+        (async () => {
+          try {
+            await fetch('/api/auth/session', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ token: 'mock_token', expiresIn: 86400 })
+            });
+          } catch (err) {
+            console.error('Failed to sync mock session:', err);
+          }
+          setIsLoading(false);
+        })();
         return; // Skip Firebase listener if mock is active
       }
     }
@@ -99,11 +104,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             });
 
             // Sync Firebase session to Server for Middleware
-            fetch('/api/auth/session', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ token, expiresIn: 3600 })
-            }).catch(err => console.error('Failed to sync session:', err));
+            try {
+              await fetch('/api/auth/session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, expiresIn: 3600 })
+              });
+            } catch (err) {
+              console.error('Failed to sync session:', err);
+            }
           } else {
             console.error('User profile not found in database');
             setUser(null);
@@ -175,11 +184,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         
         // Sync mock session to server
-        await fetch('/api/auth/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: 'mock_token', expiresIn: 86400 })
-        });
+        try {
+          await fetch('/api/auth/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: 'mock_token', expiresIn: 86400 })
+          });
+        } catch (err) {
+          console.error('Failed to sync mock session:', err);
+        }
         
         return true;
       }

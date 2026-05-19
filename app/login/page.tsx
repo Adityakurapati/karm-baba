@@ -52,15 +52,13 @@ export default function LoginPage() {
     try {
       const success = await login(email, password);
       if (success) {
-        // useAuth will handle user state update, but we might need to wait or fetch again
-        // However, the useEffect already handles redirection for authenticated users.
-        // We'll let the useEffect handle it.
+        // Keep loading true while the useEffect handles redirection
       } else {
         setError('Invalid email or password');
+        setLoading(false);
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
-    } finally {
       setLoading(false);
     }
   };

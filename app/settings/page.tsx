@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import TopHeader from '@/components/TopHeader';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 const languages = [
   { code: 'en', name: 'English', native: 'English', region: 'Global', coverage: 100, status: 'primary' },
@@ -49,10 +50,11 @@ export default function SettingsPage() {
   const tabs = ['profile', 'security', 'notifications', 'billing', 'languages'];
 
   return (
-    <DashboardLayout>
-      <TopHeader title="Settings" searchPlaceholder="Search settings..." />
+    <ProtectedRoute>
+      <DashboardLayout>
+        <TopHeader title="Settings" searchPlaceholder="Search settings..." />
 
-      <main className="flex-1 overflow-auto p-4 md:p-8 max-w-6xl mx-auto w-full">
+        <main className="flex-1 overflow-auto p-4 md:p-8 max-w-6xl mx-auto w-full">
         {/* Tabs */}
         <div className="mb-8 flex gap-2 md:gap-4 border-b border-outline-variant overflow-x-auto">
           {tabs.map((tab) => (
@@ -72,7 +74,7 @@ export default function SettingsPage() {
 
         {/* Profile Tab */}
         {activeTab === 'profile' && (
-          <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
+          <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8 animate-fade-in">
             <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">
               Profile Information
             </h2>
@@ -117,7 +119,7 @@ export default function SettingsPage() {
 
         {/* Security Tab */}
         {activeTab === 'security' && (
-          <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
+          <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8 animate-fade-in">
             <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">Security Settings</h2>
             <div className="space-y-6">
               <div className="pb-6 border-b border-outline-variant">
@@ -146,7 +148,7 @@ export default function SettingsPage() {
 
         {/* Notifications Tab */}
         {activeTab === 'notifications' && (
-          <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
+          <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8 animate-fade-in">
             <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">Notification Preferences</h2>
             <div className="space-y-6">
               {[
@@ -169,7 +171,7 @@ export default function SettingsPage() {
 
         {/* Billing Tab */}
         {activeTab === 'billing' && (
-          <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8">
+          <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8 animate-fade-in">
             <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">Billing & Subscription</h2>
             <div className="space-y-6">
               <div className="p-4 md:p-6 bg-surface-container rounded-lg">
@@ -203,7 +205,7 @@ export default function SettingsPage() {
 
         {/* Languages Tab — Global Language Adaptation */}
         {activeTab === 'languages' && (
-          <div className="space-y-8">
+          <div className="space-y-8 animate-fade-in">
             {/* Hero Section */}
             <div className="bg-orange-50/50 border border-orange-100 rounded-3xl p-6 md:p-8 relative overflow-hidden">
               <div className="relative z-10">
@@ -379,5 +381,6 @@ export default function SettingsPage() {
         )}
       </main>
     </DashboardLayout>
+    </ProtectedRoute>
   );
 }

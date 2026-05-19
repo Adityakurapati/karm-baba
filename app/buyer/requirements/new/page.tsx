@@ -9,6 +9,8 @@ import { ModernInput } from '@/components/ModernInput';
 import { ModernButton } from '@/components/ModernButton';
 import { database } from '@/lib/firebase';
 import { ref, push, set, serverTimestamp } from 'firebase/database';
+import toast from 'react-hot-toast';
+import { trackEvent } from '@/lib/utils';
 
 export default function NewRequirementPage() {
   const { user, isLoading } = useAuth();
@@ -39,6 +41,29 @@ export default function NewRequirementPage() {
     if (!user) return;
 
     setIsSubmitting(true);
+    
+    // Validations
+    const qty = parseFloat(formData.quantity);
+    const bdgt = parseFloat(formData.budget);
+    if (isNaN(qty) || qty <= 0) {
+      toast.error('Please enter a valid quantity greater than 0');
+      setIsSubmitting(false);
+      return;
+    }
+    if (isNaN(bdgt) || bdgt <= 0) {
+      toast.error('Please enter a valid budget greater than 0');
+      setIsSubmitting(false);
+      return;
+    }
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const deliveryDate = new Date(formData.requiredDeliveryDate);
+    if (deliveryDate < today) {
+      toast.error('Delivery date cannot be in the past');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const requirementsRef = ref(database, 'requirements');
       const newRequirementRef = push(requirementsRef);
@@ -56,14 +81,21 @@ export default function NewRequirementPage() {
         status: 'open',
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-        quantity: parseFloat(formData.quantity) || 0,
-        budget: parseFloat(formData.budget) || 0,
+        quantity: qty,
+        budget: bdgt,
       });
 
+      trackEvent('post_requirement_success', {
+        category: formData.category,
+        budget: bdgt,
+        currency: formData.currency
+      });
+
+      toast.success('Requirement posted successfully!');
       router.push('/buyer/requirements');
     } catch (error) {
       console.error('Error posting requirement:', error);
-      alert('Failed to post requirement. Please try again.');
+      toast.error('Failed to post requirement. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -84,7 +116,7 @@ export default function NewRequirementPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-outline-variant p-6 md:p-8 shadow-soft">
-              <div className="space-y-6">
+              <fieldset disabled={isSubmitting} className="space-y-6">
                 <ModernInput
                   label="Requirement Title"
                   name="title"
@@ -99,7 +131,7 @@ export default function NewRequirementPage() {
                   <textarea
                     name="description"
                     rows={4}
-                    className="w-full bg-surface-container-low border border-outline-variant rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all outline-none text-on-surface shadow-soft hover:shadow-md"
+                    className="w-full bg-surface-container-low border border-outline-variant rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all outline-none text-on-surface shadow-soft hover:shadow-md disabled:opacity-50"
                     placeholder="Provide detailed specifications, quality requirements, etc."
                     value={formData.description}
                     onChange={handleChange}
@@ -125,6 +157,7 @@ export default function NewRequirementPage() {
                       value={formData.quantity}
                       onChange={handleChange}
                       required
+                      min="1"
                     />
                     <ModernInput
                       label="Unit"
@@ -145,7 +178,7 @@ export default function NewRequirementPage() {
                          name="currency"
                          value={formData.currency}
                          onChange={handleChange}
-                         className="w-full bg-surface-container-low border border-outline-variant rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all outline-none text-on-surface shadow-soft hover:shadow-md"
+                         className="w-full bg-surface-container-low border border-outline-variant rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all outline-none text-on-surface shadow-soft hover:shadow-md disabled:opacity-50"
                        >
                          <option value="USD">USD</option>
                          <option value="INR">INR</option>
@@ -161,6 +194,8 @@ export default function NewRequirementPage() {
                         value={formData.budget}
                         onChange={handleChange}
                         required
+                        min="0.01"
+                        step="0.01"
                       />
                     </div>
                   </div>
@@ -180,6 +215,7 @@ export default function NewRequirementPage() {
                     className="flex-1"
                     onClick={() => router.back()}
                     type="button"
+                    disabled={isSubmitting}
                   >
                     Cancel
                   </ModernButton>
@@ -192,7 +228,7 @@ export default function NewRequirementPage() {
                     Post Requirement
                   </ModernButton>
                 </div>
-              </div>
+              </fieldset>
             </form>
           </div>
         </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope, Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
+import { Toaster } from "react-hot-toast";
 
 const manrope = Manrope({
   variable: "--font-headline",
@@ -35,6 +36,7 @@ export default function RootLayout({
       <body className={`${manrope.variable} ${inter.variable} antialiased bg-background text-on-surface`}>
         <AuthProvider>
           {children}
+          <Toaster position="bottom-right" toastOptions={{ duration: 4000 }} />
         </AuthProvider>
       </body>
     </html>

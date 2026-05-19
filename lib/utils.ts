@@ -18,3 +18,9 @@ export function formatDate(date: Date | string): string {
     day: 'numeric',
   }).format(d);
 }
+
+export function trackEvent(eventName: string, payload?: any) {
+  // Mock analytics tracker
+  console.log(`[Analytics] Event Tracked: ${eventName}`, payload || '');
+  // In a real scenario, this would push to Mixpanel, GA4, Segment, etc.
+}

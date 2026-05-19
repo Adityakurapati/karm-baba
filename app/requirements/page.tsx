@@ -1,10 +1,22 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/DashboardLayout';
+import { useAuth } from '@/lib/auth-context';
 
 export default function RequirementsPage() {
   const [filterType, setFilterType] = useState('all');
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
+
+  const handlePostRequirement = () => {
+    if (isAuthenticated) {
+      router.push('/buyer/requirements/new');
+    } else {
+      router.push('/login');
+    }
+  };
 
   const requirements = [
     {
@@ -60,7 +72,10 @@ export default function RequirementsPage() {
         <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface">
           Purchase Requirements
         </h1>
-        <button className="w-full sm:w-auto px-6 py-2 bg-primary text-white font-headline font-bold rounded-lg hover:opacity-90 transition-all text-sm">
+        <button 
+          onClick={handlePostRequirement}
+          className="w-full sm:w-auto px-6 py-2 bg-primary text-white font-headline font-bold rounded-lg hover:opacity-90 transition-all text-sm"
+        >
           Post Requirement
         </button>
       </header>

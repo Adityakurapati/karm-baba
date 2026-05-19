@@ -7,6 +7,8 @@ import { useState } from 'react';
 import { GST_STATE_CODES, STATE_NAMES } from '@/lib/gst-codes';
 import { ref, query, orderByChild, equalTo, get } from 'firebase/database';
 import { database } from '@/lib/firebase';
+import toast from 'react-hot-toast';
+import { GSTIN_REGEX } from '@/lib/sandbox';
 
 
 const documentSlots = [
@@ -68,6 +70,7 @@ export default function DocumentUploadPage() {
         const otherUserId = Object.keys(users).find(id => id !== user?.id);
         if (otherUserId) {
           setVerificationError('This GST Number is already registered with another account.');
+          toast.error('GST Number already registered');
           setIsVerifying(false);
           return;
         }
@@ -92,6 +95,7 @@ export default function DocumentUploadPage() {
         // 1. Check Status
         if (d.status.toLowerCase().includes('cancelled')) {
           setVerificationError(`GSTIN is Cancelled. Reason: ${d.status}`);
+          toast.error(`GSTIN is Cancelled`);
           setIsVerifying(false);
           return;
         }
@@ -99,6 +103,7 @@ export default function DocumentUploadPage() {
         // 2. Match Trade Name
         if (d.tradeName?.toLowerCase() !== companyName.trim().toLowerCase()) {
           setVerificationError(`Trade Name mismatch. Expected: ${d.tradeName}`);
+          toast.error(`Trade Name mismatch`);
           setIsVerifying(false);
           return;
         }
@@ -121,12 +126,16 @@ export default function DocumentUploadPage() {
           isAuthorized: true,
           onboardingStep: 4 // Explicitly save step 4 to ensure they resume here
         });
+        
+        toast.success('GST Verification Successful');
       } else {
         setVerificationError(result.error || 'Verification failed');
+        toast.error(result.error || 'Verification failed');
       }
     } catch (error) {
       console.error('GST Verification Error:', error);
       setVerificationError('An unexpected error occurred');
+      toast.error('An unexpected error occurred');
     } finally {
       setIsVerifying(false);
     }
@@ -267,7 +276,7 @@ export default function DocumentUploadPage() {
 
                       <button
                         onClick={handleVerifyGST}
-                        disabled={isVerifying || !gstin || !selectedState || !companyName}
+                        disabled={isVerifying || !GSTIN_REGEX.test(gstin) || !selectedState || !companyName}
                         className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl hover:bg-primary transition-all disabled:opacity-50 disabled:bg-slate-300 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                       >
                         {isVerifying ? (

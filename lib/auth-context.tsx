@@ -10,6 +10,7 @@ import {
   signOut
 } from 'firebase/auth';
 import { ref, get, set, child, update, onValue } from 'firebase/database';
+import toast from 'react-hot-toast';
 
 interface AuthContextType {
   user: User | null;
@@ -51,6 +52,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           token: 'mock_token',
           expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
         });
+        
+        // Sync mock session to server
+        fetch('/api/auth/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: 'mock_token', expiresIn: 86400 })
+        }).catch(err => console.error('Failed to sync mock session:', err));
+
         setIsLoading(false);
         return; // Skip Firebase listener if mock is active
       }
@@ -84,9 +93,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               email: formattedUser.email,
               role: formattedUser.role,
               companyName: formattedUser.company?.name || '',
-              token: await firebaseUser.getIdToken(),
+            const token = await firebaseUser.getIdToken();
+            setSession({
+              userId: formattedUser.id,
+              email: formattedUser.email,
+              role: formattedUser.role,
+              companyName: formattedUser.company?.name || '',
+              token,
               expiresAt,
             });
+
+            // Sync Firebase session to Server for Middleware
+            fetch('/api/auth/session', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ token, expiresIn: 3600 })
+            }).catch(err => console.error('Failed to sync session:', err));
           } else {
             console.error('User profile not found in database');
             setUser(null);
@@ -157,6 +179,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           sessionStorage.setItem('mock_admin', JSON.stringify(mockAdmin));
         }
         
+        // Sync mock session to server
+        await fetch('/api/auth/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: 'mock_token', expiresIn: 86400 })
+        });
+        
         return true;
       }
 
@@ -202,14 +231,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('mock_admin');
-      }
+      // 1. Invalidate Server Session
+      await fetch('/api/auth/logout', { method: 'POST' }).catch(err => console.error('Logout API error:', err));
+      
+      // 2. Clear Firebase Session
       await signOut(auth);
+      
+      // 3. Clear Local & Session Storage thoroughly
+      if (typeof window !== 'undefined') {
+        sessionStorage.clear();
+        localStorage.clear();
+      }
+      
+      // 4. Update React State
       setUser(null);
       setSession(null);
+      
+      // 5. Feedback and Redirect
+      toast.success('Successfully logged out', { duration: 3000 });
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
     } catch (err) {
       console.error('Logout error:', err);
+      toast.error('Error during logout');
     }
   };
 

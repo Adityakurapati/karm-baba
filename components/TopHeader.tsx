@@ -122,8 +122,12 @@ export default function TopHeader({
         <button className="text-slate-500 hover:text-slate-900 transition-colors hidden md:block">
           <span className="material-symbols-outlined">help</span>
         </button>
-        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary text-white flex items-center justify-center font-headline font-bold text-sm">
-          U
+        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary text-white flex items-center justify-center font-headline font-bold text-sm select-none" title={user ? `${user.firstName} ${user.lastName}` : 'Profile'}>
+          {user ? (
+            `${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'
+          ) : (
+            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          )}
         </div>
       </div>
     </header>

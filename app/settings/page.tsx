@@ -4,6 +4,9 @@ import { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import TopHeader from '@/components/TopHeader';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { useAuth } from '@/lib/auth-context';
+import toast from 'react-hot-toast';
+import { NotificationPreferences, NotificationCategory, NotificationChannel } from '@/lib/types';
 
 const languages = [
   { code: 'en', name: 'English', native: 'English', region: 'Global', coverage: 100, status: 'primary' },
@@ -19,6 +22,8 @@ const languages = [
 ];
 
 export default function SettingsPage() {
+  const { user, updateUserProfile } = useAuth();
+  
   const [activeTab, setActiveTab] = useState('profile');
   const [formData, setFormData] = useState({
     firstName: 'John',
@@ -38,6 +43,66 @@ export default function SettingsPage() {
 
   const handleSave = () => {
     alert('Settings saved successfully!');
+  };
+
+  // --- Notification Preferences State & Logic ---
+  const defaultNotifs: NotificationPreferences = {
+    dealUpdates: { email: true, whatsapp: false, inApp: true },
+    newMatches: { email: true, whatsapp: false, inApp: true },
+    messages: { email: false, whatsapp: false, inApp: true },
+    accountUpdates: { email: true, whatsapp: false, inApp: true },
+  };
+
+  const [localNotifs, setLocalNotifs] = useState<NotificationPreferences>(
+    user?.notificationPreferences || defaultNotifs
+  );
+
+  // Sync if user object updates externally
+  import { useEffect } from 'react';
+  useEffect(() => {
+    if (user?.notificationPreferences) {
+      setLocalNotifs(user.notificationPreferences);
+    }
+  }, [user?.notificationPreferences]);
+
+  const handleNotifToggle = async (category: NotificationCategory, channel: NotificationChannel) => {
+    // 1. Optimistic Update
+    const prev = { ...localNotifs };
+    const updated = {
+      ...localNotifs,
+      [category]: {
+        ...localNotifs[category],
+        [channel]: !localNotifs[category][channel]
+      }
+    };
+    
+    // Schema Validation: Ensure all fields are boolean
+    const isValid = Object.values(updated).every(cat => 
+      typeof cat.email === 'boolean' && 
+      typeof cat.whatsapp === 'boolean' && 
+      typeof cat.inApp === 'boolean'
+    );
+
+    if (!isValid) {
+      toast.error('Invalid preference data structure');
+      return;
+    }
+
+    setLocalNotifs(updated);
+
+    // 2. API Call Persistence
+    try {
+      const success = await updateUserProfile({ notificationPreferences: updated });
+      if (success) {
+        toast.success('Preferences updated successfully');
+      } else {
+        throw new Error('Update failed');
+      }
+    } catch (error) {
+      // Rollback
+      setLocalNotifs(prev);
+      toast.error('Failed to update preferences. Reverted.');
+    }
   };
 
   const filteredLanguages = languages.filter(
@@ -150,19 +215,56 @@ export default function SettingsPage() {
         {activeTab === 'notifications' && (
           <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8 animate-fade-in">
             <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">Notification Preferences</h2>
-            <div className="space-y-6">
+            
+            <div className="hidden md:grid grid-cols-12 gap-4 pb-4 border-b border-outline-variant text-sm font-bold text-on-surface-variant">
+              <div className="col-span-6">Category</div>
+              <div className="col-span-2 text-center">In-App</div>
+              <div className="col-span-2 text-center">Email</div>
+              <div className="col-span-2 text-center">WhatsApp</div>
+            </div>
+
+            <div className="space-y-2 pt-2">
               {[
-                { title: 'Deal Updates', desc: 'Get notified about deal status changes' },
-                { title: 'New Matches', desc: 'Receive notifications for potential trade partners' },
-                { title: 'Messages', desc: 'Get alerts for new messages' },
-                { title: 'Account Updates', desc: 'Notifications about account security' },
+                { title: 'Deal Updates', desc: 'Get notified about deal status changes', key: 'dealUpdates' as NotificationCategory },
+                { title: 'New Matches', desc: 'Receive notifications for potential trade partners', key: 'newMatches' as NotificationCategory },
+                { title: 'Messages', desc: 'Get alerts for new messages', key: 'messages' as NotificationCategory },
+                { title: 'Account Updates', desc: 'Notifications about account security', key: 'accountUpdates' as NotificationCategory },
               ].map((notif, i) => (
-                <div key={i} className="flex items-center justify-between py-4 border-b border-outline-variant last:border-b-0 gap-4">
-                  <div className="flex-1 min-w-0">
+                <div key={i} className="flex flex-col md:grid md:grid-cols-12 items-center py-4 border-b border-outline-variant last:border-b-0 gap-4">
+                  <div className="col-span-6 w-full mb-2 md:mb-0">
                     <p className="font-headline font-bold text-on-surface text-sm md:text-base">{notif.title}</p>
                     <p className="text-xs md:text-sm text-on-surface-variant">{notif.desc}</p>
                   </div>
-                  <input type="checkbox" defaultChecked className="w-5 h-5 flex-shrink-0 accent-primary" />
+                  
+                  <div className="col-span-6 w-full flex justify-between md:grid md:grid-cols-6 gap-2">
+                    <label className="flex items-center gap-2 md:col-span-2 md:justify-center cursor-pointer">
+                      <span className="md:hidden text-xs font-bold text-on-surface-variant">In-App</span>
+                      <input 
+                        type="checkbox" 
+                        checked={localNotifs[notif.key].inApp} 
+                        onChange={() => handleNotifToggle(notif.key, 'inApp')}
+                        className="w-5 h-5 accent-primary cursor-pointer" 
+                      />
+                    </label>
+                    <label className="flex items-center gap-2 md:col-span-2 md:justify-center cursor-pointer">
+                      <span className="md:hidden text-xs font-bold text-on-surface-variant">Email</span>
+                      <input 
+                        type="checkbox" 
+                        checked={localNotifs[notif.key].email} 
+                        onChange={() => handleNotifToggle(notif.key, 'email')}
+                        className="w-5 h-5 accent-primary cursor-pointer" 
+                      />
+                    </label>
+                    <label className="flex items-center gap-2 md:col-span-2 md:justify-center cursor-pointer">
+                      <span className="md:hidden text-xs font-bold text-on-surface-variant">WhatsApp</span>
+                      <input 
+                        type="checkbox" 
+                        checked={localNotifs[notif.key].whatsapp} 
+                        onChange={() => handleNotifToggle(notif.key, 'whatsapp')}
+                        className="w-5 h-5 accent-green-500 cursor-pointer" 
+                      />
+                    </label>
+                  </div>
                 </div>
               ))}
             </div>

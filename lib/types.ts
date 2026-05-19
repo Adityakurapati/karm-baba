@@ -43,6 +43,7 @@ export interface User {
     type: string;
     pan: string;
   };
+  notificationPreferences?: NotificationPreferences;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -250,3 +251,8 @@ export interface Notification {
   read: boolean;
   createdAt: Date;
 }
+
+export type NotificationChannel = 'email' | 'whatsapp' | 'inApp';
+export type NotificationCategory = 'dealUpdates' | 'newMatches' | 'messages' | 'accountUpdates';
+
+export type NotificationPreferences = Record<NotificationCategory, Record<NotificationChannel, boolean>>;

@@ -14,11 +14,14 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: "Users", href: "/admin/users", icon: "group" },
+  { label: "Leads", href: "/admin/leads", icon: "person_search" },
+  /* 
   { label: "Dashboard", href: "/admin", icon: "dashboard" },
   { label: "Pipeline", href: "/admin/pipeline", icon: "analytics" },
   { label: "RM Performance", href: "/admin/performance", icon: "query_stats" },
-  { label: "Lead Scoring", href: "/admin/leads", icon: "ads_click" },
+  { label: "Lead Scoring", href: "/admin/leads_scoring", icon: "ads_click" },
   { label: "Reports", href: "/admin/reports", icon: "assessment" },
+  */
 ];
 
 export const AdminSidebar: React.FC = () => {

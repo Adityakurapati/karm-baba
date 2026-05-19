@@ -8,7 +8,7 @@ import { ref, onValue } from "firebase/database";
 import { User } from "@/lib/types";
 import toast from "react-hot-toast";
 
-export default function SellerLeadsPage() {
+export default function BuyerLeadsPage() {
   const [leads, setLeads] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,7 +51,7 @@ export default function SellerLeadsPage() {
   });
 
   return (
-    <ProtectedRoute allowedRoles={['seller']}>
+    <ProtectedRoute allowedRoles={['buyer']}>
       <DashboardLayout>
         <div className="flex-1 overflow-auto p-4 md:p-8 bg-gradient-to-b from-background via-surface-container-low to-background">
           {/* Header */}

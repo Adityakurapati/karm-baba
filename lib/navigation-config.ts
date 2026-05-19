@@ -22,6 +22,7 @@ export const navigationConfig: Record<UserRole, NavSection[]> = {
         { icon: 'assignment', label: 'Requirements', href: '/buyer/requirements', roles: ['buyer'] },
         { icon: 'person_search', label: 'Find Suppliers', href: '/buyer/matches', roles: ['buyer'] },
         { icon: 'handshake', label: 'My Deals', href: '/buyer/deals', roles: ['buyer'] },
+        { icon: 'person_search', label: 'Leads', href: '/buyer/leads', roles: ['buyer'] },
         { icon: 'storefront', label: 'Product Marketplace', href: '/buyer/marketplace/products', roles: ['buyer'] },
         { icon: 'shopping_cart', label: 'My Purchases', href: '/buyer/purchases', roles: ['buyer'] },
       ],

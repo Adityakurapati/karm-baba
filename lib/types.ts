@@ -2,7 +2,7 @@
 // USER TYPES
 // ========================================
 
-export type UserRole = 'buyer' | 'seller' | 'admin' | 'guest';
+export type UserRole = 'buyer' | 'seller' | 'admin' | 'guest' | 'lead';
 
 export interface Company {
   id: string;
@@ -45,6 +45,8 @@ export interface User {
   };
   notificationPreferences?: NotificationPreferences;
   language?: string;
+  category?: string;
+  specialization?: string;
   createdAt: Date;
   updatedAt: Date;
 }

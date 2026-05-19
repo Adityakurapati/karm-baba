@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import TopHeader from '@/components/TopHeader';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
@@ -62,7 +62,6 @@ export default function SettingsPage() {
   );
 
   // Sync if user object updates externally
-  import { useEffect } from 'react';
   useEffect(() => {
     if (user?.notificationPreferences) {
       setLocalNotifs(user.notificationPreferences);

@@ -88,11 +88,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(formattedUser);
             
             const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-            setSession({
-              userId: formattedUser.id,
-              email: formattedUser.email,
-              role: formattedUser.role,
-              companyName: formattedUser.company?.name || '',
             const token = await firebaseUser.getIdToken();
             setSession({
               userId: formattedUser.id,

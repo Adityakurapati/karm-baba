@@ -29,6 +29,10 @@ export default function SellerProductsPage() {
         setProducts([]);
       }
       setLoading(false);
+    }, (error) => {
+      console.error(error);
+      setProducts([]);
+      setLoading(false);
     });
 
     return () => unsubscribe();

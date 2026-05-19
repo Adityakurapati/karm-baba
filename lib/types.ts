@@ -44,6 +44,7 @@ export interface User {
     pan: string;
   };
   notificationPreferences?: NotificationPreferences;
+  language?: string;
   createdAt: Date;
   updatedAt: Date;
 }

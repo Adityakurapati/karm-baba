@@ -37,6 +37,9 @@ export default function DealDetailPage({ params }: PageProps) {
           setDeal(data);
         }
         setLoading(false);
+      }, (error) => {
+        console.error(error);
+        setLoading(false);
       });
 
       // Fetch Messages
@@ -50,6 +53,9 @@ export default function DealDetailPage({ params }: PageProps) {
         } else {
           setMessages([]);
         }
+      }, (error) => {
+        console.error(error);
+        setMessages([]);
       });
 
       return () => {

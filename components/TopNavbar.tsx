@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useAuth } from '@/lib/auth-context';
 
 interface TopNavbarProps {
   activeNav: string;
@@ -11,13 +12,39 @@ interface TopNavbarProps {
 
 export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isAuthenticated, logout, user } = useAuth();
 
-  const navLinks = [
+  let navLinks = [
     { id: 'deals', label: 'Deals', href: '/deals' },
     { id: 'requirements', label: 'Requirements', href: '/requirements' },
     { id: 'network', label: 'Network', href: '/network' },
     { id: 'analytics', label: 'Analytics', href: '/analytics' },
   ];
+
+  if (isAuthenticated && user) {
+    if (user.role === 'buyer') {
+      navLinks = [
+        { id: 'requirements', label: 'Requirements', href: '/buyer/requirements' },
+        { id: 'matches', label: 'Find Suppliers', href: '/buyer/matches' },
+        { id: 'deals', label: 'My Deals', href: '/buyer/deals' },
+        { id: 'marketplace', label: 'Marketplace', href: '/buyer/marketplace/products' },
+      ];
+    } else if (user.role === 'seller') {
+      navLinks = [
+        { id: 'products', label: 'My Products', href: '/seller/products' },
+        { id: 'leads', label: 'Leads', href: '/seller/leads' },
+        { id: 'deals', label: 'My Deals', href: '/seller/deals' },
+        { id: 'marketplace', label: 'Marketplace', href: '/seller/marketplace' },
+      ];
+    } else if (user.role === 'admin') {
+      navLinks = [
+        { id: 'users', label: 'Users', href: '/admin/users' },
+        { id: 'deals', label: 'Deals', href: '/admin/deals' },
+        { id: 'analytics', label: 'Analytics', href: '/admin/analytics' },
+        { id: 'requirements', label: 'Requirements', href: '/requirements' },
+      ];
+    }
+  }
 
   return (
     <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-outline-variant shadow-sm">
@@ -54,18 +81,37 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
 
         {/* Auth Buttons */}
         <div className="hidden md:flex gap-4">
-          <Link
-            href="/login"
-            className="px-6 py-2 text-primary font-headline font-bold hover:bg-primary hover:text-white rounded transition-colors"
-          >
-            Log In
-          </Link>
-            <Link
-              href="/register"
-              className="px-6 py-2 bg-primary text-white font-headline font-bold rounded hover:bg-primary-dark transition-colors"
-            >
-              Sign Up
-            </Link>
+          {isAuthenticated ? (
+            <>
+              <Link
+                href={user?.role === 'admin' ? '/admin' : '/dashboard'}
+                className="px-6 py-2 text-primary font-headline font-bold hover:bg-primary hover:text-white rounded transition-colors"
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={() => logout()}
+                className="px-6 py-2 bg-slate-200 text-slate-700 font-headline font-bold rounded hover:bg-slate-300 transition-colors"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="px-6 py-2 text-primary font-headline font-bold hover:bg-primary hover:text-white rounded transition-colors"
+              >
+                Log In
+              </Link>
+              <Link
+                href="/register"
+                className="px-6 py-2 bg-primary text-white font-headline font-bold rounded hover:bg-primary-dark transition-colors"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -96,18 +142,40 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
             ))}
           </nav>
           <div className="mt-4 pt-4 border-t border-outline-variant flex gap-2">
-            <Link
-              href="/login"
-              className="flex-1 px-4 py-2 text-primary font-headline font-bold rounded border border-primary text-center"
-            >
-              Log In
-            </Link>
-            <Link
-              href="/register"
-              className="flex-1 px-4 py-2 bg-primary text-white font-headline font-bold rounded text-center"
-            >
-              Sign Up
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  href={user?.role === 'admin' ? '/admin' : '/dashboard'}
+                  className="flex-1 px-4 py-2 text-primary font-headline font-bold rounded border border-primary text-center"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={() => {
+                    logout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex-1 px-4 py-2 bg-slate-200 text-slate-700 font-headline font-bold rounded text-center"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="flex-1 px-4 py-2 text-primary font-headline font-bold rounded border border-primary text-center"
+                >
+                  Log In
+                </Link>
+                <Link
+                  href="/register"
+                  className="flex-1 px-4 py-2 bg-primary text-white font-headline font-bold rounded text-center"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

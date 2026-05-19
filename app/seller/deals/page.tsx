@@ -29,6 +29,10 @@ export default function SellerDealsPage() {
         setDeals([]);
       }
       setLoading(false);
+    }, (error) => {
+      console.error(error);
+      setDeals([]);
+      setLoading(false);
     });
 
     return () => unsubscribe();

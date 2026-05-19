@@ -102,7 +102,8 @@ export default function DocumentUploadPage() {
 
         // 2. Match Trade Name
         if (d.tradeName?.toLowerCase() !== companyName.trim().toLowerCase()) {
-          setVerificationError(`Trade Name mismatch. Expected: ${d.tradeName}`);
+          setVerificationError(`Trade Name mismatch.`);
+          // setVerificationError(`Trade Name mismatch. Expected: ${d.tradeName}`);
           toast.error(`Trade Name mismatch`);
           setIsVerifying(false);
           return;
@@ -126,7 +127,7 @@ export default function DocumentUploadPage() {
           isAuthorized: true,
           onboardingStep: 4 // Explicitly save step 4 to ensure they resume here
         });
-        
+
         toast.success('GST Verification Successful');
       } else {
         setVerificationError(result.error || 'Verification failed');

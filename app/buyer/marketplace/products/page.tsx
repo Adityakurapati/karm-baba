@@ -29,6 +29,10 @@ export default function BuyerProductMarketplace() {
         setProducts([]);
       }
       setLoading(false);
+    }, (error) => {
+      console.error(error);
+      setProducts([]);
+      setLoading(false);
     });
 
     return () => unsubscribe();

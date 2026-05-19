@@ -97,25 +97,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Demo Credentials Note */}
-          <div className="p-4 bg-primary/10 border border-primary rounded-lg text-sm">
-            <p className="font-bold text-primary mb-3">Demo Accounts:</p>
-            <div className="space-y-2">
-              <div>
-                <p className="text-xs font-bold text-on-surface">Buyer:</p>
-                <p className="text-on-surface-variant">arun@techcorp.com</p>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-on-surface">Seller:</p>
-                <p className="text-on-surface-variant">rajesh@automotiveparts.com</p>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-on-surface">Admin:</p>
-                <p className="text-on-surface-variant">admin@karmbaba.com</p>
-              </div>
-              <p className="text-xs text-on-surface-variant pt-2">Any password works for demo accounts</p>
-            </div>
-          </div>
+
 
           {/* Email */}
           <div>

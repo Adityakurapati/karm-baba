@@ -31,6 +31,10 @@ export default function MarketplacePage() {
         setRequirements([]);
       }
       setLoading(false);
+    }, (error) => {
+      console.error(error);
+      setRequirements([]);
+      setLoading(false);
     });
 
     return () => unsubscribe();

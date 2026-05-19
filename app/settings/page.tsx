@@ -30,23 +30,52 @@ export default function SettingsPage() {
   
   const [activeTab, setActiveTab] = useState('profile');
   const [formData, setFormData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john@example.com',
-    phone: '+1234567890',
-    company: 'Tech Corp USA',
-    country: 'USA',
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    company: user?.company?.name || '',
+    country: 'Global',
   });
-  const [primaryLang, setPrimaryLang] = useState(i18n.language || 'en');
+  const [primaryLang, setPrimaryLang] = useState(user?.language || i18n.language || 'en');
   const [searchLang, setSearchLang] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        company: user.company?.name || '',
+      }));
+      if (user.language) {
+        setPrimaryLang(user.language);
+      }
+    }
+  }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    alert('Settings saved successfully!');
+  const handleSave = async () => {
+    try {
+      const success = await updateUserProfile({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+      });
+      if (success) {
+        toast.success('Settings saved successfully!');
+      } else {
+        toast.error('Failed to save settings.');
+      }
+    } catch (error) {
+      toast.error('An error occurred while saving.');
+    }
   };
 
   // --- Notification Preferences State & Logic ---
@@ -419,12 +448,18 @@ export default function SettingsPage() {
                       </button>
                       {primaryLang !== lang.code && (
                         <button
-                          onClick={() => {
+                          onClick={async () => {
                             setPrimaryLang(lang.code);
+                            // Set cookies for Google Translate and Next.js
+                            document.cookie = `googtrans=/en/${lang.code}; path=/; max-age=31536000; SameSite=Lax`;
                             document.cookie = `NEXT_LOCALE=${lang.code}; path=/; max-age=31536000; SameSite=Lax`;
-                            i18n.changeLanguage(lang.code);
-                            router.refresh();
+                            
+                            // Save to Firebase
+                            await updateUserProfile({ language: lang.code });
+                            
                             toast.success(t('settings.success', 'Settings saved successfully'));
+                            // Reload to apply Google Translate script
+                            window.location.reload();
                           }}
                           className="flex-1 py-2 bg-primary/5 text-primary rounded-lg text-xs font-bold hover:bg-primary/10 transition-colors"
                         >

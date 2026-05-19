@@ -30,6 +30,10 @@ export default function RequirementsPage() {
         setRequirements([]);
       }
       setLoading(false);
+    }, (error) => {
+      console.error(error);
+      setRequirements([]);
+      setLoading(false);
     });
 
     return () => unsubscribe();

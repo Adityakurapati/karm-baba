@@ -34,6 +34,10 @@ export default function MessagesPage() {
         setUserDeals([]);
       }
       setLoading(false);
+    }, (error) => {
+      console.error(error);
+      setUserDeals([]);
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -56,6 +60,9 @@ export default function MessagesPage() {
       } else {
         setMessages([]);
       }
+    }, (error) => {
+      console.error(error);
+      setMessages([]);
     });
 
     return () => unsubscribe();

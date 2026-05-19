@@ -29,6 +29,10 @@ export default function BoughtProductsPage() {
         setOrders([]);
       }
       setLoading(false);
+    }, (error) => {
+      console.error(error);
+      setOrders([]);
+      setLoading(false);
     });
 
     return () => unsubscribe();

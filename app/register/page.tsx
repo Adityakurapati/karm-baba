@@ -99,6 +99,7 @@ export default function RegisterPage() {
               height={60}
               className="h-16 w-16 mx-auto"
               priority
+              unoptimized
             />
           </Link>
           <h2 className="text-3xl font-headline font-black text-on-surface mb-2">

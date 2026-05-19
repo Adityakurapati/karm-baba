@@ -52,6 +52,7 @@ export default function Sidebar({ open = true, onClose }: SidebarProps) {
               height={56}
               className="w-14 h-14"
               priority
+              unoptimized
             />
             {(open || true) && (
               <span className={`font-headline font-black text-primary text-xl ${!open ? 'md:hidden' : ''}`}>

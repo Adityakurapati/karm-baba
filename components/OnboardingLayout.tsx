@@ -51,7 +51,7 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
       {/* Top Navigation */}
       <header className="fixed top-0 w-full z-50 bg-slate-50/80 backdrop-blur-xl flex justify-between items-center px-8 h-16 border-b border-slate-200/30">
         <Link href="/" className="flex items-center gap-3">
-          <Image src="/logo.png" alt="KARM BABA" width={40} height={40} className="w-10 h-10" priority />
+          <Image src="/logo.png" alt="KARM BABA" width={40} height={40} className="w-10 h-10" priority unoptimized />
           <span className="text-xl font-black tracking-tight text-primary font-headline">KARM BABA</span>
         </Link>
         <div className="flex items-center gap-6">

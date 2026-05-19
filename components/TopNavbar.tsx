@@ -31,6 +31,7 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
             height={80}
             className="h-14 w-20"
             priority
+            unoptimized
           />
         </Link>
 

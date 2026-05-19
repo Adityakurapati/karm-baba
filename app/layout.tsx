@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Manrope, Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
@@ -21,11 +21,12 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "KARM BABA | Global Trade Intelligence & Deal Execution",
   description: "Global Trade Intelligence Platform with CRM, Deal Management, and AI-powered insights",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    userScalable: false,
-  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  userScalable: false,
 };
 
 export default async function RootLayout({

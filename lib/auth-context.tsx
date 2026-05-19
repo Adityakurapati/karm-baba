@@ -173,56 +173,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (email: string, password: string, firstName: string, lastName: string, role: UserRole): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const firebaseUser = userCredential.user;
-
-      const newUser: User = {
-        id: firebaseUser.uid,
-        email,
-        firstName,
-        lastName,
-        role,
-        company: {
-          id: `comp_${Math.random().toString(36).substr(2, 9)}`,
-          name: '',
-          registrationNumber: '',
-          industry: '',
-          location: '',
-          employees: 0,
-          yearEstablished: new Date().getFullYear(),
+      // Call the backend registration API
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        phone: '',
-        credibilityScore: 50,
-        verificationStatus: 'pending',
-        verificationBadges: [],
-        riskLevel: 'medium',
-        isOnboarded: false,
-        onboardingStep: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      // Save to database (serializing Dates)
-      await set(ref(database, `users/${firebaseUser.uid}`), {
-        ...newUser,
-        createdAt: newUser.createdAt.toISOString(),
-        updatedAt: newUser.updatedAt.toISOString(),
+        body: JSON.stringify({ email, password, firstName, lastName, role }),
       });
 
-      // Explicitly set state to prevent race condition with onAuthStateChanged's get()
-      setUser(newUser);
-      setSession({
-        userId: newUser.id,
-        email: newUser.email,
-        role: newUser.role,
-        companyName: newUser.company?.name || '',
-        token: await firebaseUser.getIdToken(),
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
+
+      // After successful backend registration, log the user in to trigger Firebase Auth state changes
+      await signInWithEmailAndPassword(auth, email, password);
 
       return true;
-    } catch (err) {
-      console.error('Registration error:', err);
+    } catch (err: any) {
+      console.error('Registration error:', err.message || err);
       return false;
     } finally {
       setIsLoading(false);

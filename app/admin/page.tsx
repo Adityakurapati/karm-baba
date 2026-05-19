@@ -11,11 +11,11 @@ export default function AdminDashboard() {
         </div>
         <div className="flex items-center gap-3">
           <button className="flex items-center gap-2 px-6 py-2.5 rounded-full font-headline text-sm font-bold bg-surface-container-highest text-primary hover:bg-surface-variant transition-all border border-primary/5">
-            <span className="material-symbols-outlined text-lg">ios_share</span>
+            <span className="material-symbols-outlined notranslate text-lg" translate="no">ios_share</span>
             Export Data
           </button>
           <button className="flex items-center gap-2 px-8 py-2.5 rounded-full font-headline text-sm font-bold text-white chart-gradient-blue shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">
-            <span className="material-symbols-outlined text-lg">tune</span>
+            <span className="material-symbols-outlined notranslate text-lg" translate="no">tune</span>
             System Settings
           </button>
         </div>
@@ -83,7 +83,7 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-bold font-headline text-on-surface">RM Performance Metrics</h3>
           <button className="text-primary text-sm font-bold flex items-center gap-1 hover:underline">
-            View All RMs <span className="material-symbols-outlined text-sm">chevron_right</span>
+            View All RMs <span className="material-symbols-outlined notranslate text-sm" translate="no">chevron_right</span>
           </button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -117,7 +117,7 @@ export default function AdminDashboard() {
                 <span className={`text-xs font-bold px-2 py-0.5 rounded ${rm.score > 80 ? 'bg-tertiary-container/10 text-tertiary' : 'bg-error-container text-on-error-container'}`}>
                   Lead Score: {rm.score}
                 </span>
-                <span className={`material-symbols-outlined ${rm.color} group-hover:translate-x-1 transition-transform`}>
+                <span className={`material-symbols-outlined notranslate ${rm.color} group-hover:translate-x-1 transition-transform`} translate="no">
                   {rm.trend}
                 </span>
               </div>
@@ -132,7 +132,7 @@ export default function AdminDashboard() {
         <div className="bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/10 shadow-sm">
           <div className="p-6 border-b border-outline-variant/10 flex justify-between items-center">
             <h3 className="text-lg font-bold font-headline">Top Strategic Clients</h3>
-            <span className="material-symbols-outlined text-on-surface-variant cursor-pointer">more_horiz</span>
+            <span className="material-symbols-outlined notranslate text-on-surface-variant cursor-pointer" translate="no">more_horiz</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -171,7 +171,7 @@ export default function AdminDashboard() {
         <div className="bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/10 shadow-sm">
           <div className="p-6 border-b border-outline-variant/10 flex justify-between items-center">
             <h3 className="text-lg font-bold font-headline text-error">High-Risk Accounts</h3>
-            <span className="material-symbols-outlined text-error cursor-pointer">warning</span>
+            <span className="material-symbols-outlined notranslate text-error cursor-pointer" translate="no">warning</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -213,15 +213,15 @@ export default function AdminDashboard() {
         </div>
         <div className="flex items-center gap-6">
           <button className="flex items-center gap-2 text-xs font-bold text-on-surface hover:text-primary transition-colors group">
-            <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">add_circle</span>
+            <span className="material-symbols-outlined notranslate text-lg group-hover:scale-110 transition-transform" translate="no">add_circle</span>
             New Engagement
           </button>
           <button className="flex items-center gap-2 text-xs font-bold text-on-surface hover:text-primary transition-colors group">
-            <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">flag</span>
+            <span className="material-symbols-outlined notranslate text-lg group-hover:scale-110 transition-transform" translate="no">flag</span>
             Priority Actions
           </button>
           <button className="flex items-center gap-2 text-xs font-bold text-on-surface hover:text-primary transition-colors group">
-            <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">smart_toy</span>
+            <span className="material-symbols-outlined notranslate text-lg group-hover:scale-110 transition-transform" translate="no">smart_toy</span>
             AI Insights
           </button>
         </div>

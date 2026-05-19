@@ -172,7 +172,7 @@ export default function DocumentUploadPage() {
             <div className="bg-white p-8 rounded-xl flex flex-col gap-6 shadow-sm border border-outline-variant/20">
               <div className="flex items-center justify-between">
                 <h3 className="font-headline text-lg font-bold">Trust Score Preview</h3>
-                <span className="material-symbols-outlined text-primary">security</span>
+                <span className="material-symbols-outlined notranslate text-primary" translate="no">security</span>
               </div>
               <div className="relative flex items-center justify-center py-4">
                 <svg className="w-40 h-40 transform -rotate-90">
@@ -201,7 +201,7 @@ export default function DocumentUploadPage() {
               >
                 <div className="flex items-center justify-between mb-8">
                   <div className="bg-orange-50 p-4 rounded-xl">
-                    <span className="material-symbols-outlined text-primary text-3xl">{doc.icon}</span>
+                    <span className="material-symbols-outlined notranslate text-primary text-3xl" translate="no">{doc.icon}</span>
                   </div>
                   <span className={`text-xs font-bold px-3 py-1 rounded-full ${doc.badgeColor}`}>{doc.badge}</span>
                 </div>
@@ -216,7 +216,7 @@ export default function DocumentUploadPage() {
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                       <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-8 flex flex-col items-center gap-4 text-center">
                         <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
-                          <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                          <span className="material-symbols-outlined notranslate text-4xl" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
                         </div>
                         <div>
                           <span className="text-xs font-black text-emerald-700 uppercase tracking-widest block mb-1">Authenticated Entity</span>
@@ -240,7 +240,7 @@ export default function DocumentUploadPage() {
                               placeholder="Exact Company / Trade Name"
                               className="w-full bg-slate-50 border-2 border-outline-variant/30 rounded-2xl px-6 py-4 text-sm font-bold tracking-widest focus:border-primary focus:outline-none transition-all placeholder:tracking-normal placeholder:text-on-surface-variant/40"
                             />
-                            <span className="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant/30">domain</span>
+                            <span className="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined notranslate text-on-surface-variant/30" translate="no">domain</span>
                           </div>
                           <div className="relative">
                             <input
@@ -250,7 +250,7 @@ export default function DocumentUploadPage() {
                               placeholder="GST Number"
                               className="w-full bg-slate-50 border-2 border-outline-variant/30 rounded-2xl px-6 py-4 text-sm font-bold tracking-widest focus:border-primary focus:outline-none transition-all placeholder:tracking-normal placeholder:text-on-surface-variant/40"
                             />
-                            <span className="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant/30">business</span>
+                            <span className="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined notranslate text-on-surface-variant/30" translate="no">business</span>
                           </div>
                           <div className="relative">
                             <select
@@ -263,14 +263,14 @@ export default function DocumentUploadPage() {
                                 <option key={name} value={name}>{name}</option>
                               ))}
                             </select>
-                            <span className="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant/30 pointer-events-none">expand_more</span>
+                            <span className="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined notranslate text-on-surface-variant/30 pointer-events-none" translate="no">expand_more</span>
                           </div>
                         </div>
                       </div>
 
                       {verificationError && (
                         <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-start gap-3">
-                          <span className="material-symbols-outlined text-red-500 text-sm mt-0.5">error</span>
+                          <span className="material-symbols-outlined notranslate text-red-500 text-sm mt-0.5" translate="no">error</span>
                           <p className="text-xs text-red-600 font-bold leading-relaxed">{verificationError}</p>
                         </div>
                       )}
@@ -282,13 +282,13 @@ export default function DocumentUploadPage() {
                       >
                         {isVerifying ? (
                           <>
-                            <span className="animate-spin material-symbols-outlined text-sm">sync</span>
+                            <span className="animate-spin material-symbols-outlined notranslate text-sm" translate="no">sync</span>
                             <span>Authenticating...</span>
                           </>
                         ) : (
                           <>
                             <span>Verify GST Protocol</span>
-                            <span className="material-symbols-outlined text-sm">verified</span>
+                            <span className="material-symbols-outlined notranslate text-sm" translate="no">verified</span>
                           </>
                         )}
                       </button>
@@ -343,7 +343,7 @@ export default function DocumentUploadPage() {
           </div>
           <div className="h-4 w-[1px] bg-outline-variant/30"></div>
           <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-sm text-on-surface-variant">info</span>
+            <span className="material-symbols-outlined notranslate text-sm text-on-surface-variant" translate="no">info</span>
             <span className="text-xs text-on-surface-variant">Reviewing typically takes 2-4 hours.</span>
           </div>
         </div>

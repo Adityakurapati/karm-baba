@@ -87,7 +87,7 @@ export default function LeadsPage() {
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="text-on-surface hover:text-primary transition-colors"
           >
-            <span className="material-symbols-outlined">menu</span>
+            <span className="material-symbols-outlined notranslate" translate="no">menu</span>
           </button>
           <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface flex-1 ml-4">
             Lead Management

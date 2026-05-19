@@ -108,12 +108,12 @@ export default function IndustryTargetingPage() {
                 >
                   {isSelected && (
                     <div className="absolute top-4 right-4 text-primary">
-                      <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                      <span className="material-symbols-outlined notranslate" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                     </div>
                   )}
                   <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
                     <div className="w-20 h-20 bg-orange-50 rounded-2xl flex items-center justify-center text-primary shrink-0">
-                      <span className="material-symbols-outlined text-4xl">{ind.icon}</span>
+                      <span className="material-symbols-outlined notranslate text-4xl" translate="no">{ind.icon}</span>
                     </div>
                     <div className="flex-1">
                       <h3 className="text-xl font-bold mb-2 font-headline">{ind.title}</h3>
@@ -121,7 +121,7 @@ export default function IndustryTargetingPage() {
                       <div className="flex flex-wrap gap-3">
                         {ind.tags.map((tag) => (
                           <span key={tag} className="px-4 py-1.5 bg-orange-50 rounded-full text-xs font-bold text-primary flex items-center gap-2">
-                            <span className="material-symbols-outlined text-sm">check</span> {tag}
+                            <span className="material-symbols-outlined notranslate text-sm" translate="no">check</span> {tag}
                           </span>
                         ))}
                       </div>
@@ -147,13 +147,13 @@ export default function IndustryTargetingPage() {
               >
                 {isSelected && (
                   <div className="absolute top-4 right-4 text-primary">
-                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                    <span className="material-symbols-outlined notranslate" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                   </div>
                 )}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 transition-all group-hover:scale-150"></div>
                 <div className="relative z-10">
                   <div className="w-14 h-14 bg-orange-50 rounded-xl flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-3xl">{ind.icon}</span>
+                    <span className="material-symbols-outlined notranslate text-3xl" translate="no">{ind.icon}</span>
                   </div>
                   <h3 className="text-xl font-bold mb-4 font-headline">{ind.title}</h3>
                   <div className="flex items-center gap-2 mb-6">

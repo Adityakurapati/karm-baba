@@ -50,7 +50,7 @@ export default function AdminLogin() {
           {/* Logo/Brand Section */}
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl shadow-xl shadow-primary/20 mb-6 group transition-transform hover:scale-105 duration-300">
-              <span className="material-symbols-outlined text-white text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>architecture</span>
+              <span className="material-symbols-outlined notranslate text-white text-3xl" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>architecture</span>
             </div>
             <h1 className="text-3xl font-extrabold font-headline tracking-tighter text-on-surface mb-2">KARM BABA</h1>
             <p className="text-on-surface-variant font-medium tracking-tight uppercase text-[10px] opacity-70">Executive Access Gate</p>
@@ -60,7 +60,7 @@ export default function AdminLogin() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="p-4 bg-error-container text-on-error-container rounded-2xl text-xs font-bold border border-error/10 animate-slide-in-down flex items-center gap-3">
-                <span className="material-symbols-outlined text-lg">error</span>
+                <span className="material-symbols-outlined notranslate text-lg" translate="no">error</span>
                 {error}
               </div>
             )}
@@ -69,7 +69,7 @@ export default function AdminLogin() {
               <div className="space-y-2">
                 <label className="text-xs font-black uppercase tracking-widest text-on-surface-variant/60 ml-1">Email Identifier</label>
                 <div className="relative group">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 group-focus-within:text-primary transition-colors text-xl">alternate_email</span>
+                  <span className="material-symbols-outlined notranslate absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 group-focus-within:text-primary transition-colors text-xl" translate="no">alternate_email</span>
                   <input 
                     type="email"
                     value={email}
@@ -84,7 +84,7 @@ export default function AdminLogin() {
               <div className="space-y-2">
                 <label className="text-xs font-black uppercase tracking-widest text-on-surface-variant/60 ml-1">Secure Token</label>
                 <div className="relative group">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 group-focus-within:text-primary transition-colors text-xl">lock</span>
+                  <span className="material-symbols-outlined notranslate absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 group-focus-within:text-primary transition-colors text-xl" translate="no">lock</span>
                   <input 
                     type="password"
                     value={password}
@@ -104,7 +104,7 @@ export default function AdminLogin() {
             >
               <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
               <span className="relative z-10">{loading ? "Authenticating..." : "Authorize Access"}</span>
-              {!loading && <span className="material-symbols-outlined relative z-10 text-lg">arrow_forward</span>}
+              {!loading && <span className="material-symbols-outlined notranslate relative z-10 text-lg" translate="no">arrow_forward</span>}
             </button>
           </form>
 

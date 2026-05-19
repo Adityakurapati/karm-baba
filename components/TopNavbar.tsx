@@ -119,7 +119,7 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="md:hidden text-on-surface"
         >
-          <span className="material-symbols-outlined">menu</span>
+          <span className="material-symbols-outlined notranslate" translate="no">menu</span>
         </button>
       </div>
 

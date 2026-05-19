@@ -110,7 +110,7 @@ export default function NetworkPage() {
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="text-on-surface hover:text-primary transition-colors"
           >
-            <span className="material-symbols-outlined">menu</span>
+            <span className="material-symbols-outlined notranslate" translate="no">menu</span>
           </button>
           <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface flex-1 ml-4">
             Verified Network
@@ -122,7 +122,7 @@ export default function NetworkPage() {
           {/* Search and Filter */}
           <div className="mb-6 space-y-4">
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-3 top-3 text-on-surface-variant">
+              <span className="material-symbols-outlined notranslate absolute left-3 top-3 text-on-surface-variant" translate="no">
                 search
               </span>
               <input
@@ -168,7 +168,7 @@ export default function NetworkPage() {
                     </h3>
                   </div>
                   {contact.verified && (
-                    <span className="material-symbols-outlined text-primary text-xl filled">
+                    <span className="material-symbols-outlined notranslate text-primary text-xl filled" translate="no">
                       verified
                     </span>
                   )}
@@ -176,13 +176,13 @@ export default function NetworkPage() {
 
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2 text-on-surface-variant text-sm">
-                    <span className="material-symbols-outlined text-base">
+                    <span className="material-symbols-outlined notranslate text-base" translate="no">
                       public
                     </span>
                     {contact.country}
                   </div>
                   <div className="flex items-center gap-2 text-on-surface-variant text-sm">
-                    <span className="material-symbols-outlined text-base">
+                    <span className="material-symbols-outlined notranslate text-base" translate="no">
                       store
                     </span>
                     {contact.deals} completed deals

@@ -7,10 +7,12 @@ import {
   onAuthStateChanged, 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
-  signOut
+  signOut,
+  sendPasswordResetEmail
 } from 'firebase/auth';
-import { ref, get, set, child, update, onValue } from 'firebase/database';
+import { ref, get, set, child, update, onValue, push } from 'firebase/database';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
@@ -23,11 +25,13 @@ interface AuthContextType {
   hasRole: (role: UserRole) => boolean;
   canAccess: (roles: UserRole[]) => boolean;
   updateUserProfile: (data: Partial<User>) => Promise<boolean>;
+  resetPassword: (email: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<AuthSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,16 +47,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Convert dates back
         mockAdmin.createdAt = new Date(mockAdmin.createdAt);
         mockAdmin.updatedAt = new Date(mockAdmin.updatedAt);
-        setUser(mockAdmin);
-        setSession({
-          userId: mockAdmin.id,
-          email: mockAdmin.email,
-          role: mockAdmin.role,
-          companyName: mockAdmin.company?.name || 'KARM BABA',
-          token: 'mock_token',
-          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        });
-        
         // Sync mock session to server
         (async () => {
           try {
@@ -64,6 +58,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           } catch (err) {
             console.error('Failed to sync mock session:', err);
           }
+          
+          setUser(mockAdmin);
+          setSession({
+            userId: mockAdmin.id,
+            email: mockAdmin.email,
+            role: mockAdmin.role,
+            companyName: mockAdmin.company?.name || 'KARM BABA',
+            token: 'mock_token',
+            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          });
+          
           setIsLoading(false);
         })();
         return; // Skip Firebase listener if mock is active
@@ -90,18 +95,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 expiryDate: b.expiryDate ? new Date(b.expiryDate) : undefined,
               })) || [],
             };
-            setUser(formattedUser);
-            
             const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
             const token = await firebaseUser.getIdToken();
-            setSession({
-              userId: formattedUser.id,
-              email: formattedUser.email,
-              role: formattedUser.role,
-              companyName: formattedUser.company?.name || '',
-              token,
-              expiresAt,
-            });
 
             // Sync Firebase session to Server for Middleware
             try {
@@ -113,6 +108,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             } catch (err) {
               console.error('Failed to sync session:', err);
             }
+
+            setUser(formattedUser);
+            setSession({
+              userId: formattedUser.id,
+              email: formattedUser.email,
+              role: formattedUser.role,
+              companyName: formattedUser.company?.name || '',
+              token,
+              expiresAt,
+            });
           } else {
             console.error('User profile not found in database');
             setUser(null);
@@ -168,21 +173,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           updatedAt: new Date(),
         };
         
-        setUser(mockAdmin);
-        setSession({
-          userId: mockAdmin.id,
-          email: mockAdmin.email,
-          role: mockAdmin.role,
-          companyName: 'KARM BABA',
-          token: 'mock_token',
-          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        });
-        
-        // Persist mock admin for page reloads
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('mock_admin', JSON.stringify(mockAdmin));
-        }
-        
         // Sync mock session to server
         try {
           await fetch('/api/auth/session', {
@@ -193,11 +183,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } catch (err) {
           console.error('Failed to sync mock session:', err);
         }
+
+        setUser(mockAdmin);
+        setSession({
+          userId: mockAdmin.id,
+          email: mockAdmin.email,
+          role: mockAdmin.role,
+          companyName: 'KARM BABA',
+          token: 'mock_token',
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        });
+
+        // Persist mock admin for page reloads
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('mock_admin', JSON.stringify(mockAdmin));
+        }
         
         return true;
       }
 
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+      
+      // Log session
+      try {
+        const sessionData = {
+          timestamp: new Date().toISOString(),
+          device: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown Device',
+        };
+        await push(ref(database, `users/${uid}/sessions`), sessionData);
+      } catch (sessionErr) {
+        console.error('Failed to log session:', sessionErr);
+      }
+
       return true;
     } catch (err) {
       console.error('Login error:', err);
@@ -255,11 +273,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       setSession(null);
       
-      // 5. Feedback and Redirect
+      // 5. Artificial delay so the user sees the 'Logging out...' modal
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // 6. Feedback and Redirect
       toast.success('Successfully logged out', { duration: 3000 });
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
-      }
+      router.push('/login');
     } catch (err) {
       console.error('Logout error:', err);
       toast.error('Error during logout');
@@ -322,6 +341,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return user ? roles.includes(user.role) : false;
   };
 
+  const resetPassword = async (email: string): Promise<boolean> => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      return true;
+    } catch (err) {
+      console.error('Password reset error:', err);
+      return false;
+    }
+  };
+
   const value: AuthContextType = {
     user,
     session,
@@ -333,6 +362,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     hasRole,
     canAccess,
     updateUserProfile,
+    resetPassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

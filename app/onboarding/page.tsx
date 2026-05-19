@@ -101,14 +101,14 @@ export default function OnboardingRoleSelectionPage() {
             >
               {/* Selected Check */}
               <div className={`absolute top-6 right-6 transition-opacity ${selectedRole === role.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}>
-                <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                <span className="material-symbols-outlined notranslate text-primary text-3xl" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
               </div>
 
               {/* Icon */}
               <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-8 ${
                 role.color === 'primary' ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'
               } group-hover:scale-110 transition-transform`}>
-                <span className="material-symbols-outlined text-4xl">{role.icon}</span>
+                <span className="material-symbols-outlined notranslate text-4xl" translate="no">{role.icon}</span>
               </div>
 
               <h3 className="font-headline text-2xl font-bold text-on-surface mb-3">{role.title}</h3>
@@ -118,7 +118,7 @@ export default function OnboardingRoleSelectionPage() {
                 <ul className="space-y-3">
                   {role.features.map((f) => (
                     <li key={f} className="flex items-center gap-2 text-sm text-on-surface-variant">
-                      <span className={`material-symbols-outlined text-sm ${role.color === 'primary' ? 'text-primary' : 'text-secondary'}`}>token</span>
+                      <span className={`material-symbols-outlined notranslate text-sm ${role.color === 'primary' ? 'text-primary' : 'text-secondary'}`} translate="no">token</span>
                       {f}
                     </li>
                   ))}

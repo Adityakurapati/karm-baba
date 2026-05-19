@@ -45,7 +45,7 @@ export const ModernModal = ({
             onClick={onClose}
             className="text-on-surface-light hover:text-on-surface transition-colors p-2 hover:bg-surface-container rounded-lg"
           >
-            <span className="material-symbols-outlined">close</span>
+            <span className="material-symbols-outlined notranslate" translate="no">close</span>
           </button>
         </div>
 

@@ -235,7 +235,7 @@ export default function BuyerProductMarketplace() {
               {success ? (
                 <div className="text-center py-8">
                   <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <span className="material-symbols-outlined text-4xl">check_circle</span>
+                    <span className="material-symbols-outlined notranslate text-4xl" translate="no">check_circle</span>
                   </div>
                   <h2 className="text-2xl font-headline font-black text-on-surface mb-2">Order Confirmed!</h2>
                   <p className="text-on-surface-variant">Your payment has been processed successfully.</p>
@@ -257,13 +257,13 @@ export default function BuyerProductMarketplace() {
                   <div className="space-y-4 mb-8">
                     <div className="p-4 border-2 border-primary bg-primary/5 rounded-xl flex items-center gap-4">
                       <div className="w-10 h-10 bg-primary text-white rounded-lg flex items-center justify-center">
-                        <span className="material-symbols-outlined">payments</span>
+                        <span className="material-symbols-outlined notranslate" translate="no">payments</span>
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-bold">KARM BABA Secure Pay</p>
                         <p className="text-xs text-on-surface-variant">Instant bank transfer secured</p>
                       </div>
-                      <span className="material-symbols-outlined text-primary">check_circle</span>
+                      <span className="material-symbols-outlined notranslate text-primary" translate="no">check_circle</span>
                     </div>
                   </div>
 

@@ -92,7 +92,7 @@ export default function TimelinePage() {
           </div>
           <div className="flex gap-3 flex-wrap">
             <button className="bg-primary text-white px-5 py-3 rounded-full font-bold text-sm flex items-center gap-2 hover:scale-105 transition-transform shadow-lg shadow-primary/20">
-              <span className="material-symbols-outlined text-base">add_alarm</span>
+              <span className="material-symbols-outlined notranslate text-base" translate="no">add_alarm</span>
               Schedule Task
             </button>
             <div className="bg-orange-50 rounded-full p-1 flex">
@@ -157,7 +157,7 @@ export default function TimelinePage() {
                         event.status === 'running' ? 'bg-blue-100 text-blue-600' :
                         'bg-orange-50 text-primary'
                       }`}>
-                        <span className="material-symbols-outlined text-lg">{event.icon}</span>
+                        <span className="material-symbols-outlined notranslate text-lg" translate="no">{event.icon}</span>
                       </div>
 
                       {/* Card */}
@@ -200,7 +200,7 @@ export default function TimelinePage() {
             <div className="bg-white rounded-3xl p-6 border border-outline-variant shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-bold font-headline text-sm flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary text-lg">schedule</span>
+                  <span className="material-symbols-outlined notranslate text-primary text-lg" translate="no">schedule</span>
                   Recurring Jobs
                 </h3>
                 <button className="text-primary text-[10px] font-bold underline">Manage</button>
@@ -225,7 +225,7 @@ export default function TimelinePage() {
             <div className="p-[1px] rounded-3xl" style={{ background: 'linear-gradient(135deg, #ff6b35, #ff9500)' }}>
               <div className="bg-white rounded-[23px] p-6">
                 <h3 className="font-bold font-headline text-sm mb-4 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary text-lg">bar_chart</span>
+                  <span className="material-symbols-outlined notranslate text-primary text-lg" translate="no">bar_chart</span>
                   7-Day Execution Summary
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
@@ -249,11 +249,11 @@ export default function TimelinePage() {
               <h3 className="font-bold font-headline text-sm mb-4">Quick Schedule</h3>
               <div className="space-y-2">
                 <button className="w-full py-3 bg-primary text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform">
-                  <span className="material-symbols-outlined text-sm">bolt</span>
+                  <span className="material-symbols-outlined notranslate text-sm" translate="no">bolt</span>
                   Run Selected Now
                 </button>
                 <button className="w-full py-3 bg-white border border-outline-variant rounded-xl font-bold text-sm text-on-surface hover:bg-orange-50 transition-colors flex items-center justify-center gap-2">
-                  <span className="material-symbols-outlined text-sm">pause</span>
+                  <span className="material-symbols-outlined notranslate text-sm" translate="no">pause</span>
                   Pause All Scheduled
                 </button>
               </div>

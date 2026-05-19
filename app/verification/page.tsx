@@ -58,13 +58,13 @@ export default function VerificationPage() {
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-bold font-headline">Mandatory Base</h3>
-                  <span className="material-symbols-outlined text-primary text-xl">verified_user</span>
+                  <span className="material-symbols-outlined notranslate text-primary text-xl" translate="no">verified_user</span>
                 </div>
                 <div className="space-y-4">
                   {['GST Registration', 'PAN Verification', 'Signatory Identity'].map((item) => (
                     <div key={item} className="flex items-center justify-between p-3 rounded-xl bg-orange-50/30">
                       <div className="flex items-center gap-3">
-                        <span className="material-symbols-outlined text-emerald-500" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                        <span className="material-symbols-outlined notranslate text-emerald-500" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                         <span className="text-sm font-semibold">{item}</span>
                       </div>
                       <span className="text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-1 rounded">Verified</span>
@@ -77,7 +77,7 @@ export default function VerificationPage() {
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-bold font-headline">Financial Credibility</h3>
-                  <span className="material-symbols-outlined text-secondary text-xl">account_balance</span>
+                  <span className="material-symbols-outlined notranslate text-secondary text-xl" translate="no">account_balance</span>
                 </div>
                 <div className="space-y-4">
                   {[
@@ -86,14 +86,14 @@ export default function VerificationPage() {
                   ].map((item) => (
                     <div key={item.name} className="flex items-center justify-between p-3 rounded-xl bg-orange-50/30 opacity-80">
                       <div className="flex items-center gap-3">
-                        <span className="material-symbols-outlined text-blue-500 animate-spin">sync</span>
+                        <span className="material-symbols-outlined notranslate text-blue-500 animate-spin" translate="no">sync</span>
                         <span className="text-sm font-semibold">{item.name}</span>
                       </div>
                       <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded">{item.status}</span>
                     </div>
                   ))}
                   <div className="p-3 border border-dashed border-outline-variant rounded-xl flex items-center justify-center gap-2 group cursor-pointer hover:bg-orange-50/50 transition-colors">
-                    <span className="material-symbols-outlined text-sm text-outline">add_circle</span>
+                    <span className="material-symbols-outlined notranslate text-sm text-outline" translate="no">add_circle</span>
                     <span className="text-xs font-bold text-outline uppercase tracking-wider">Add Credit History</span>
                   </div>
                 </div>
@@ -107,21 +107,21 @@ export default function VerificationPage() {
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-bold font-headline">Industry Compliance (Pharma)</h3>
                   <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-primary text-lg">medical_services</span>
+                    <span className="material-symbols-outlined notranslate text-primary text-lg" translate="no">medical_services</span>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-orange-50/30 p-4 rounded-xl">
                     <p className="text-[10px] uppercase font-black text-on-surface-variant tracking-widest mb-2">WHO-GMP</p>
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-emerald-500 text-base" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                      <span className="material-symbols-outlined notranslate text-emerald-500 text-base" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                       <span className="text-sm font-bold">Verified</span>
                     </div>
                   </div>
                   <div className="bg-orange-50/30 p-4 rounded-xl">
                     <p className="text-[10px] uppercase font-black text-on-surface-variant tracking-widest mb-2">FDA License</p>
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-amber-500 text-base">pending</span>
+                      <span className="material-symbols-outlined notranslate text-amber-500 text-base" translate="no">pending</span>
                       <span className="text-sm font-bold">Pending</span>
                     </div>
                   </div>
@@ -132,7 +132,7 @@ export default function VerificationPage() {
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-bold font-headline">Export Readiness</h3>
-                  <span className="material-symbols-outlined text-primary text-xl">public</span>
+                  <span className="material-symbols-outlined notranslate text-primary text-xl" translate="no">public</span>
                 </div>
                 <div className="space-y-3">
                   {[
@@ -141,12 +141,12 @@ export default function VerificationPage() {
                   ].map((item) => (
                     <div key={item.name} className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-primary text-lg">{item.icon}</span>
+                        <span className="material-symbols-outlined notranslate text-primary text-lg" translate="no">{item.icon}</span>
                       </div>
                       <div className="flex-1">
                         <div className="flex justify-between items-center">
                           <p className="text-sm font-bold">{item.name}</p>
-                          <span className="material-symbols-outlined text-emerald-500 text-sm">verified</span>
+                          <span className="material-symbols-outlined notranslate text-emerald-500 text-sm" translate="no">verified</span>
                         </div>
                         <div className="w-full bg-surface-container-high h-1 rounded-full mt-1">
                           <div className="w-full bg-primary h-full rounded-full"></div>
@@ -165,7 +165,7 @@ export default function VerificationPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10">
                     <div className="flex items-center gap-3 mb-4">
-                      <span className="material-symbols-outlined text-orange-300">videocam</span>
+                      <span className="material-symbols-outlined notranslate text-orange-300" translate="no">videocam</span>
                       <h4 className="font-bold text-sm uppercase tracking-wider">Video Verification</h4>
                     </div>
                     <p className="text-xs text-white/70 mb-4">Scheduled for Oct 24, 2023. This is the final step for &ldquo;Elite Trust&rdquo; badge.</p>
@@ -173,12 +173,12 @@ export default function VerificationPage() {
                   </div>
                   <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10">
                     <div className="flex items-center gap-3 mb-4">
-                      <span className="material-symbols-outlined text-orange-300">rule</span>
+                      <span className="material-symbols-outlined notranslate text-orange-300" translate="no">rule</span>
                       <h4 className="font-bold text-sm uppercase tracking-wider">3rd Party Audit</h4>
                     </div>
                     <p className="text-xs text-white/70 mb-4">Conducted by GlobalCert Bureau. All facilities have been pre-screened.</p>
                     <div className="flex items-center gap-2 text-orange-300">
-                      <span className="material-symbols-outlined text-sm">event</span>
+                      <span className="material-symbols-outlined notranslate text-sm" translate="no">event</span>
                       <span className="text-xs font-bold">Scheduled for tomorrow</span>
                     </div>
                   </div>
@@ -195,11 +195,11 @@ export default function VerificationPage() {
               <div className="relative mb-6">
                 <div className="w-24 h-24 rounded-full p-1 animate-pulse" style={{ background: 'linear-gradient(135deg, #ff6b35, #ff9500, #e55a24)' }}>
                   <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                    <span className="material-symbols-outlined text-primary text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>workspace_premium</span>
+                    <span className="material-symbols-outlined notranslate text-primary text-4xl" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>workspace_premium</span>
                   </div>
                 </div>
                 <div className="absolute -bottom-2 -right-2 bg-primary text-white w-8 h-8 rounded-full border-4 border-orange-50 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                  <span className="material-symbols-outlined notranslate text-sm" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
                 </div>
               </div>
               <h3 className="text-xl font-black font-headline tracking-tight text-primary">KARM BABA Certified</h3>
@@ -220,7 +220,7 @@ export default function VerificationPage() {
             {/* Growth Intelligence */}
             <div className="bg-orange-50/50 border border-orange-200/30 rounded-3xl p-6">
               <div className="flex items-center gap-3 mb-6">
-                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                <span className="material-symbols-outlined notranslate text-primary" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
                 <h3 className="font-bold font-headline text-primary">Growth Intelligence</h3>
               </div>
               <div className="space-y-4">
@@ -238,15 +238,15 @@ export default function VerificationPage() {
             {/* Action HUD */}
             <div className="bg-white rounded-3xl p-6 shadow-lg shadow-primary/5 space-y-3 border border-outline-variant">
               <button className="w-full py-4 bg-primary text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:translate-y-[-2px] active:scale-95 transition-all">
-                <span className="material-symbols-outlined">upload_file</span>
+                <span className="material-symbols-outlined notranslate" translate="no">upload_file</span>
                 Upload Missing Documents
               </button>
               <button className="w-full py-4 bg-red-50 text-red-700 border border-red-200 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-red-100 transition-all">
-                <span className="material-symbols-outlined">report</span>
+                <span className="material-symbols-outlined notranslate" translate="no">report</span>
                 Fix Flagged Issues
               </button>
               <button className="w-full py-4 bg-white border-2 border-primary/20 text-primary rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-orange-50 transition-all">
-                <span className="material-symbols-outlined">send</span>
+                <span className="material-symbols-outlined notranslate" translate="no">send</span>
                 Request Final Review
               </button>
             </div>

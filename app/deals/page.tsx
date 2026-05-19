@@ -96,7 +96,7 @@ export default function DealsPage() {
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="text-on-surface hover:text-primary transition-colors flex-shrink-0"
           >
-            <span className="material-symbols-outlined">menu</span>
+            <span className="material-symbols-outlined notranslate" translate="no">menu</span>
           </button>
           <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface flex-1 ml-2 md:ml-4">
             Deal Management

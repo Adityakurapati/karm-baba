@@ -38,7 +38,7 @@ export default function VerificationCompletePage() {
           {/* Circular Progress */}
           <div className="md:col-span-5 bg-white rounded-xl p-8 flex flex-col items-center justify-center relative overflow-hidden border border-outline-variant/20">
             <div className="absolute top-0 right-0 p-4">
-              <span className="material-symbols-outlined text-primary/20 text-6xl">verified_user</span>
+              <span className="material-symbols-outlined notranslate text-primary/20 text-6xl" translate="no">verified_user</span>
             </div>
             <div className="relative w-64 h-64 flex items-center justify-center">
               <svg className="w-full h-full transform -rotate-90">
@@ -52,7 +52,7 @@ export default function VerificationCompletePage() {
             </div>
             <div className="mt-8 text-center">
               <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-4">
-                <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>security</span>
+                <span className="material-symbols-outlined notranslate text-sm" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>security</span>
                 <span className="text-sm font-bold">KARM BABA Certified</span>
               </div>
               <p className="text-xs text-on-surface-variant font-medium">Pending Final Audit Review</p>
@@ -64,7 +64,7 @@ export default function VerificationCompletePage() {
             {/* Credibility Score */}
             <div className="rounded-xl p-8 flex flex-col justify-between" style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}>
               <div>
-                <span className="material-symbols-outlined text-white/80 text-4xl mb-4">analytics</span>
+                <span className="material-symbols-outlined notranslate text-white/80 text-4xl mb-4" translate="no">analytics</span>
                 <h3 className="text-white font-headline font-bold text-xl">Credibility Score</h3>
               </div>
               <div className="flex items-baseline gap-1 mt-4">
@@ -77,7 +77,7 @@ export default function VerificationCompletePage() {
             {/* Risk Level */}
             <div className="rounded-xl p-8 flex flex-col justify-between bg-orange-50 border border-orange-100">
               <div>
-                <span className="material-symbols-outlined text-primary text-4xl mb-4">shield_with_heart</span>
+                <span className="material-symbols-outlined notranslate text-primary text-4xl mb-4" translate="no">shield_with_heart</span>
                 <h3 className="text-on-surface font-headline font-bold text-xl">Risk Level</h3>
               </div>
               <div className="flex flex-col mt-4">
@@ -96,7 +96,7 @@ export default function VerificationCompletePage() {
                 {['Identity', 'Compliance', 'Financials'].map((item) => (
                   <div key={item} className="flex items-center justify-between p-4 bg-white rounded-lg border border-outline-variant/10">
                     <div className="flex items-center gap-4">
-                      <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                      <span className="material-symbols-outlined notranslate text-primary" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                       <span className="font-bold text-on-surface">{item}</span>
                     </div>
                     <span className="text-xs font-bold uppercase text-primary bg-primary/10 px-3 py-1 rounded-full">Verified</span>
@@ -116,7 +116,7 @@ export default function VerificationCompletePage() {
             style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}
           >
             {isFinishing ? 'Finishing...' : authLoading ? 'Loading...' : 'Go to Dashboard'}
-            <span className="material-symbols-outlined">arrow_forward</span>
+            <span className="material-symbols-outlined notranslate" translate="no">arrow_forward</span>
           </button>
         </div>
       </div>

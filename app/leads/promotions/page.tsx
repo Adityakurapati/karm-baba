@@ -66,7 +66,7 @@ export default function PromotionsPage() {
           </div>
           <div className="flex gap-3 flex-wrap">
             <button className="bg-primary text-white px-5 py-3 rounded-full font-bold text-sm flex items-center gap-2 hover:scale-105 transition-transform shadow-lg shadow-primary/20">
-              <span className="material-symbols-outlined text-base">add</span>
+              <span className="material-symbols-outlined notranslate text-base" translate="no">add</span>
               New Campaign
             </button>
             <div className="bg-orange-50 rounded-full p-1 flex">
@@ -93,7 +93,7 @@ export default function PromotionsPage() {
           ].map((kpi) => (
             <div key={kpi.label} className="bg-white rounded-2xl p-5 border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start mb-3">
-                <span className="material-symbols-outlined text-primary text-xl">{kpi.icon}</span>
+                <span className="material-symbols-outlined notranslate text-primary text-xl" translate="no">{kpi.icon}</span>
                 <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">{kpi.change}</span>
               </div>
               <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">{kpi.label}</p>
@@ -107,7 +107,7 @@ export default function PromotionsPage() {
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold font-headline tracking-tight">Active Campaigns</h2>
             <button className="text-primary text-xs font-bold flex items-center gap-1 hover:underline">
-              View All <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              View All <span className="material-symbols-outlined notranslate text-sm" translate="no">arrow_forward</span>
             </button>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -195,7 +195,7 @@ export default function PromotionsPage() {
           <aside className="lg:col-span-4 space-y-6">
             <div className="bg-white rounded-3xl p-6 border border-outline-variant shadow-sm">
               <div className="flex items-center gap-2 mb-4">
-                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                <span className="material-symbols-outlined notranslate text-primary" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
                 <h3 className="font-bold font-headline text-sm">AI Campaign Advisor</h3>
               </div>
               <div className="space-y-4">
@@ -223,7 +223,7 @@ export default function PromotionsPage() {
               <h3 className="font-bold font-headline text-sm mb-3">Quick Actions</h3>
               <div className="space-y-2">
                 <button className="w-full py-3 bg-primary text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform">
-                  <span className="material-symbols-outlined text-sm">rocket_launch</span>
+                  <span className="material-symbols-outlined notranslate text-sm" translate="no">rocket_launch</span>
                   Boost Top Campaign
                 </button>
                 <button className="w-full py-3 bg-white border border-outline-variant rounded-xl font-bold text-sm text-on-surface hover:bg-orange-50 transition-colors">

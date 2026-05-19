@@ -28,7 +28,7 @@ export default function DashboardPage() {
                 <p className="font-bold text-primary">$42,500 USD</p>
               </div>
               <Link href="/deals/new" className="text-white px-5 py-2 rounded-full font-headline text-sm font-bold flex items-center gap-2 hover:scale-[1.02] transition-transform shadow-lg shadow-primary/20" style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}>
-                <span className="material-symbols-outlined text-sm">add</span>
+                <span className="material-symbols-outlined notranslate text-sm" translate="no">add</span>
                 Create Deal
               </Link>
             </div>
@@ -62,7 +62,7 @@ export default function DashboardPage() {
                         step.active ? 'bg-white border-2 border-primary text-primary ring-4 ring-primary/10' :
                         'bg-white border-2 border-outline-variant text-slate-400'
                       }`}>
-                        <span className="material-symbols-outlined text-sm" style={step.done ? { fontVariationSettings: "'FILL' 1" } : {}}>{step.icon}</span>
+                        <span className="material-symbols-outlined notranslate text-sm" translate="no" style={step.done ? { fontVariationSettings: "'FILL' 1" } : {}}>{step.icon}</span>
                       </div>
                       <span className={`text-[11px] font-bold uppercase tracking-tighter ${step.active ? 'text-primary' : step.done ? '' : 'text-slate-400'}`}>{step.label}</span>
                     </div>
@@ -75,7 +75,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col sm:flex-row justify-between items-start gap-3 mb-6">
                   <h3 className="font-headline text-xl font-bold tracking-tight">Proforma Invoice Generator</h3>
                   <button className="bg-primary text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 hover:opacity-90 transition-colors">
-                    <span className="material-symbols-outlined text-sm">bolt</span>
+                    <span className="material-symbols-outlined notranslate text-sm" translate="no">bolt</span>
                     AI Pricing Suggestions
                   </button>
                 </div>
@@ -152,13 +152,13 @@ export default function DashboardPage() {
                     ].map((doc) => (
                       <li key={doc.name} className={`flex items-center justify-between p-2 rounded-lg ${doc.highlight ? 'bg-white border border-orange-200' : 'bg-white/50 border border-white'}`}>
                         <div className="flex items-center gap-3">
-                          <span className={`material-symbols-outlined text-lg ${doc.highlight ? 'text-primary' : 'text-primary'}`}>{doc.icon}</span>
+                          <span className={`material-symbols-outlined notranslate text-lg ${doc.highlight ? 'text-primary' : 'text-primary'}`} translate="no">{doc.icon}</span>
                           <span className="text-xs font-bold text-on-surface">{doc.name}</span>
                         </div>
                         {doc.action === 'sign' ? (
                           <span className="text-[9px] font-bold text-primary uppercase">Need Sign</span>
                         ) : (
-                          <button className="material-symbols-outlined text-slate-400 text-lg hover:text-primary">download</button>
+                          <button className="material-symbols-outlined notranslate text-slate-400 text-lg hover:text-primary" translate="no">download</button>
                         )}
                       </li>
                     ))}
@@ -174,15 +174,15 @@ export default function DashboardPage() {
                 <h3 className="font-headline text-lg font-bold mb-6 tracking-tight">Executive Actions</h3>
                 <div className="space-y-3">
                   <button className="w-full py-4 rounded-xl font-bold flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform" style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}>
-                    <span className="material-symbols-outlined">verified</span>
+                    <span className="material-symbols-outlined notranslate" translate="no">verified</span>
                     Approve Invoice
                   </button>
                   <div className="grid grid-cols-2 gap-3">
                     <button className="bg-slate-800 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-slate-700 transition-colors">
-                      <span className="material-symbols-outlined text-sm">share</span>PDF
+                      <span className="material-symbols-outlined notranslate text-sm" translate="no">share</span>PDF
                     </button>
                     <button className="bg-slate-800 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-slate-700 transition-colors">
-                      <span className="material-symbols-outlined text-sm">chat</span>WhatsApp
+                      <span className="material-symbols-outlined notranslate text-sm" translate="no">chat</span>WhatsApp
                     </button>
                   </div>
                   <button className="w-full bg-white/5 border border-white/10 py-3 rounded-xl text-sm font-bold text-slate-400 hover:text-white hover:bg-white/10 transition-all">
@@ -194,12 +194,12 @@ export default function DashboardPage() {
               {/* Smart Intelligence */}
               <section className="space-y-4">
                 <div className="flex items-center gap-2 px-2">
-                  <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
+                  <span className="material-symbols-outlined notranslate text-primary" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
                   <h3 className="font-headline text-sm font-black uppercase tracking-widest text-slate-500">Smart Intelligence</h3>
                 </div>
                 <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl">
                   <div className="flex items-start gap-3">
-                    <span className="material-symbols-outlined text-red-500 text-lg">warning</span>
+                    <span className="material-symbols-outlined notranslate text-red-500 text-lg" translate="no">warning</span>
                     <div>
                       <h4 className="text-xs font-black text-red-800">HS Code Mismatch Detected</h4>
                       <p className="text-[11px] text-red-700/80 mt-1">HS Code 2933.39 for &apos;Polymer Resin&apos; differs from previous filings (2933.31).</p>
@@ -219,7 +219,7 @@ export default function DashboardPage() {
               <section className="bg-orange-50/30 border border-orange-100 rounded-xl overflow-hidden h-48 relative">
                 <div className="w-full h-full flex items-center justify-center">
                   <div className="text-center">
-                    <span className="material-symbols-outlined text-primary text-3xl">location_on</span>
+                    <span className="material-symbols-outlined notranslate text-primary text-3xl" translate="no">location_on</span>
                     <p className="text-[10px] font-bold text-slate-500 mt-2">Transit: Port of Rotterdam</p>
                   </div>
                 </div>

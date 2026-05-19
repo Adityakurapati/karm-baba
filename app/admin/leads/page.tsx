@@ -20,14 +20,14 @@ export default function LeadScoring() {
         {/* AI Prediction Accuracy */}
         <div className="col-span-12 md:col-span-4 bg-surface-container-lowest p-6 rounded-xl border-l-4 border-tertiary shadow-sm">
           <div className="flex items-center justify-between mb-6">
-            <span className="material-symbols-outlined text-tertiary bg-tertiary-container/10 p-2 rounded-lg" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
+            <span className="material-symbols-outlined notranslate text-tertiary bg-tertiary-container/10 p-2 rounded-lg" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-tertiary/70">AI Prediction</span>
           </div>
           <div className="space-y-1">
             <p className="text-on-surface-variant text-sm font-semibold">Model Confidence</p>
             <div className="flex items-baseline gap-2">
               <h3 className="text-4xl font-headline font-extrabold text-on-surface">94.8%</h3>
-              <span className="text-xs font-bold text-emerald-600 flex items-center">+1.2% <span className="material-symbols-outlined text-xs">north</span></span>
+              <span className="text-xs font-bold text-emerald-600 flex items-center">+1.2% <span className="material-symbols-outlined notranslate text-xs" translate="no">north</span></span>
             </div>
           </div>
           <div className="mt-6 h-1 w-full bg-surface-container rounded-full overflow-hidden">
@@ -39,7 +39,7 @@ export default function LeadScoring() {
         {/* Weighted Parameters */}
         <div className="col-span-12 md:col-span-8 bg-surface-container-lowest p-8 rounded-xl shadow-sm">
           <h3 className="text-lg font-headline font-bold text-on-surface mb-6 flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary">tune</span>
+            <span className="material-symbols-outlined notranslate text-primary" translate="no">tune</span>
             Scoring Weights
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-8">
@@ -116,7 +116,7 @@ export default function LeadScoring() {
           <div className="px-8 py-6 border-b border-surface-container flex justify-between items-center">
             <h3 className="text-lg font-headline font-bold text-on-surface">Top Scored Opportunities</h3>
             <button className="text-primary text-xs font-bold flex items-center gap-1 hover:underline">
-              View All Intelligence <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              View All Intelligence <span className="material-symbols-outlined notranslate text-sm" translate="no">arrow_forward</span>
             </button>
           </div>
           <div className="overflow-x-auto">
@@ -167,7 +167,7 @@ export default function LeadScoring() {
                       </span>
                     </td>
                     <td className="px-8 py-5 text-right">
-                      <button className="material-symbols-outlined text-on-surface-variant/40 hover:text-primary transition-colors">more_horiz</button>
+                      <button className="material-symbols-outlined notranslate text-on-surface-variant/40 hover:text-primary transition-colors" translate="no">more_horiz</button>
                     </td>
                   </tr>
                 ))}

@@ -65,7 +65,7 @@ export default function TopHeader({
   return (
     <header className="bg-slate-50/80 backdrop-blur-md flex justify-between items-center h-14 md:h-16 px-4 md:px-8 border-b border-slate-200/20">
       <div className="relative w-full md:w-96">
-        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">
+        <span className="material-symbols-outlined notranslate absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" translate="no">
           search
         </span>
         <input
@@ -80,7 +80,7 @@ export default function TopHeader({
             onClick={() => setShowNotifs(!showNotifs)}
             className="text-slate-500 hover:text-slate-900 transition-colors relative"
           >
-            <span className="material-symbols-outlined">notifications</span>
+            <span className="material-symbols-outlined notranslate" translate="no">notifications</span>
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                 {unreadCount}
@@ -120,7 +120,7 @@ export default function TopHeader({
           )}
         </div>
         <button className="text-slate-500 hover:text-slate-900 transition-colors hidden md:block">
-          <span className="material-symbols-outlined">help</span>
+          <span className="material-symbols-outlined notranslate" translate="no">help</span>
         </button>
         <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary text-white flex items-center justify-center font-headline font-bold text-sm select-none" title={user ? `${user.firstName} ${user.lastName}` : 'Profile'}>
           {user ? (

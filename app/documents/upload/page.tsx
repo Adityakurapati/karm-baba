@@ -63,7 +63,7 @@ export default function DocumentUploadPage() {
                     className="bg-white rounded-xl border border-outline-variant p-4 hover:border-primary cursor-pointer transition-colors"
                   >
                     <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-3">
-                      <span className="material-symbols-outlined text-primary">
+                      <span className="material-symbols-outlined notranslate text-primary" translate="no">
                         {doc.icon}
                       </span>
                     </div>
@@ -87,7 +87,7 @@ export default function DocumentUploadPage() {
               }`}
             >
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="material-symbols-outlined text-primary text-3xl">
+                <span className="material-symbols-outlined notranslate text-primary text-3xl" translate="no">
                   cloud_upload
                 </span>
               </div>
@@ -116,7 +116,7 @@ export default function DocumentUploadPage() {
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                          <span className="material-symbols-outlined text-primary">
+                          <span className="material-symbols-outlined notranslate text-primary" translate="no">
                             description
                           </span>
                         </div>
@@ -129,7 +129,7 @@ export default function DocumentUploadPage() {
                           </p>
                         </div>
                       </div>
-                      <span className="material-symbols-outlined text-green-600">
+                      <span className="material-symbols-outlined notranslate text-green-600" translate="no">
                         check_circle
                       </span>
                     </div>
@@ -155,9 +155,9 @@ export default function DocumentUploadPage() {
                     <span className="text-sm font-headline font-bold text-on-surface">
                       {item.label}
                     </span>
-                    <span className={`material-symbols-outlined text-lg ${
+                    <span className={`material-symbols-outlined notranslate text-lg ${
                       item.status === 'verified' ? 'text-green-600' : 'text-yellow-600'
-                    }`}>
+                    }`} translate="no">
                       {item.icon}
                     </span>
                   </div>

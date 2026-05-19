@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import TopNavbar from '@/components/TopNavbar';
+import { useAuth } from '@/lib/auth-context';
 
 /* ─── hook: fires once when element enters viewport ─── */
 function useInView(threshold = 0.15) {
@@ -92,6 +93,7 @@ export default function Home() {
   const [hoveredTier, setHoveredTier] = useState<number | null>(null);
   const [activePill, setActivePill] = useState(0);
   const [currency, setCurrency] = useState<'INR' | 'USD'>('INR');
+  const { isAuthenticated, user } = useAuth();
 
   /* hero typewriter */
   const words = ['They Close.', 'They Deliver.', 'They Scale.'];
@@ -193,7 +195,15 @@ export default function Home() {
               Start Selling →
             </Link>
             <Link
-              href="/requirements"
+              href={
+                !isAuthenticated
+                  ? '/login'
+                  : user?.role === 'buyer'
+                  ? '/buyer/requirements'
+                  : user?.role === 'seller'
+                  ? '/seller/requirements'
+                  : '/requirements'
+              }
               className="px-8 py-3.5 border-2 border-primary text-primary font-headline font-bold rounded-xl hover:bg-orange-50 hover:scale-105 active:scale-95 transition-all"
             >
               Post Requirement
@@ -213,7 +223,7 @@ export default function Home() {
           ].map((item) => (
             <div key={item.label}
               className="flex items-center justify-center gap-2 text-on-surface-variant text-sm font-semibold py-2.5 px-3 rounded-xl hover:bg-orange-50 hover:text-primary transition-colors cursor-default">
-              <span className="material-symbols-outlined text-xl">{item.icon}</span>
+              <span className="material-symbols-outlined notranslate text-xl" translate="no">{item.icon}</span>
               {item.label}
             </div>
           ))}
@@ -222,7 +232,7 @@ export default function Home() {
           {['GST Verified', 'Trusted Network', 'AI Screening'].map((badge) => (
             <span key={badge}
               className="px-3 py-1 bg-orange-50 border border-orange-200 rounded-full text-xs font-bold text-primary hover:bg-primary hover:text-white hover:border-primary transition-all cursor-default flex items-center gap-1">
-              <span className="material-symbols-outlined text-[14px]">check</span> {badge}
+              <span className="material-symbols-outlined notranslate text-[14px]" translate="no">check</span> {badge}
             </span>
           ))}
         </div>
@@ -249,7 +259,7 @@ export default function Home() {
             ].map((item, i) => (
               <FadeIn key={item.step} delay={i * 120} className="flex flex-col items-center text-center p-8 group">
                 <div className={`relative w-20 h-20 rounded-2xl flex items-center justify-center mb-5 border-2 ${item.bg} ${item.border} group-hover:scale-110 transition-transform duration-300`}>
-                  <span className="material-symbols-outlined text-3xl">{item.icon}</span>
+                  <span className="material-symbols-outlined notranslate text-3xl" translate="no">{item.icon}</span>
                   <span className={`absolute -top-3 -right-3 w-6 h-6 rounded-full bg-white border-2 ${item.border} text-xs font-black flex items-center justify-center ${item.num}`}>
                     {item.step}
                   </span>
@@ -290,7 +300,7 @@ export default function Home() {
               <FadeIn key={item.title} delay={i * 100}>
                 <div className="industry-card p-6 bg-white rounded-2xl border border-outline-variant cursor-pointer h-full">
                   <div className="flex items-start justify-between mb-3">
-                    <span className="material-symbols-outlined text-3xl">{item.icon}</span>
+                    <span className="material-symbols-outlined notranslate text-3xl" translate="no">{item.icon}</span>
                     <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-orange-50 text-primary border border-orange-100">{item.tag}</span>
                   </div>
                   <h3 className="font-headline font-bold text-on-surface mb-1">{item.title}</h3>
@@ -303,7 +313,7 @@ export default function Home() {
           <FadeIn delay={300}>
             <div className="industry-card p-6 bg-white rounded-2xl border border-outline-variant flex items-center justify-between flex-wrap gap-4 cursor-default">
               <div className="flex items-center gap-4">
-                <span className="material-symbols-outlined text-3xl">ship</span>
+                <span className="material-symbols-outlined notranslate text-3xl" translate="no">ship</span>
                 <div>
                   <h3 className="font-headline font-bold text-on-surface mb-0.5">Import-Export Services</h3>
                   <p className="text-on-surface-variant text-sm">Complete logistics, customs clearance, and trade financing for global commerce.</p>
@@ -368,7 +378,7 @@ export default function Home() {
               <FadeIn key={i} delay={i * 80}>
                 <div className="feature-card p-6 bg-white rounded-2xl border border-outline-variant h-full">
                   <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center mb-4 group-hover:scale-110">
-                    <span className="material-symbols-outlined text-2xl">{f.icon}</span>
+                    <span className="material-symbols-outlined notranslate text-2xl" translate="no">{f.icon}</span>
                   </div>
                   <h3 className="font-headline font-bold text-on-surface mb-2">{f.title}</h3>
                   <p className="text-on-surface-variant text-sm leading-relaxed">{f.desc}</p>
@@ -422,7 +432,7 @@ export default function Home() {
                   {['List 3 Products — Free Forever', 'Verified Business Profile', 'Receive Real Buyer Inquiries', 'WhatsApp & Email Trade Alerts', 'Taste of Karm AI', 'CRM Access at ₹99 / $1.11'].map((f) => (
                     <li key={f} className="flex items-start gap-2">
                       <span className="w-4 h-4 rounded-full bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-900/50 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors">
-                        <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
+                        <span className="material-symbols-outlined notranslate text-primary" translate="no" style={{ fontSize: '10px' }}>check</span>
                       </span>
                       {f}
                     </li>
@@ -448,7 +458,7 @@ export default function Home() {
                   {['Unlimited Product Listings', 'Premium CRM Access', 'Priority Business Listing', 'Real-Time Trade Alerts', 'Monthly Trade Insights Report', 'Cancel Anytime — No Questions'].map((f) => (
                     <li key={f} className="flex items-start gap-2">
                       <span className="w-4 h-4 rounded-full bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-900/50 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors">
-                        <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
+                        <span className="material-symbols-outlined notranslate text-primary" translate="no" style={{ fontSize: '10px' }}>check</span>
                       </span>
                       {f}
                     </li>
@@ -474,7 +484,7 @@ export default function Home() {
                   {['Verified Business Listing', 'Premium CRM — Full Access', 'Karm AI Access', 'WhatsApp & Email Trade Alerts', 'Monthly Trade Insights Report', 'Dedicated Digital Trade Support'].map((f) => (
                     <li key={f} className="flex items-start gap-2">
                       <span className="w-4 h-4 rounded-full bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-900/50 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors">
-                        <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
+                        <span className="material-symbols-outlined notranslate text-primary" translate="no" style={{ fontSize: '10px' }}>check</span>
                       </span>
                       {f}
                     </li>
@@ -491,7 +501,7 @@ export default function Home() {
               <div className="tier-card relative p-7 rounded-2xl h-full flex flex-col"
                 style={{ background: '#f97316', boxShadow: '0 24px 50px rgba(249,115,22,.38)' }}>
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full whitespace-nowrap flex items-center gap-1">
-                  <span className="material-symbols-outlined text-accent" style={{ fontSize: '12px' }}>star</span> Most Popular
+                  <span className="material-symbols-outlined notranslate text-accent" translate="no" style={{ fontSize: '12px' }}>star</span> Most Popular
                 </div>
                 <p className="text-white/70 text-xs font-bold uppercase tracking-widest mb-1">Smart Growth</p>
                 <div className="text-4xl font-headline font-black text-white mb-1">
@@ -503,7 +513,7 @@ export default function Home() {
                   {['150 Verified Leads Every Month', 'Priority Search Placement', 'Premium CRM — Convert Leads', 'SEO-Optimised Trade Listing', 'Buyer & Shipment History Access', '1:1 Trade Strategy Onboarding Call'].map((f) => (
                     <li key={f} className="flex items-start gap-2">
                       <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="material-symbols-outlined text-white" style={{ fontSize: '10px' }}>check</span>
+                        <span className="material-symbols-outlined notranslate text-white" translate="no" style={{ fontSize: '10px' }}>check</span>
                       </span>
                       {f}
                     </li>
@@ -532,7 +542,7 @@ export default function Home() {
                   {['250 Deeply Verified Leads Monthly', '300+ Direct Buyer Phone Numbers', 'Monthly Bulk Shipment Records', 'Competitor Intelligence Access', 'Direct Access to Trade Executives', 'Your Own 1-on-1 Relationship Manager', 'Karm AI Trade Intelligence'].map((f) => (
                     <li key={f} className="flex items-start gap-2">
                       <span className="w-4 h-4 rounded-full bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-900/50 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors">
-                        <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
+                        <span className="material-symbols-outlined notranslate text-primary" translate="no" style={{ fontSize: '10px' }}>check</span>
                       </span>
                       {f}
                     </li>
@@ -558,7 +568,7 @@ export default function Home() {
                   {['330 Precision-Matched Leads Monthly', 'Dedicated Senior Account Manager', 'Premium Profile + Product Video', 'Human-Intelligence Buyer Matching', '300+ Direct Executive Contacts', 'Sample Coordination & Buyer Follow-Up', 'Quarterly Targeted Marketing Campaign', 'Custom Integrations & API Access'].map((f) => (
                     <li key={f} className="flex items-start gap-2">
                       <span className="w-4 h-4 rounded-full bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-900/50 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors">
-                        <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
+                        <span className="material-symbols-outlined notranslate text-primary" translate="no" style={{ fontSize: '10px' }}>check</span>
                       </span>
                       {f}
                     </li>
@@ -598,7 +608,7 @@ export default function Home() {
                     ].map((f) => (
                       <div key={f} className="flex items-start gap-2 text-sm text-white/70">
                         <span className="w-4 h-4 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <span className="material-symbols-outlined text-primary" style={{ fontSize: '10px' }}>check</span>
+                          <span className="material-symbols-outlined notranslate text-primary" translate="no" style={{ fontSize: '10px' }}>check</span>
                         </span>
                         {f}
                       </div>
@@ -697,7 +707,7 @@ export default function Home() {
                   rel={c.rel}
                   className="flex items-center gap-1.5 text-sm text-white/40 hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-sm"
                 >
-                  <span className="material-symbols-outlined text-primary" style={{ fontSize: '1rem' }} aria-hidden="true">{c.icon}</span>
+                  <span className="material-symbols-outlined notranslate text-primary" translate="no" style={{ fontSize: '1rem' }} aria-hidden="true">{c.icon}</span>
                   {c.label}
                 </a>
               ))}

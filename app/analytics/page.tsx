@@ -15,7 +15,7 @@ export default function AnalyticsPage() {
           <div className="flex-1 p-[1px] rounded-3xl" style={{ background: 'linear-gradient(135deg, #ff6b35, #ff9500)' }}>
             <div className="bg-white h-full w-full rounded-[23px] p-6 md:p-8 relative overflow-hidden">
               <div className="absolute top-0 right-0 p-8 opacity-10">
-                <span className="material-symbols-outlined text-[120px]">bolt</span>
+                <span className="material-symbols-outlined notranslate text-[120px]" translate="no">bolt</span>
               </div>
               <div className="relative z-10">
                 <div className="flex items-center gap-2 mb-4 flex-wrap">
@@ -28,7 +28,7 @@ export default function AnalyticsPage() {
                 </p>
                 <div className="flex gap-4 flex-wrap">
                   <button className="bg-primary text-white rounded-full px-6 py-3 font-bold flex items-center gap-2 hover:scale-105 transition-transform">
-                    Analyze Impact <span className="material-symbols-outlined text-sm">trending_up</span>
+                    Analyze Impact <span className="material-symbols-outlined notranslate text-sm" translate="no">trending_up</span>
                   </button>
                   <button className="text-primary font-bold border border-primary/20 rounded-full px-6 py-3 hover:bg-orange-50 transition-colors">
                     Dismiss
@@ -72,7 +72,7 @@ export default function AnalyticsPage() {
             </div>
             <div className="h-[300px] md:h-[400px] w-full rounded-2xl bg-orange-50/30 relative flex items-center justify-center overflow-hidden border border-orange-100">
               <div className="text-center">
-                <span className="material-symbols-outlined text-primary text-6xl">public</span>
+                <span className="material-symbols-outlined notranslate text-primary text-6xl" translate="no">public</span>
                 <p className="text-sm font-bold text-on-surface-variant mt-4">Global Trade Heatmap</p>
                 <p className="text-xs text-on-surface-variant mt-1">Real-time trade volume visualization</p>
               </div>
@@ -94,7 +94,7 @@ export default function AnalyticsPage() {
             <div className="flex-1 bg-orange-50 border border-orange-100 rounded-3xl p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                  <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>lightbulb</span>
+                  <span className="material-symbols-outlined notranslate" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>lightbulb</span>
                 </div>
                 <h3 className="text-xl font-bold font-headline">Market Opportunity</h3>
               </div>

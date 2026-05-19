@@ -1,229 +1,221 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import DashboardLayout from '@/components/DashboardLayout';
-import { useAuth } from '@/lib/auth-context';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { mockUsers } from '@/lib/mockData';
-import { ModernStatCard } from '@/components/ModernStatCard';
-import { ModernInput } from '@/components/ModernInput';
-import { ModernButton } from '@/components/ModernButton';
-import { ModernBadge } from '@/components/ModernBadge';
-import { ModernCard } from '@/components/ModernCard';
+import React, { useEffect, useState } from "react";
+import { database } from "@/lib/firebase";
+import { ref, onValue } from "firebase/database";
+import { User } from "@/lib/types";
 
 export default function AdminUsersPage() {
-  const { user, isLoading } = useAuth();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterRole, setFilterRole] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
-  if (isLoading || !user) return null;
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = () => setActiveMenu(null);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
 
-  const users = mockUsers.filter(u => u.role !== 'admin');
-  
-  const filteredUsers = users.filter(u => {
-    const matchesSearch = u.company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         u.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = filterRole === 'all' || u.role === filterRole;
-    const matchesStatus = filterStatus === 'all' || u.verificationStatus === filterStatus;
-    return matchesSearch && matchesRole && matchesStatus;
+  useEffect(() => {
+    const usersRef = ref(database, 'users');
+    const unsubscribe = onValue(usersRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const usersArray = Object.keys(data).map(key => ({
+          ...data[key],
+          id: key
+        })) as User[];
+        // Sort by updatedAt or createdAt descending
+        usersArray.sort((a, b) => new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime());
+        setUsers(usersArray);
+      } else {
+        setUsers([]);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const filteredUsers = users.filter(user => {
+    const search = searchTerm.toLowerCase();
+    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
+    const email = (user.email || '').toLowerCase();
+    return fullName.includes(search) || email.includes(search);
   });
 
-  const getVerificationVariant = (status: string) => {
-    switch (status) {
-      case 'verified':
-        return 'success';
-      case 'pending':
-        return 'warning';
-      case 'rejected':
-        return 'error';
-      default:
-        return 'info';
+  const getRiskBadge = (level?: string) => {
+    switch(level) {
+      case 'high': return <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest bg-error-container text-on-error-container rounded-full shadow-sm">High Risk</span>;
+      case 'medium': return <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest bg-orange-100 text-orange-800 rounded-full shadow-sm">Medium Risk</span>;
+      case 'low': return <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest bg-green-100 text-green-800 rounded-full shadow-sm">Low Risk</span>;
+      default: return <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest bg-slate-100 text-slate-800 rounded-full shadow-sm">Unknown</span>;
     }
   };
 
-  const getRiskVariant = (risk: string) => {
-    switch (risk) {
-      case 'low':
-        return 'success';
-      case 'medium':
-        return 'warning';
-      case 'high':
-        return 'error';
-      default:
-        return 'info';
-    }
+  const getVerificationBadge = (status?: string, isGstVerified?: boolean) => {
+    if (status === 'verified' || isGstVerified) return <span className="flex items-center gap-1 text-green-600 font-bold text-xs"><span className="material-symbols-outlined notranslate text-sm" translate="no">verified</span> Verified</span>;
+    if (status === 'pending') return <span className="flex items-center gap-1 text-orange-500 font-bold text-xs"><span className="material-symbols-outlined notranslate text-sm" translate="no">pending</span> Pending</span>;
+    return <span className="flex items-center gap-1 text-slate-500 font-bold text-xs"><span className="material-symbols-outlined notranslate text-sm" translate="no">cancel</span> Unverified</span>;
   };
 
   return (
-    <ProtectedRoute>
-      <DashboardLayout>
-        <div className="flex-1 overflow-auto p-4 md:p-8 bg-gradient-to-b from-background via-surface-container-low to-background">
-          {/* Header */}
-          <div className="mb-12 animate-slide-in-down">
-            <h1 className="text-4xl font-headline font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary-dark to-secondary mb-3">
-              User Management
-            </h1>
-            <p className="text-lg text-on-surface-variant font-medium">
-              Verify users, monitor credibility scores, and manage access levels
-            </p>
-          </div>
-
-          {/* Summary Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <ModernStatCard
-              label="Total Users"
-              value={users.length}
-              icon="👥"
-              color="blue"
-            />
-            <ModernStatCard
-              label="Verified"
-              value={users.filter(u => u.verificationStatus === 'verified').length}
-              icon="✅"
-              color="green"
-              change="+12% this month"
-              changeType="up"
-            />
-            <ModernStatCard
-              label="Pending Review"
-              value={users.filter(u => u.verificationStatus === 'pending').length}
-              icon="⏳"
-              color="yellow"
-            />
-            <ModernStatCard
-              label="Avg Credibility"
-              value={Math.round(users.reduce((sum, u) => sum + u.credibilityScore, 0) / users.length)}
-              icon="⭐"
-              color="orange"
-            />
-          </div>
-
-          {/* Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 animate-slide-in-down">
-            <ModernInput
-              label="Search"
-              placeholder="Search by company or email..."
+    <div className="p-8 max-w-[1600px] mx-auto space-y-8 animate-fade-in">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <h2 className="text-4xl font-extrabold tracking-tight text-on-surface font-headline">User Directory</h2>
+          <p className="text-on-surface-variant mt-1 font-medium">Real-time portfolio intelligence and user management.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <span className="material-symbols-outlined notranslate absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" translate="no">search</span>
+            <input 
+              type="text" 
+              placeholder="Search by name or email..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              icon="🔍"
+              className="pl-12 pr-4 py-3 rounded-full border border-outline-variant/30 bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm w-72 text-sm font-medium"
             />
-            <div>
-              <label className="block text-sm font-bold text-on-surface mb-2">Role</label>
-              <select
-                value={filterRole}
-                onChange={(e) => setFilterRole(e.target.value)}
-                className="w-full bg-surface-container-low border border-outline-variant rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all outline-none text-on-surface shadow-soft hover:shadow-md"
-              >
-                <option value="all">All Roles</option>
-                <option value="buyer">Buyer</option>
-                <option value="seller">Seller</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-on-surface mb-2">Status</label>
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full bg-surface-container-low border border-outline-variant rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all outline-none text-on-surface shadow-soft hover:shadow-md"
-              >
-                <option value="all">All Status</option>
-                <option value="verified">Verified</option>
-                <option value="pending">Pending</option>
-                <option value="rejected">Rejected</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Users Grid */}
-          <div className="animate-slide-in-up">
-            <div className="flex items-center gap-3 mb-8">
-              <h2 className="text-2xl font-headline font-black text-on-surface">
-                User Directory
-              </h2>
-              <span className="inline-block bg-gradient-to-r from-primary to-secondary text-white text-xs font-bold px-3 py-1 rounded-full">
-                {filteredUsers.length} users
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4">
-              {filteredUsers.length > 0 ? (
-                filteredUsers.map((u, idx) => (
-                  <ModernCard key={u.id} gradient hover className="p-6 group" style={{ animationDelay: `${idx * 50}ms` }}>
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex-1">
-                        <h3 className="font-headline font-bold text-lg text-on-surface group-hover:text-primary transition-colors">
-                          {u.company.name}
-                        </h3>
-                        <p className="text-sm text-on-surface-light mt-1">{u.company.location}</p>
-                      </div>
-                      <ModernBadge variant={u.role === 'buyer' ? 'primary' : 'info'} icon={u.role === 'buyer' ? '🛒' : '🏭'}>
-                        {u.role.charAt(0).toUpperCase() + u.role.slice(1)}
-                      </ModernBadge>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6 pb-6 border-b border-outline-variant">
-                      <div>
-                        <p className="text-xs font-bold text-on-surface-light uppercase mb-2">Contact</p>
-                        <p className="text-sm font-bold text-on-surface">{u.firstName} {u.lastName}</p>
-                        <p className="text-xs text-on-surface-light">{u.email}</p>
-                      </div>
-
-                      <div>
-                        <p className="text-xs font-bold text-on-surface-light uppercase mb-2">Credibility Score</p>
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 h-2 bg-surface-container rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-gradient-to-r from-success to-green-600"
-                              style={{ width: `${u.credibilityScore}%` }}
-                            />
-                          </div>
-                          <span className="font-bold text-on-surface text-sm">{u.credibilityScore}%</span>
-                        </div>
-                      </div>
-
-                      <div>
-                        <p className="text-xs font-bold text-on-surface-light uppercase mb-2">Risk Level</p>
-                        <ModernBadge variant={getRiskVariant(u.riskLevel)}>
-                          {u.riskLevel.charAt(0).toUpperCase() + u.riskLevel.slice(1)}
-                        </ModernBadge>
-                      </div>
-
-                      <div>
-                        <p className="text-xs font-bold text-on-surface-light uppercase mb-2">Verification</p>
-                        <ModernBadge variant={getVerificationVariant(u.verificationStatus)}>
-                          {u.verificationStatus.charAt(0).toUpperCase() + u.verificationStatus.slice(1)}
-                        </ModernBadge>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <ModernButton variant="outline" size="sm" className="flex-1">
-                        <Link href={`/admin/users/${u.id}`} className="w-full">Review Profile</Link>
-                      </ModernButton>
-                      {u.verificationStatus === 'pending' && (
-                        <>
-                          <ModernButton variant="secondary" size="sm" className="flex-1">
-                            Approve
-                          </ModernButton>
-                          <ModernButton variant="danger" size="sm" className="flex-1">
-                            Reject
-                          </ModernButton>
-                        </>
-                      )}
-                    </div>
-                  </ModernCard>
-                ))
-              ) : (
-                <ModernCard className="p-12 text-center">
-                  <p className="text-lg font-bold text-on-surface-light">No users found matching your filters</p>
-                </ModernCard>
-              )}
-            </div>
           </div>
         </div>
-      </DashboardLayout>
-    </ProtectedRoute>
+      </div>
+
+      {/* Users Table */}
+      <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/10 shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-outline-variant/10 flex justify-between items-center bg-surface-container-low/30">
+          <h3 className="text-lg font-bold font-headline">Registered Accounts</h3>
+          <span className="inline-block bg-primary/10 text-primary font-bold px-3 py-1 text-xs rounded-full">{filteredUsers.length} Total</span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left whitespace-nowrap">
+            <thead className="bg-surface-container-low">
+              <tr>
+                <th className="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">User Details</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Contact Info</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Role / Onboarding</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Verification</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Credibility & Risk</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-outline-variant/5">
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-16 text-center text-on-surface-variant">
+                    <div className="inline-block w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <p className="font-bold font-headline">Synchronizing Database...</p>
+                  </td>
+                </tr>
+              ) : filteredUsers.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-16 text-center text-on-surface-variant">
+                    <span className="material-symbols-outlined notranslate text-4xl mb-2 opacity-50" translate="no">search_off</span>
+                    <p className="font-bold font-headline">No users found.</p>
+                  </td>
+                </tr>
+              ) : (
+                filteredUsers.map((user) => (
+                  <tr key={user.id} className="hover:bg-surface-container-low/50 transition-colors group cursor-pointer">
+                    {/* User Details */}
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black font-headline shrink-0 shadow-sm border border-primary/20">
+                          {user.firstName?.charAt(0)?.toUpperCase() || 'U'}
+                        </div>
+                        <div>
+                          <p className="font-extrabold text-on-surface text-sm">{user.firstName} {user.lastName}</p>
+                          <p className="text-xs text-on-surface-variant font-medium mt-0.5">Joined {new Date(user.createdAt || user.updatedAt || Date.now()).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Contact Info */}
+                    <td className="px-6 py-5">
+                      <div className="text-sm">
+                        <p className="text-on-surface font-bold">{user.email}</p>
+                        <p className="text-xs text-on-surface-variant font-medium mt-0.5">{user.phone || 'No phone provided'}</p>
+                      </div>
+                    </td>
+
+                    {/* Role & Onboarding */}
+                    <td className="px-6 py-5">
+                      <div className="space-y-1.5">
+                        <span className={`inline-block px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded border ${user.role === 'buyer' ? 'bg-blue-50 text-blue-700 border-blue-200' : user.role === 'seller' ? 'bg-purple-50 text-purple-700 border-purple-200' : 'bg-slate-100 text-slate-700 border-slate-200'}`}>
+                          {user.role || 'Guest'}
+                        </span>
+                        <p className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest mt-1">
+                          Step {user.onboardingStep || 1} / 6
+                        </p>
+                      </div>
+                    </td>
+
+                    {/* Verification Status */}
+                    <td className="px-6 py-5">
+                      <div className="flex flex-col gap-1">
+                        {getVerificationBadge(user.verificationStatus, !!user.isGstVerified)}
+                        {user.isAuthorized && (
+                           <span className="flex items-center gap-1 text-primary font-bold text-[10px] uppercase tracking-widest mt-1"><span className="material-symbols-outlined notranslate text-xs" translate="no">shield_person</span> Authorized</span>
+                        )}
+                      </div>
+                    </td>
+
+                    {/* Credibility Score & Risk */}
+                    <td className="px-6 py-5">
+                      <div className="flex flex-col gap-3">
+                        <div className="w-32">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Score: {user.credibilityScore || 0}</span>
+                          </div>
+                          <div className="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full rounded-full transition-all duration-1000 ${(user.credibilityScore || 0) > 80 ? 'bg-green-500' : (user.credibilityScore || 0) > 40 ? 'bg-orange-500' : 'bg-red-500'}`}
+                              style={{ width: `${Math.min(Math.max(user.credibilityScore || 0, 0), 100)}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                        <div>
+                          {getRiskBadge(user.riskLevel)}
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="px-6 py-5 text-right relative">
+                      <button 
+                        className="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-full transition-colors group-hover:bg-surface-container"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveMenu(activeMenu === user.id ? null : user.id!);
+                        }}
+                      >
+                        <span className="material-symbols-outlined notranslate text-xl" translate="no">more_horiz</span>
+                      </button>
+                      
+                      {activeMenu === user.id && (
+                        <div className="absolute right-8 top-12 w-48 bg-surface-container-lowest border border-outline-variant/15 shadow-xl rounded-xl py-2 z-50 animate-fade-in text-left">
+                          <button className="w-full px-4 py-2 text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-3" onClick={(e) => { e.stopPropagation(); setActiveMenu(null); }}>
+                            <span className="material-symbols-outlined notranslate text-sm" translate="no">visibility</span> View Profile
+                          </button>
+                          <button className="w-full px-4 py-2 text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-3" onClick={(e) => { e.stopPropagation(); setActiveMenu(null); }}>
+                            <span className="material-symbols-outlined notranslate text-sm" translate="no">admin_panel_settings</span> Change Role
+                          </button>
+                          <div className="h-px bg-outline-variant/10 my-1"></div>
+                          <button className="w-full px-4 py-2 text-sm font-medium text-error hover:bg-error-container/50 hover:text-error transition-colors flex items-center gap-3" onClick={(e) => { e.stopPropagation(); setActiveMenu(null); }}>
+                            <span className="material-symbols-outlined notranslate text-sm" translate="no">block</span> Suspend User
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 }

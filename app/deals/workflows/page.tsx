@@ -85,11 +85,11 @@ export default function WorkflowsPage() {
           </div>
           <div className="flex gap-3 flex-wrap">
             <button className="bg-primary text-white px-5 py-3 rounded-full font-bold text-sm flex items-center gap-2 hover:scale-105 transition-transform shadow-lg shadow-primary/20">
-              <span className="material-symbols-outlined text-base">add</span>
+              <span className="material-symbols-outlined notranslate text-base" translate="no">add</span>
               New Workflow
             </button>
             <button className="px-5 py-3 rounded-full font-bold text-sm flex items-center gap-2 border border-outline-variant text-on-surface hover:bg-orange-50 transition-colors">
-              <span className="material-symbols-outlined text-base">upload</span>
+              <span className="material-symbols-outlined notranslate text-base" translate="no">upload</span>
               Import Template
             </button>
           </div>
@@ -107,7 +107,7 @@ export default function WorkflowsPage() {
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Live
               </span>
               <button className="text-primary text-xs font-bold flex items-center gap-1 px-3 py-1 rounded-full bg-white border border-primary/20 hover:bg-orange-50 transition-colors">
-                <span className="material-symbols-outlined text-sm">edit</span> Edit
+                <span className="material-symbols-outlined notranslate text-sm" translate="no">edit</span> Edit
               </button>
             </div>
           </div>
@@ -140,7 +140,7 @@ export default function WorkflowsPage() {
                   >
                     <div className="flex items-center gap-4">
                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${iconColors[node.color]}`}>
-                        <span className="material-symbols-outlined">{node.icon}</span>
+                        <span className="material-symbols-outlined notranslate" translate="no">{node.icon}</span>
                       </div>
                       <div className="text-left flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -151,7 +151,7 @@ export default function WorkflowsPage() {
                         <h4 className="font-bold text-on-surface">{node.title}</h4>
                         <p className="text-xs text-on-surface-variant mt-0.5">{node.subtitle}</p>
                       </div>
-                      <span className="material-symbols-outlined text-sm text-slate-400">chevron_right</span>
+                      <span className="material-symbols-outlined notranslate text-sm text-slate-400" translate="no">chevron_right</span>
                     </div>
                   </button>
 
@@ -182,7 +182,7 @@ export default function WorkflowsPage() {
 
             {/* Add New Node */}
             <button className="mt-4 w-10 h-10 border-2 border-dashed border-primary/30 rounded-xl flex items-center justify-center text-primary hover:bg-orange-50 transition-colors group">
-              <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">add</span>
+              <span className="material-symbols-outlined notranslate text-lg group-hover:scale-110 transition-transform" translate="no">add</span>
             </button>
           </div>
         </section>
@@ -237,7 +237,7 @@ export default function WorkflowsPage() {
             <div className="p-[1px] rounded-3xl" style={{ background: 'linear-gradient(135deg, #ff6b35, #ff9500)' }}>
               <div className="bg-white rounded-[23px] p-6">
                 <h3 className="font-bold font-headline text-sm mb-6 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary text-lg">insights</span>
+                  <span className="material-symbols-outlined notranslate text-primary text-lg" translate="no">insights</span>
                   Automation Metrics
                 </h3>
                 <div className="space-y-5">
@@ -249,7 +249,7 @@ export default function WorkflowsPage() {
                   ].map((metric) => (
                     <div key={metric.label} className="flex items-center gap-4">
                       <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-primary shrink-0">
-                        <span className="material-symbols-outlined text-lg">{metric.icon}</span>
+                        <span className="material-symbols-outlined notranslate text-lg" translate="no">{metric.icon}</span>
                       </div>
                       <div className="flex-1">
                         <p className="text-[10px] font-bold text-on-surface-variant uppercase">{metric.label}</p>
@@ -264,7 +264,7 @@ export default function WorkflowsPage() {
             {/* AI Suggestions */}
             <div className="bg-orange-50/50 border border-orange-100 rounded-3xl p-6">
               <div className="flex items-center gap-2 mb-4">
-                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                <span className="material-symbols-outlined notranslate text-primary" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
                 <h3 className="font-bold font-headline text-sm">AI Suggestions</h3>
               </div>
               <div className="space-y-3">

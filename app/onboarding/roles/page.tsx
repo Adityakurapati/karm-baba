@@ -56,7 +56,7 @@ export default function RoleSelectionPage() {
             >
               {/* Icon */}
               <div className="w-16 h-16 bg-primary-container rounded-xl flex items-center justify-center mb-6">
-                <span className="material-symbols-outlined text-white text-3xl" style={{fontSize: '32px'}}>
+                <span className="material-symbols-outlined notranslate text-white text-3xl" translate="no" style={{fontSize: '32px'}}>
                   {role.icon}
                 </span>
               </div>

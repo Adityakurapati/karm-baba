@@ -8,7 +8,7 @@ export default function PerformanceBriefing() {
         <div>
           <nav className="flex items-center gap-2 text-xs font-bold text-on-surface-variant tracking-widest mb-2">
             <span className="uppercase">Intelligence</span>
-            <span className="material-symbols-outlined text-[10px]">chevron_right</span>
+            <span className="material-symbols-outlined notranslate text-[10px]" translate="no">chevron_right</span>
             <span className="text-primary uppercase">RM Performance</span>
           </nav>
           <h2 className="font-headline text-4xl font-extrabold tracking-tight text-on-surface">RM Performance Briefing</h2>
@@ -16,11 +16,11 @@ export default function PerformanceBriefing() {
         </div>
         <div className="flex gap-3">
           <button className="px-5 py-2.5 bg-surface-container-lowest text-on-surface font-semibold text-sm rounded-xl shadow-sm border border-outline-variant/15 flex items-center gap-2 hover:bg-surface-container transition-colors">
-            <span className="material-symbols-outlined text-lg">calendar_today</span>
+            <span className="material-symbols-outlined notranslate text-lg" translate="no">calendar_today</span>
             Last 30 Days
           </button>
           <button className="px-5 py-2.5 bg-primary text-white font-bold text-sm rounded-xl shadow-md shadow-primary/20 flex items-center gap-2 hover:opacity-90 transition-opacity">
-            <span className="material-symbols-outlined text-lg">download</span>
+            <span className="material-symbols-outlined notranslate text-lg" translate="no">download</span>
             Export Report
           </button>
         </div>
@@ -40,10 +40,10 @@ export default function PerformanceBriefing() {
               <h3 className={`text-3xl font-headline font-extrabold ${stat.special ? 'text-white' : 'text-on-surface'}`}>{stat.value}</h3>
               {stat.change && (
                 <span className={`${stat.color} font-bold text-xs flex items-center ${stat.bg} px-2 py-1 rounded-full`}>
-                  <span className="material-symbols-outlined text-sm mr-1">{stat.icon}</span> {stat.change}
+                  <span className="material-symbols-outlined notranslate text-sm mr-1" translate="no">{stat.icon}</span> {stat.change}
                 </span>
               )}
-              {stat.special && <span className="material-symbols-outlined text-3xl opacity-30 text-white">{stat.icon}</span>}
+              {stat.special && <span className="material-symbols-outlined notranslate text-3xl opacity-30 text-white" translate="no">{stat.icon}</span>}
             </div>
             {stat.progress !== null && (
               <div className="mt-4 h-1.5 w-full bg-surface-container-low rounded-full overflow-hidden">
@@ -112,7 +112,7 @@ export default function PerformanceBriefing() {
               <div key={i} className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${sector.color}`}>
-                    <span className="material-symbols-outlined">{sector.icon}</span>
+                    <span className="material-symbols-outlined notranslate" translate="no">{sector.icon}</span>
                   </div>
                   <div>
                     <p className="font-bold text-sm">{sector.label}</p>
@@ -175,7 +175,7 @@ export default function PerformanceBriefing() {
               <p className="text-xs text-on-surface-variant mb-4">{rm.role}</p>
               {rm.csat ? (
                 <div className="flex items-center gap-2 mb-6">
-                  <span className="material-symbols-outlined text-sm text-yellow-500" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                  <span className="material-symbols-outlined notranslate text-sm text-yellow-500" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
                   <span className="text-xs font-bold text-on-surface-variant">{rm.csat} CSAT</span>
                 </div>
               ) : (
@@ -191,7 +191,7 @@ export default function PerformanceBriefing() {
               )}
               <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-primary border-t border-slate-100 pt-4 cursor-pointer hover:opacity-70 transition-opacity mt-2">
                 View Deal Sheet
-                <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                <span className="material-symbols-outlined notranslate text-sm" translate="no">arrow_forward</span>
               </div>
             </div>
           ))}
@@ -201,7 +201,7 @@ export default function PerformanceBriefing() {
       {/* Execution HUD (Floating Footer) */}
       <div className="fixed bottom-8 left-[calc(50%+128px)] -translate-x-1/2 executive-glass px-8 py-4 rounded-full border border-outline-variant/10 shadow-2xl z-50 flex items-center gap-12">
         <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+          <span className="material-symbols-outlined notranslate text-secondary" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
           <div>
             <p className="text-[8px] font-bold uppercase tracking-tighter text-on-surface-variant">Executive Intelligence</p>
             <p className="text-[10px] font-medium text-on-surface">3 RM targets nearing performance threshold. <span className="text-primary font-bold cursor-pointer hover:underline">Notify VP?</span></p>

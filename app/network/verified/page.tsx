@@ -131,7 +131,7 @@ export default function VerifiedNetworkPage() {
                 {member.name}
               </h3>
               <p className="text-sm text-on-surface-variant flex items-center gap-1 mb-4">
-                <span className="material-symbols-outlined text-sm">public</span>
+                <span className="material-symbols-outlined notranslate text-sm" translate="no">public</span>
                 {member.country}
               </p>
 

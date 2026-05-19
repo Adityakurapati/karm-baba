@@ -54,7 +54,7 @@ export default function AIAssistantPage() {
         <div className="bg-gradient-to-br from-primary to-primary-container text-white p-8">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-              <span className="material-symbols-outlined text-2xl">smart_toy</span>
+              <span className="material-symbols-outlined notranslate text-2xl" translate="no">smart_toy</span>
             </div>
             <div>
               <h1 className="text-3xl font-headline font-black">KARM AI Assistant</h1>
@@ -132,7 +132,7 @@ export default function AIAssistantPage() {
                 onClick={handleSendMessage}
                 className="px-6 py-3 bg-primary text-white font-headline font-bold rounded-lg hover:bg-primary-container transition-colors"
               >
-                <span className="material-symbols-outlined">send</span>
+                <span className="material-symbols-outlined notranslate" translate="no">send</span>
               </button>
             </div>
           </div>

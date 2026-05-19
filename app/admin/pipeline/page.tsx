@@ -81,7 +81,7 @@ export default function PipelineManagement() {
               <button className="px-4 py-2 text-on-surface-variant text-sm font-semibold hover:text-primary transition-all">Analytics</button>
             </div>
             <button className="flex items-center gap-2 bg-surface-container-highest px-4 py-2.5 rounded-xl text-primary text-sm font-bold hover:bg-surface-container-high transition-colors">
-              <span className="material-symbols-outlined text-sm">filter_list</span>
+              <span className="material-symbols-outlined notranslate text-sm" translate="no">filter_list</span>
               Filter
             </button>
           </div>
@@ -94,12 +94,12 @@ export default function PipelineManagement() {
           ].map((f, i) => (
             <div key={i} className="px-4 py-2 bg-surface-container-lowest border border-outline-variant/15 rounded-full text-xs font-semibold text-on-surface-variant flex items-center gap-2 shadow-sm">
               <span>{f.label}: <b>{f.val}</b></span>
-              <span className="material-symbols-outlined text-xs cursor-pointer hover:text-error transition-colors">close</span>
+              <span className="material-symbols-outlined notranslate text-xs cursor-pointer hover:text-error transition-colors" translate="no">close</span>
             </div>
           ))}
           <div className="px-4 py-2 bg-surface-container-lowest border border-outline-variant/15 rounded-full text-xs font-semibold text-on-surface-variant flex items-center gap-2 shadow-sm cursor-pointer hover:bg-surface-container-low transition-colors">
             <span>Manager: <b>All</b></span>
-            <span className="material-symbols-outlined text-xs">arrow_drop_down</span>
+            <span className="material-symbols-outlined notranslate text-xs" translate="no">arrow_drop_down</span>
           </div>
         </div>
       </section>
@@ -115,7 +115,7 @@ export default function PipelineManagement() {
                   <h3 className="font-headline font-bold text-on-surface uppercase tracking-wider text-xs">{column.title}</h3>
                   <span className="bg-surface-container-high text-on-surface-variant px-2 py-0.5 rounded-full text-[10px] font-bold">{column.count}</span>
                 </div>
-                <span className="material-symbols-outlined text-on-surface-variant/40 text-sm cursor-pointer hover:text-primary transition-colors">more_horiz</span>
+                <span className="material-symbols-outlined notranslate text-on-surface-variant/40 text-sm cursor-pointer hover:text-primary transition-colors" translate="no">more_horiz</span>
               </div>
               <div className="flex flex-col gap-4 overflow-y-auto no-scrollbar pb-8 px-1">
                 {column.cards.map((card, j) => (
@@ -130,7 +130,7 @@ export default function PipelineManagement() {
                         <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">{card.letter}</div>
                       ) : (
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${card.won ? 'bg-emerald-50 text-emerald-600' : 'bg-tertiary/10 text-tertiary'}`}>
-                          <span className="material-symbols-outlined" style={{ fontVariationSettings: card.won ? "'FILL' 1" : undefined }}>{card.icon}</span>
+                          <span className="material-symbols-outlined notranslate" translate="no" style={{ fontVariationSettings: card.won ? "'FILL' 1" : undefined }}>{card.icon}</span>
                         </div>
                       )}
                       {card.priority && (
@@ -145,7 +145,7 @@ export default function PipelineManagement() {
                     <div className="flex items-center justify-between pt-4 border-t border-outline-variant/10">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded-full bg-surface-container border border-outline-variant/10 flex items-center justify-center overflow-hidden">
-                          <span className="material-symbols-outlined text-sm text-outline">person</span>
+                          <span className="material-symbols-outlined notranslate text-sm text-outline" translate="no">person</span>
                         </div>
                         <span className="text-[10px] font-bold text-on-surface-variant">{card.manager}</span>
                       </div>
@@ -166,7 +166,7 @@ export default function PipelineManagement() {
         <div className="flex -space-x-3">
           {[1, 2].map((_, i) => (
             <div key={i} className="w-8 h-8 rounded-full border-2 border-surface-container-highest bg-surface-container overflow-hidden">
-               <span className="material-symbols-outlined text-on-surface-variant flex items-center justify-center h-full">person</span>
+               <span className="material-symbols-outlined notranslate text-on-surface-variant flex items-center justify-center h-full" translate="no">person</span>
             </div>
           ))}
           <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-[10px] font-bold text-white border-2 border-surface-container-highest">+4</div>

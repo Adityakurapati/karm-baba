@@ -277,7 +277,7 @@ export default function RegisterPage() {
                       : 'border-outline-variant hover:border-primary/30 text-on-surface-variant'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-2xl mb-1">shopping_cart</span>
+                  <span className="material-symbols-outlined notranslate text-2xl mb-1" translate="no">shopping_cart</span>
                   <span className="font-bold">Buyer</span>
                 </button>
                 <button
@@ -289,7 +289,7 @@ export default function RegisterPage() {
                       : 'border-outline-variant hover:border-secondary/30 text-on-surface-variant'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-2xl mb-1">factory</span>
+                  <span className="material-symbols-outlined notranslate text-2xl mb-1" translate="no">factory</span>
                   <span className="font-bold">Seller</span>
                 </button>
               </div>

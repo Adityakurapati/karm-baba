@@ -4,14 +4,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
+import { useState } from 'react';
 import { getNavigationForRole } from '@/lib/navigation-config';
 
 interface SidebarProps {
   open?: boolean;
   onClose?: () => void;
+  onToggle?: () => void;
 }
 
-export default function Sidebar({ open = true, onClose }: SidebarProps) {
+export default function Sidebar({ open = true, onClose, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout, isLoading } = useAuth();
@@ -21,10 +23,11 @@ export default function Sidebar({ open = true, onClose }: SidebarProps) {
   }
 
   const sections = getNavigationForRole(user.role);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    router.push('/');
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    await logout();
   };
 
   return (
@@ -37,20 +40,31 @@ export default function Sidebar({ open = true, onClose }: SidebarProps) {
         />
       )}
 
+      {/* Logging Out Modal */}
+      {isLoggingOut && (
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-sm w-full flex flex-col items-center shadow-xl animate-fade-in">
+            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-6"></div>
+            <h3 className="text-xl font-bold font-headline text-slate-900 mb-2">Logging out...</h3>
+            <p className="text-slate-500 text-center">Please wait while we securely log you out of your account.</p>
+          </div>
+        </div>
+      )}
+
       <aside
         className={`fixed left-0 top-0 h-screen bg-slate-50 border-r border-slate-200 flex flex-col py-6 z-40 overflow-y-auto transition-all duration-300
           ${open ? 'w-72 translate-x-0' : '-translate-x-full md:translate-x-0 md:w-20 w-72'}
         `}
       >
-        {/* Logo */}
-        <div className={`mb-10 ${open ? 'px-6' : 'md:px-2 px-6'}`}>
-          <Link href="/" className={`flex items-center ${open ? 'gap-3' : 'md:justify-center gap-3'}`}>
+        {/* Logo and Toggle */}
+        <div className={`mb-6 flex flex-col ${open ? 'px-6' : 'md:px-2 px-6'} items-center`}>
+          <Link href="/" className={`flex items-center w-full ${open ? 'gap-3' : 'md:justify-center gap-3'}`}>
             <Image
               src="/logo.png"
               alt="KARM BABA Logo"
               width={56}
               height={56}
-              className="w-14 h-14"
+              className="w-14 h-14 flex-shrink-0"
               priority
               unoptimized
             />
@@ -60,6 +74,19 @@ export default function Sidebar({ open = true, onClose }: SidebarProps) {
               </span>
             )}
           </Link>
+
+          {/* Toggle Button (Desktop Only) */}
+          <button
+            onClick={onToggle}
+            className={`hidden md:flex items-center justify-center w-8 h-8 rounded-full border border-slate-200 bg-white shadow-sm text-slate-500 hover:text-primary hover:border-primary transition-all mt-4 ${
+              open ? 'self-end mr-2' : ''
+            }`}
+            title={open ? 'Collapse Sidebar' : 'Expand Sidebar'}
+          >
+            <span className="material-symbols-outlined notranslate" translate="no" style={{ fontSize: '18px' }}>
+              {open ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right'}
+            </span>
+          </button>
         </div>
 
         {/* Navigation */}
@@ -86,7 +113,7 @@ export default function Sidebar({ open = true, onClose }: SidebarProps) {
                       } ${!open ? 'md:justify-center' : ''}`}
                       title={!open ? item.label : undefined}
                     >
-                      <span className="material-symbols-outlined" style={{fontSize: '20px'}}>
+                      <span className="material-symbols-outlined notranslate" translate="no" style={{fontSize: '20px'}}>
                         {item.icon}
                       </span>
                       <span className={`font-headline ${!open ? 'md:hidden' : ''}`}>{item.label}</span>
@@ -127,7 +154,7 @@ export default function Sidebar({ open = true, onClose }: SidebarProps) {
               }`}
               title={!open ? "Logout" : undefined}
             >
-              <span className="material-symbols-outlined" style={{fontSize: '20px'}}>logout</span>
+              <span className="material-symbols-outlined notranslate" translate="no" style={{fontSize: '20px'}}>logout</span>
               <span className={!open ? 'md:hidden' : ''}>Logout</span>
             </button>
           </div>

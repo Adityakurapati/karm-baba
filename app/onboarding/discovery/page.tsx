@@ -54,7 +54,7 @@ export default function DynamicDiscoveryPage() {
                       <option value="licensing">Licensing &amp; Intellectual Property</option>
                     </select>
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <span className="material-symbols-outlined text-on-surface-variant">expand_more</span>
+                      <span className="material-symbols-outlined notranslate text-on-surface-variant" translate="no">expand_more</span>
                     </div>
                   </div>
                 </div>
@@ -74,7 +74,7 @@ export default function DynamicDiscoveryPage() {
                             : 'bg-surface-container-low text-on-surface-variant hover:bg-orange-50/30'
                         }`}
                       >
-                        <span className="material-symbols-outlined text-3xl">{m.icon}</span>
+                        <span className="material-symbols-outlined notranslate text-3xl" translate="no">{m.icon}</span>
                         <span className="text-xs font-bold uppercase">{m.label}</span>
                       </button>
                     ))}
@@ -169,7 +169,7 @@ export default function DynamicDiscoveryPage() {
               <div className="text-white rounded-2xl p-8 shadow-2xl relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #c44b1a, #e55a24)' }}>
                 <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
                 <div className="flex items-center gap-3 mb-6 relative z-10">
-                  <span className="material-symbols-outlined text-orange-200" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
+                  <span className="material-symbols-outlined notranslate text-orange-200" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
                   <h3 className="text-xl font-bold tracking-tight font-headline">Next Best Action</h3>
                 </div>
                 <div className="space-y-6 relative z-10">

@@ -57,7 +57,7 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
         <div className="flex items-center gap-6">
           <span className="text-slate-500 font-medium text-sm hover:text-primary transition-colors cursor-pointer">Help</span>
           <div className="flex items-center gap-4">
-            <span className="material-symbols-outlined text-slate-500 cursor-pointer hover:text-primary transition-colors">notifications</span>
+            <span className="material-symbols-outlined notranslate text-slate-500 cursor-pointer hover:text-primary transition-colors" translate="no">notifications</span>
             <div className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-headline font-bold text-sm">U</div>
           </div>
         </div>
@@ -82,7 +82,7 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
                   key={step.href}
                   className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 cursor-not-allowed transition-all duration-300"
                 >
-                  <span className="material-symbols-outlined opacity-50">lock</span>
+                  <span className="material-symbols-outlined notranslate opacity-50" translate="no">lock</span>
                   <span className="font-headline opacity-50">{step.label}</span>
                 </div>
               );
@@ -101,7 +101,7 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
                 }`}
               >
                 <span
-                  className="material-symbols-outlined"
+                  className="material-symbols-outlined notranslate" translate="no"
                   style={isCompleted ? { fontVariationSettings: "'FILL' 1" } : {}}
                 >
                   {isCompleted ? 'check_circle' : step.icon}

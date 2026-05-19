@@ -8,7 +8,7 @@ export default function PerformanceView() {
         <div>
           <nav className="flex items-center gap-2 text-xs font-bold text-on-surface-variant tracking-widest mb-2">
             <span className="uppercase">Intelligence</span>
-            <span className="material-symbols-outlined text-[10px]">chevron_right</span>
+            <span className="material-symbols-outlined notranslate text-[10px]" translate="no">chevron_right</span>
             <span className="text-primary uppercase">RM PERFORMANCE</span>
           </nav>
           <h2 className="font-headline text-4xl font-extrabold tracking-tight text-on-surface">Relationship Management</h2>
@@ -16,11 +16,11 @@ export default function PerformanceView() {
         </div>
         <div className="flex gap-3">
           <button className="px-5 py-2.5 bg-surface-container-lowest text-on-surface font-semibold text-sm rounded-xl shadow-sm border border-outline-variant/15 flex items-center gap-2 hover:bg-surface-container transition-colors">
-            <span className="material-symbols-outlined text-lg">calendar_today</span>
+            <span className="material-symbols-outlined notranslate text-lg" translate="no">calendar_today</span>
             Last 30 Days
           </button>
           <button className="px-5 py-2.5 bg-primary text-white font-bold text-sm rounded-xl shadow-md shadow-primary/20 flex items-center gap-2 hover:opacity-90 transition-opacity">
-            <span className="material-symbols-outlined text-lg">download</span>
+            <span className="material-symbols-outlined notranslate text-lg" translate="no">download</span>
             Export Report
           </button>
         </div>
@@ -37,7 +37,7 @@ export default function PerformanceView() {
           <div key={i} className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/15 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-4">
               <div className={`w-10 h-10 rounded-lg ${kpi.bg} flex items-center justify-center ${kpi.color}`}>
-                <span className="material-symbols-outlined">{kpi.icon}</span>
+                <span className="material-symbols-outlined notranslate" translate="no">{kpi.icon}</span>
               </div>
               <span className={`text-xs font-bold ${kpi.trendColor} ${kpi.trendColor === 'text-green-600' ? 'bg-green-50' : 'bg-error-container/20'} px-2 py-1 rounded`}>{kpi.change}</span>
             </div>
@@ -60,8 +60,8 @@ export default function PerformanceView() {
               <p className="text-sm text-on-surface-variant">Revenue generation by top-tier Relationship Managers</p>
             </div>
             <div className="flex items-center gap-2">
-              <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container-highest text-primary shadow-sm"><span className="material-symbols-outlined text-lg">bar_chart</span></button>
-              <button className="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high"><span className="material-symbols-outlined text-lg">show_chart</span></button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container-highest text-primary shadow-sm"><span className="material-symbols-outlined notranslate text-lg" translate="no">bar_chart</span></button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high"><span className="material-symbols-outlined notranslate text-lg" translate="no">show_chart</span></button>
             </div>
           </div>
           <div className="space-y-6">
@@ -127,7 +127,7 @@ export default function PerformanceView() {
         {/* Regional Performance Card */}
         <div className="bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/15 relative overflow-hidden shadow-sm">
           <div className="absolute top-0 right-0 p-8 opacity-10">
-            <span className="material-symbols-outlined text-8xl text-primary">public</span>
+            <span className="material-symbols-outlined notranslate text-8xl text-primary" translate="no">public</span>
           </div>
           <h4 className="font-headline font-bold text-xl mb-6 flex items-center gap-2">
             <span className="w-1.5 h-6 bg-primary rounded-full"></span>
@@ -179,7 +179,7 @@ export default function PerformanceView() {
         <div className="executive-blur bg-surface-container-highest/70 border border-outline-variant/20 rounded-full p-2 flex items-center justify-between shadow-2xl backdrop-blur-xl">
           <div className="flex items-center gap-4 px-4">
             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white shadow-lg">
-              <span className="material-symbols-outlined text-sm">rocket_launch</span>
+              <span className="material-symbols-outlined notranslate text-sm" translate="no">rocket_launch</span>
             </div>
             <p className="text-xs font-bold text-on-surface">Q3 Strategy Implementation Active</p>
           </div>

@@ -147,7 +147,7 @@ export default function DealDetailPage({ params }: PageProps) {
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="text-on-surface hover:text-primary transition-colors"
           >
-            <span className="material-symbols-outlined">menu</span>
+            <span className="material-symbols-outlined notranslate" translate="no">menu</span>
           </button>
           <div className="flex-1 ml-4">
             <Link 
@@ -260,15 +260,15 @@ export default function DealDetailPage({ params }: PageProps) {
                       onClick={() => setActiveTab('messages')}
                       className="w-full p-3 bg-white/10 rounded-lg hover:bg-white/20 transition-colors font-bold text-left flex items-center gap-2"
                     >
-                      <span className="material-symbols-outlined text-sm">chat</span>
+                      <span className="material-symbols-outlined notranslate text-sm" translate="no">chat</span>
                       Send Message
                     </button>
                     <button className="w-full p-3 bg-white/10 rounded-lg hover:bg-white/20 transition-colors font-bold text-left flex items-center gap-2">
-                      <span className="material-symbols-outlined text-sm">upload_file</span>
+                      <span className="material-symbols-outlined notranslate text-sm" translate="no">upload_file</span>
                       Upload Document
                     </button>
                     <button className="w-full p-3 bg-white/10 rounded-lg hover:bg-white/20 transition-colors font-bold text-left flex items-center gap-2">
-                      <span className="material-symbols-outlined text-sm">update</span>
+                      <span className="material-symbols-outlined notranslate text-sm" translate="no">update</span>
                       Update Status
                     </button>
                   </div>
@@ -320,7 +320,7 @@ export default function DealDetailPage({ params }: PageProps) {
                     className="flex items-center justify-between p-4 border border-outline-variant rounded-lg hover:border-primary transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-primary">
+                      <span className="material-symbols-outlined notranslate text-primary" translate="no">
                         description
                       </span>
                       <div>
@@ -331,7 +331,7 @@ export default function DealDetailPage({ params }: PageProps) {
                       </div>
                     </div>
                     <button className="p-2 hover:bg-surface-container rounded transition-colors">
-                      <span className="material-symbols-outlined">download</span>
+                      <span className="material-symbols-outlined notranslate" translate="no">download</span>
                     </button>
                   </div>
                 ))}
@@ -385,7 +385,7 @@ export default function DealDetailPage({ params }: PageProps) {
                   disabled={!newMessage.trim()}
                   className="px-6 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50"
                 >
-                  <span className="material-symbols-outlined">send</span>
+                  <span className="material-symbols-outlined notranslate" translate="no">send</span>
                 </button>
               </div>
             </div>

@@ -172,9 +172,9 @@ export default function PricingPage() {
                     {plan.features.map((feature, j) => (
                       <li key={j} className={`flex items-center gap-2 text-sm ${plan.featured ? (j === 0 ? 'text-on-surface dark:text-white font-semibold' : 'text-on-surface dark:text-white') : 'text-on-surface-variant dark:text-slate-300'}`}>
                         {plan.featured && j === 0 ? (
-                          <span className="material-symbols-outlined text-primary text-lg filled" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
+                          <span className="material-symbols-outlined notranslate text-primary text-lg filled" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
                         ) : (
-                          <span className="material-symbols-outlined text-primary text-lg">check_circle</span>
+                          <span className="material-symbols-outlined notranslate text-primary text-lg" translate="no">check_circle</span>
                         )}
                         {feature}
                       </li>
@@ -207,7 +207,7 @@ export default function PricingPage() {
           <FadeIn>
             <div className="bg-orange-50/60 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/30 p-8 rounded-2xl flex items-start gap-4 transition-colors">
               <div className="p-3 bg-white dark:bg-slate-800 rounded-xl shadow-sm flex-shrink-0">
-                <span className="material-symbols-outlined text-primary text-3xl">shield</span>
+                <span className="material-symbols-outlined notranslate text-primary text-3xl" translate="no">shield</span>
               </div>
               <div>
                 <h4 className="font-headline font-bold text-on-surface dark:text-white text-lg mb-1">Institutional Security</h4>
@@ -218,7 +218,7 @@ export default function PricingPage() {
           <FadeIn delay={100}>
             <div className="bg-orange-50/60 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/30 p-8 rounded-2xl flex items-start gap-4 transition-colors">
               <div className="p-3 bg-white dark:bg-slate-800 rounded-xl shadow-sm flex-shrink-0">
-                <span className="material-symbols-outlined text-primary text-3xl">verified_user</span>
+                <span className="material-symbols-outlined notranslate text-primary text-3xl" translate="no">verified_user</span>
               </div>
               <div>
                 <h4 className="font-headline font-bold text-on-surface dark:text-white text-lg mb-1">Compliance Guaranteed</h4>
@@ -243,7 +243,7 @@ export default function PricingPage() {
                   >
                     <span className="font-bold text-on-surface dark:text-white">{faq.q}</span>
                     <span
-                      className="material-symbols-outlined text-on-surface-variant dark:text-slate-400 transition-transform duration-300"
+                      className="material-symbols-outlined notranslate text-on-surface-variant dark:text-slate-400 transition-transform duration-300" translate="no"
                       style={{ transform: openFaq === i ? 'rotate(180deg)' : 'rotate(0deg)' }}
                     >
                       expand_more

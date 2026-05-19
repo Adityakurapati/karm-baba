@@ -13,7 +13,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="h-screen bg-background">
       {/* Sidebar - Fixed Position */}
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar 
+        open={sidebarOpen} 
+        onClose={() => setSidebarOpen(false)} 
+        onToggle={() => setSidebarOpen(!sidebarOpen)} 
+      />
 
       {/* Mobile Header Bar */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-white border-b border-slate-200 h-14 flex items-center px-4">
@@ -21,7 +25,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           onClick={() => setSidebarOpen(true)}
           className="text-on-surface hover:text-primary transition-colors"
         >
-          <span className="material-symbols-outlined">menu</span>
+          <span className="material-symbols-outlined notranslate" translate="no">menu</span>
         </button>
         <span className="ml-3 font-headline font-bold text-primary text-lg">KARM BABA</span>
       </div>

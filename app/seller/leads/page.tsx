@@ -5,25 +5,56 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { database } from "@/lib/firebase";
 import { ref, onValue } from "firebase/database";
-import { User } from "@/lib/types";
+import { PlatformLead } from "@/lib/types";
+import { useAuth } from "@/lib/auth-context";
 import toast from "react-hot-toast";
 
 export default function SellerLeadsPage() {
-  const [leads, setLeads] = useState<User[]>([]);
+  const { user } = useAuth();
+  const [leads, setLeads] = useState<PlatformLead[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [connectingId, setConnectingId] = useState<string | null>(null);
 
   useEffect(() => {
-    const usersRef = ref(database, 'users');
-    const unsubscribe = onValue(usersRef, (snapshot) => {
+    if (!user) return;
+
+    const leadsRef = ref(database, 'leads');
+    const unsubscribe = onValue(leadsRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const leadsArray = Object.keys(data)
-          .map(key => ({ ...data[key], id: key }))
-          .filter((user: User) => user.role === 'lead') as User[];
+        const leadsArray = Object.keys(data).map(key => ({
+          ...data[key],
+          id: key
+        })) as PlatformLead[];
+
+        // Filter based on assignment logic
+        const visibleLeads = leadsArray.filter(lead => {
+          if (lead.assignmentType === 'all') return true;
+          
+          if (lead.assignmentType === 'users') {
+            return lead.assignedUsers?.includes(user.id);
+          }
+          
+          if (lead.assignmentType === 'categories') {
+            const userCategories = Array.isArray(user.category) 
+              ? user.category 
+              : user.category ? [user.category] : [];
+            const userIndustry = Array.isArray(user.company?.industry)
+              ? user.company?.industry
+              : user.company?.industry ? [user.company.industry] : [];
+            
+            // If the lead is assigned to ANY category the user has selected
+            return lead.assignedCategories?.some(cat => 
+              userCategories.includes(cat) || userIndustry.includes(cat)
+            );
+          }
+          
+          return false;
+        });
         
-        setLeads(leadsArray);
+        visibleLeads.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+        setLeads(visibleLeads);
       } else {
         setLeads([]);
       }
@@ -31,7 +62,7 @@ export default function SellerLeadsPage() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   const handleConnect = (leadId: string) => {
     setConnectingId(leadId);
@@ -44,10 +75,9 @@ export default function SellerLeadsPage() {
 
   const filteredLeads = leads.filter(lead => {
     const search = searchTerm.toLowerCase();
-    const fullName = `${lead.firstName || ''} ${lead.lastName || ''}`.toLowerCase();
-    const cat = (lead.category || '').toLowerCase();
-    const spec = (lead.specialization || '').toLowerCase();
-    return fullName.includes(search) || cat.includes(search) || spec.includes(search);
+    const name = (lead.name || '').toLowerCase();
+    const company = (lead.companyName || '').toLowerCase();
+    return name.includes(search) || company.includes(search);
   });
 
   return (
@@ -61,14 +91,14 @@ export default function SellerLeadsPage() {
                 Industry Leads
               </h1>
               <p className="text-lg text-on-surface-variant font-medium">
-                Connect with verified agents and category specialists to accelerate your deals.
+                Connect with verified agents and category specialists curated for you.
               </p>
             </div>
             <div className="relative w-full md:w-auto">
               <span className="material-symbols-outlined notranslate absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" translate="no">search</span>
               <input 
                 type="text" 
-                placeholder="Search by name, category..." 
+                placeholder="Search by name, company..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full md:w-80 pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/30 bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm font-medium"
@@ -80,13 +110,13 @@ export default function SellerLeadsPage() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-32">
               <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-6"></div>
-              <p className="font-bold text-xl text-on-surface-variant font-headline animate-pulse">Loading Lead Network...</p>
+              <p className="font-bold text-xl text-on-surface-variant font-headline animate-pulse">Loading Curated Network...</p>
             </div>
           ) : filteredLeads.length === 0 ? (
             <div className="bg-surface-container-lowest rounded-3xl p-16 text-center border border-outline-variant/10 shadow-sm">
               <span className="material-symbols-outlined notranslate text-6xl text-on-surface-variant opacity-30 mb-6 block" translate="no">person_search</span>
               <h3 className="text-2xl font-bold font-headline mb-2">No Leads Found</h3>
-              <p className="text-on-surface-variant text-lg">We couldn't find any leads matching your criteria. Check back later!</p>
+              <p className="text-on-surface-variant text-lg">We couldn't find any leads assigned to your profile matching your criteria. Check back later!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-slide-in-up">
@@ -98,26 +128,23 @@ export default function SellerLeadsPage() {
 
                   <div className="flex justify-between items-start mb-6">
                     <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 text-primary flex items-center justify-center text-2xl font-black font-headline shadow-inner">
-                      {lead.firstName?.charAt(0)?.toUpperCase() || 'L'}
-                    </div>
-                    <div className="bg-surface-container px-3 py-1 rounded-full text-xs font-bold text-on-surface-variant uppercase tracking-wider">
-                      {lead.category || 'General'}
+                      {lead.name?.charAt(0)?.toUpperCase() || 'L'}
                     </div>
                   </div>
 
                   <div className="mb-6">
-                    <h3 className="font-bold font-headline text-xl text-on-surface mb-1 group-hover:text-primary transition-colors">{lead.firstName} {lead.lastName}</h3>
-                    <p className="text-sm font-medium text-primary">{lead.specialization || 'Independent Consultant'}</p>
+                    <h3 className="font-bold font-headline text-xl text-on-surface mb-1 group-hover:text-primary transition-colors">{lead.name}</h3>
+                    <p className="text-sm font-medium text-primary">{lead.companyName}</p>
                   </div>
 
                   <div className="space-y-3 mb-8 pb-6 border-b border-outline-variant/10">
                     <div className="flex items-center gap-3 text-sm text-on-surface-variant">
-                      <span className="material-symbols-outlined notranslate text-[18px] opacity-70" translate="no">verified</span>
-                      <span className="font-medium text-green-600">Verified Platform Agent</span>
+                      <span className="material-symbols-outlined notranslate text-[18px] opacity-70" translate="no">phone</span>
+                      <span className="font-medium text-on-surface">{lead.phone}</span>
                     </div>
                     <div className="flex items-center gap-3 text-sm text-on-surface-variant">
-                      <span className="material-symbols-outlined notranslate text-[18px] opacity-70" translate="no">military_tech</span>
-                      <span className="font-medium">Top {lead.credibilityScore || 100}% Credibility</span>
+                      <span className="material-symbols-outlined notranslate text-[18px] opacity-70" translate="no">verified</span>
+                      <span className="font-medium text-green-600">Verified Partner</span>
                     </div>
                   </div>
 
@@ -131,7 +158,7 @@ export default function SellerLeadsPage() {
                     ) : (
                       <>
                         <span className="material-symbols-outlined notranslate text-[18px] group-hover/btn:scale-110 transition-transform" translate="no">handshake</span>
-                        Connect with Lead
+                        Request Connection
                       </>
                     )}
                   </button>

@@ -2,8 +2,21 @@
 
 import DashboardLayout from '@/components/DashboardLayout';
 import TopHeader from '@/components/TopHeader';
+import { useAuth } from '@/lib/auth-context';
 
 export default function VerificationPage() {
+  const { user } = useAuth();
+
+  if (!user) return null;
+
+  // Calculate dynamic trust score based on onboarding inputs
+  let trustScore = 20; // Base score
+  if (user.onboardingStep && user.onboardingStep > 2) trustScore += 15;
+  if (user.company?.industry || user.category) trustScore += 15;
+  if (user.isGstVerified) trustScore += 50;
+
+  const isKarmBabaCertified = user.isKarmBabaCertified === true;
+
   return (
     <DashboardLayout>
       <TopHeader title="Certification & Trust" searchPlaceholder="Search verification data..." />
@@ -18,11 +31,11 @@ export default function VerificationPage() {
           <div className="flex gap-3 flex-wrap">
             <div className="bg-orange-50 border border-orange-200 px-4 py-2 rounded-xl flex items-center gap-3">
               <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Trust Score</span>
-              <span className="text-2xl font-black text-primary">92/100</span>
+              <span className="text-2xl font-black text-primary">{user.credibilityScore || trustScore}/100</span>
             </div>
             <div className="bg-emerald-50 border border-emerald-100 px-4 py-2 rounded-xl flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-sm font-bold text-emerald-700">Risk Level: Low</span>
+              <span className={`w-2 h-2 rounded-full ${user.riskLevel === 'high' ? 'bg-red-500' : user.riskLevel === 'medium' ? 'bg-orange-500' : 'bg-emerald-500'} animate-pulse`}></span>
+              <span className={`text-sm font-bold ${user.riskLevel === 'high' ? 'text-red-700' : user.riskLevel === 'medium' ? 'text-orange-700' : 'text-emerald-700'} capitalize`}>Risk Level: {user.riskLevel || 'Unknown'}</span>
             </div>
           </div>
         </section>
@@ -31,12 +44,12 @@ export default function VerificationPage() {
         <section className="bg-orange-50/50 border border-orange-100 rounded-3xl p-6 md:p-8 relative overflow-hidden">
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
             <div className="space-y-2">
-              <h2 className="text-xl font-bold font-headline text-on-surface">85% Verification Complete</h2>
-              <p className="text-on-surface-variant text-sm">You are 15% away from becoming a <span className="font-bold text-primary">Premium Verified Merchant</span>.</p>
+              <h2 className="text-xl font-bold font-headline text-on-surface">{user.credibilityScore || trustScore}% Verification Complete</h2>
+              <p className="text-on-surface-variant text-sm">You are {100 - (user.credibilityScore || trustScore)}% away from becoming a <span className="font-bold text-primary">Premium Verified Merchant</span>.</p>
             </div>
             <div className="flex-1 max-w-xl">
               <div className="h-4 w-full bg-surface-container-highest rounded-full overflow-hidden">
-                <div className="h-full rounded-full w-[85%]" style={{ background: 'linear-gradient(90deg, #e55a24, #ff9500)' }}></div>
+                <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${user.credibilityScore || trustScore}%`, background: 'linear-gradient(90deg, #e55a24, #ff9500)' }}></div>
               </div>
               <div className="flex justify-between mt-3">
                 <span className="text-xs font-bold text-on-surface-variant">Standard</span>
@@ -49,209 +62,81 @@ export default function VerificationPage() {
           </div>
         </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Main Trust Grid (Left 8 cols) */}
-          <div className="lg:col-span-8 space-y-8">
-            {/* Grid: Mandatory & Financial */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Mandatory Base */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-bold font-headline">Mandatory Base</h3>
-                  <span className="material-symbols-outlined notranslate text-primary text-xl" translate="no">verified_user</span>
-                </div>
-                <div className="space-y-4">
-                  {['GST Registration', 'PAN Verification', 'Signatory Identity'].map((item) => (
-                    <div key={item} className="flex items-center justify-between p-3 rounded-xl bg-orange-50/30">
-                      <div className="flex items-center gap-3">
-                        <span className="material-symbols-outlined notranslate text-emerald-500" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                        <span className="text-sm font-semibold">{item}</span>
-                      </div>
-                      <span className="text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-1 rounded">Verified</span>
-                    </div>
-                  ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* GST Verified Badge */}
+          <div className={`bg-white rounded-2xl p-8 shadow-sm border ${user.isGstVerified ? 'border-emerald-200' : 'border-outline-variant'} flex flex-col items-center text-center`}>
+            <div className="relative mb-6">
+              <div className={`w-24 h-24 rounded-full p-1 ${user.isGstVerified ? 'bg-emerald-100' : 'bg-surface-container'}`}>
+                <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+                  <span className={`material-symbols-outlined notranslate text-4xl ${user.isGstVerified ? 'text-emerald-500' : 'text-on-surface-variant/50'}`} translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    {user.isGstVerified ? 'verified_user' : 'gpp_bad'}
+                  </span>
                 </div>
               </div>
-
-              {/* Financial Credibility */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-bold font-headline">Financial Credibility</h3>
-                  <span className="material-symbols-outlined notranslate text-secondary text-xl" translate="no">account_balance</span>
+              {user.isGstVerified && (
+                <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-white w-8 h-8 rounded-full border-4 border-white flex items-center justify-center">
+                  <span className="material-symbols-outlined notranslate text-sm" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>check</span>
                 </div>
-                <div className="space-y-4">
-                  {[
-                    { name: 'Bank Statements', status: 'Processing' },
-                    { name: 'Tax Filings (2Y)', status: 'In Review' },
-                  ].map((item) => (
-                    <div key={item.name} className="flex items-center justify-between p-3 rounded-xl bg-orange-50/30 opacity-80">
-                      <div className="flex items-center gap-3">
-                        <span className="material-symbols-outlined notranslate text-blue-500 animate-spin" translate="no">sync</span>
-                        <span className="text-sm font-semibold">{item.name}</span>
-                      </div>
-                      <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded">{item.status}</span>
-                    </div>
-                  ))}
-                  <div className="p-3 border border-dashed border-outline-variant rounded-xl flex items-center justify-center gap-2 group cursor-pointer hover:bg-orange-50/50 transition-colors">
-                    <span className="material-symbols-outlined notranslate text-sm text-outline" translate="no">add_circle</span>
-                    <span className="text-xs font-bold text-outline uppercase tracking-wider">Add Credit History</span>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
-
-            {/* Industry Compliance & Export Readiness */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Industry Compliance */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-primary border border-outline-variant">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-bold font-headline">Industry Compliance (Pharma)</h3>
-                  <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
-                    <span className="material-symbols-outlined notranslate text-primary text-lg" translate="no">medical_services</span>
-                  </div>
+            <h3 className={`text-xl font-black font-headline tracking-tight ${user.isGstVerified ? 'text-emerald-700' : 'text-on-surface'}`}>
+              GST Registered Entity
+            </h3>
+            {user.isGstVerified ? (
+              <>
+                <p className="text-sm font-bold text-on-surface-variant mt-2 uppercase tracking-widest">{user.gstDetails?.legalName}</p>
+                <div className="mt-6 w-full bg-emerald-50 rounded-xl p-4 text-left">
+                  <p className="text-xs font-bold text-emerald-600 uppercase mb-1">GSTIN</p>
+                  <p className="text-sm font-bold text-emerald-900">{user.gstDetails?.gstin}</p>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-orange-50/30 p-4 rounded-xl">
-                    <p className="text-[10px] uppercase font-black text-on-surface-variant tracking-widest mb-2">WHO-GMP</p>
-                    <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined notranslate text-emerald-500 text-base" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                      <span className="text-sm font-bold">Verified</span>
-                    </div>
-                  </div>
-                  <div className="bg-orange-50/30 p-4 rounded-xl">
-                    <p className="text-[10px] uppercase font-black text-on-surface-variant tracking-widest mb-2">FDA License</p>
-                    <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined notranslate text-amber-500 text-base" translate="no">pending</span>
-                      <span className="text-sm font-bold">Pending</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Export Readiness */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-bold font-headline">Export Readiness</h3>
-                  <span className="material-symbols-outlined notranslate text-primary text-xl" translate="no">public</span>
-                </div>
-                <div className="space-y-3">
-                  {[
-                    { icon: 'barcode', name: 'IEC Code Registration' },
-                    { icon: 'local_shipping', name: 'Shipping Carrier Details' },
-                  ].map((item) => (
-                    <div key={item.name} className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined notranslate text-primary text-lg" translate="no">{item.icon}</span>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-center">
-                          <p className="text-sm font-bold">{item.name}</p>
-                          <span className="material-symbols-outlined notranslate text-emerald-500 text-sm" translate="no">verified</span>
-                        </div>
-                        <div className="w-full bg-surface-container-high h-1 rounded-full mt-1">
-                          <div className="w-full bg-primary h-full rounded-full"></div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Advanced Trust Layer */}
-            <div className="rounded-3xl p-6 md:p-8 text-white relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' }}>
-              <div className="relative z-10">
-                <h3 className="text-2xl font-bold font-headline mb-6">Advanced Trust Layer</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10">
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="material-symbols-outlined notranslate text-orange-300" translate="no">videocam</span>
-                      <h4 className="font-bold text-sm uppercase tracking-wider">Video Verification</h4>
-                    </div>
-                    <p className="text-xs text-white/70 mb-4">Scheduled for Oct 24, 2023. This is the final step for &ldquo;Elite Trust&rdquo; badge.</p>
-                    <button className="w-full py-2 bg-white text-on-surface font-bold text-xs rounded-full hover:scale-105 transition-transform">Join Session</button>
-                  </div>
-                  <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10">
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="material-symbols-outlined notranslate text-orange-300" translate="no">rule</span>
-                      <h4 className="font-bold text-sm uppercase tracking-wider">3rd Party Audit</h4>
-                    </div>
-                    <p className="text-xs text-white/70 mb-4">Conducted by GlobalCert Bureau. All facilities have been pre-screened.</p>
-                    <div className="flex items-center gap-2 text-orange-300">
-                      <span className="material-symbols-outlined notranslate text-sm" translate="no">event</span>
-                      <span className="text-xs font-bold">Scheduled for tomorrow</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-primary opacity-20 rounded-full blur-3xl"></div>
-            </div>
+              </>
+            ) : (
+              <p className="text-sm text-on-surface-variant mt-2">GST Verification is pending or incomplete.</p>
+            )}
           </div>
 
-          {/* Sidebar Intelligence (Right 4 cols) */}
-          <aside className="lg:col-span-4 space-y-6">
-            {/* Certified Badge */}
-            <div className="bg-orange-50 border border-orange-100 rounded-3xl p-8 flex flex-col items-center text-center">
-              <div className="relative mb-6">
-                <div className="w-24 h-24 rounded-full p-1 animate-pulse" style={{ background: 'linear-gradient(135deg, #ff6b35, #ff9500, #e55a24)' }}>
-                  <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                    <span className="material-symbols-outlined notranslate text-primary text-4xl" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>workspace_premium</span>
-                  </div>
+          {/* Karm Baba Certified Badge */}
+          <div className={`bg-white rounded-2xl p-8 shadow-sm border ${isKarmBabaCertified ? 'border-primary/30 bg-orange-50/10' : 'border-outline-variant'} flex flex-col items-center text-center`}>
+            <div className="relative mb-6">
+              <div className={`w-24 h-24 rounded-full p-1 ${isKarmBabaCertified ? 'animate-pulse' : ''}`} style={isKarmBabaCertified ? { background: 'linear-gradient(135deg, #ff6b35, #ff9500, #e55a24)' } : { background: '#e2e8f0' }}>
+                <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+                  <span className={`material-symbols-outlined notranslate text-4xl ${isKarmBabaCertified ? 'text-primary' : 'text-on-surface-variant/50'}`} translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    workspace_premium
+                  </span>
                 </div>
-                <div className="absolute -bottom-2 -right-2 bg-primary text-white w-8 h-8 rounded-full border-4 border-orange-50 flex items-center justify-center">
+              </div>
+              {isKarmBabaCertified && (
+                <div className="absolute -bottom-2 -right-2 bg-primary text-white w-8 h-8 rounded-full border-4 border-white flex items-center justify-center">
                   <span className="material-symbols-outlined notranslate text-sm" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
                 </div>
-              </div>
-              <h3 className="text-xl font-black font-headline tracking-tight text-primary">KARM BABA Certified</h3>
-              <p className="text-xs font-medium text-on-surface-variant mt-2 uppercase tracking-widest">Active Partner</p>
-              <div className="mt-6 w-full h-px bg-outline-variant/30"></div>
-              <div className="mt-6 grid grid-cols-2 w-full gap-4">
-                <div className="text-left">
-                  <p className="text-[10px] font-bold text-outline uppercase">Since</p>
-                  <p className="text-sm font-bold text-on-surface">MAY 2021</p>
-                </div>
-                <div className="text-left">
-                  <p className="text-[10px] font-bold text-outline uppercase">Next Review</p>
-                  <p className="text-sm font-bold text-on-surface">MAY 2024</p>
-                </div>
-              </div>
+              )}
             </div>
-
-            {/* Growth Intelligence */}
-            <div className="bg-orange-50/50 border border-orange-200/30 rounded-3xl p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <span className="material-symbols-outlined notranslate text-primary" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
-                <h3 className="font-bold font-headline text-primary">Growth Intelligence</h3>
-              </div>
-              <div className="space-y-4">
-                <div className="bg-white/60 p-4 rounded-2xl">
-                  <p className="text-xs font-bold text-primary mb-1 uppercase">Recommendation 01</p>
-                  <p className="text-sm text-on-surface-variant leading-relaxed">Uploading your <span className="font-bold">ISO 9001</span> certificate will increase your trust score by <span className="text-emerald-600 font-bold">+6 points</span>.</p>
+            <h3 className={`text-xl font-black font-headline tracking-tight ${isKarmBabaCertified ? 'text-primary' : 'text-on-surface'}`}>
+              KARM BABA Certified
+            </h3>
+            {isKarmBabaCertified ? (
+              <>
+                <p className="text-xs font-medium text-on-surface-variant mt-2 uppercase tracking-widest">Active Partner</p>
+                <div className="mt-6 w-full h-px bg-outline-variant/30"></div>
+                <div className="mt-6 grid grid-cols-2 w-full gap-4">
+                  <div className="text-left">
+                    <p className="text-[10px] font-bold text-outline uppercase">Since</p>
+                    <p className="text-sm font-bold text-on-surface">
+                      {new Date(user.createdAt || Date.now()).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }).toUpperCase()}
+                    </p>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[10px] font-bold text-outline uppercase">Status</p>
+                    <p className="text-sm font-bold text-on-surface">Authorized</p>
+                  </div>
                 </div>
-                <div className="bg-white/60 p-4 rounded-2xl">
-                  <p className="text-xs font-bold text-primary mb-1 uppercase">Recommendation 02</p>
-                  <p className="text-sm text-on-surface-variant leading-relaxed">Link your <span className="font-bold">Corporate LinkedIn</span> to verify leadership continuity.</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Action HUD */}
-            <div className="bg-white rounded-3xl p-6 shadow-lg shadow-primary/5 space-y-3 border border-outline-variant">
-              <button className="w-full py-4 bg-primary text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:translate-y-[-2px] active:scale-95 transition-all">
-                <span className="material-symbols-outlined notranslate" translate="no">upload_file</span>
-                Upload Missing Documents
-              </button>
-              <button className="w-full py-4 bg-red-50 text-red-700 border border-red-200 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-red-100 transition-all">
-                <span className="material-symbols-outlined notranslate" translate="no">report</span>
-                Fix Flagged Issues
-              </button>
-              <button className="w-full py-4 bg-white border-2 border-primary/20 text-primary rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-orange-50 transition-all">
-                <span className="material-symbols-outlined notranslate" translate="no">send</span>
-                Request Final Review
-              </button>
-            </div>
-          </aside>
+              </>
+            ) : (
+              <p className="text-sm text-on-surface-variant mt-2">Pending in Verification</p>
+            )}
+          </div>
         </div>
+
       </main>
     </DashboardLayout>
   );

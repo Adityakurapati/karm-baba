@@ -24,7 +24,9 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
   const { user, isLoading } = useAuth();
 
   const currentStepIndex = steps.findIndex(
-    (s) => pathname === s.href || pathname.startsWith(s.href + '/')
+    (s) => s.href === '/onboarding'
+      ? pathname === '/onboarding'
+      : pathname === s.href || pathname.startsWith(s.href + '/')
   );
 
   // Enforce sequential step access
@@ -71,7 +73,9 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
         </div>
         <nav className="space-y-1">
           {steps.map((step, index) => {
-            const isActive = pathname === step.href || pathname.startsWith(step.href + '/');
+            const isActive = step.href === '/onboarding' 
+              ? pathname === '/onboarding' 
+              : pathname === step.href || pathname.startsWith(step.href + '/');
             const isCompleted = currentStepIndex > index;
             const allowedStep = user?.onboardingStep || 1;
             const isLocked = step.stepNum > allowedStep;

@@ -30,16 +30,16 @@ export const navigationConfig: Record<UserRole, NavSection[]> = {
     {
       title: 'Tools',
       items: [
-        { icon: 'group', label: 'Network', href: '/network', roles: ['buyer'] },
-        { icon: 'verified', label: 'Certifications', href: '/buyer/certifications', roles: ['buyer'] },
-        { icon: 'smart_toy', label: 'AI Assistant', href: '/assistant', roles: ['buyer'] },
+        // { icon: 'group', label: 'Network', href: '/network', roles: ['buyer'] },
+        // { icon: 'verified', label: 'Certifications', href: '/buyer/certifications', roles: ['buyer'] },
+        // { icon: 'smart_toy', label: 'AI Assistant', href: '/assistant', roles: ['buyer'] },
         { icon: 'mail', label: 'Messages', href: '/messages', roles: ['buyer'] },
       ],
     },
     {
       title: 'Account',
       items: [
-        { icon: 'trending_up', label: 'Analytics', href: '/analytics', roles: ['buyer'] },
+        // { icon: 'trending_up', label: 'Analytics', href: '/analytics', roles: ['buyer'] },
         { icon: 'settings', label: 'Settings', href: '/settings', roles: ['buyer'] },
         { icon: 'verified_user', label: 'Verification', href: '/verification', roles: ['buyer'] },
       ],
@@ -59,16 +59,16 @@ export const navigationConfig: Record<UserRole, NavSection[]> = {
     {
       title: 'Tools',
       items: [
-        { icon: 'group', label: 'Network', href: '/network', roles: ['seller'] },
+        // { icon: 'group', label: 'Network', href: '/network', roles: ['seller'] },
         { icon: 'storefront', label: 'Marketplace', href: '/seller/marketplace', roles: ['seller'] },
-        { icon: 'smart_toy', label: 'AI Assistant', href: '/assistant', roles: ['seller'] },
+        // { icon: 'smart_toy', label: 'AI Assistant', href: '/assistant', roles: ['seller'] },
         { icon: 'mail', label: 'Messages', href: '/messages', roles: ['seller'] },
       ],
     },
     {
       title: 'Account',
       items: [
-        { icon: 'trending_up', label: 'Analytics', href: '/analytics', roles: ['seller'] },
+        // { icon: 'trending_up', label: 'Analytics', href: '/analytics', roles: ['seller'] },
         { icon: 'settings', label: 'Settings', href: '/settings', roles: ['seller'] },
         { icon: 'verified_user', label: 'Verification', href: '/verification', roles: ['seller'] },
       ],
@@ -110,6 +110,8 @@ export const navigationConfig: Record<UserRole, NavSection[]> = {
       ],
     },
   ],
+
+  lead: [],
 };
 
 export function getNavigationForRole(role: UserRole): NavSection[] {

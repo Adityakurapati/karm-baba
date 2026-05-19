@@ -1,32 +1,25 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { database, auth } from "@/lib/firebase";
-import { ref, onValue, set, push } from "firebase/database";
-import { initializeApp, getApps } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { User } from "@/lib/types";
+import { database } from "@/lib/firebase";
+import { ref, onValue, push, set } from "firebase/database";
+import { PlatformLead, User } from "@/lib/types";
 import toast from "react-hot-toast";
 
-// Use a secondary Firebase app to create users without logging out the admin
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-};
-
-function getSecondaryAuth() {
-  const apps = getApps();
-  const secondaryApp = apps.find(app => app.name === "Secondary") || initializeApp(firebaseConfig, "Secondary");
-  return getAuth(secondaryApp);
-}
+const AVAILABLE_CATEGORIES = [
+  "Technology",
+  "Real Estate",
+  "Manufacturing",
+  "Finance",
+  "Consulting",
+  "Pharmacy",
+  "Agriculture",
+  "Other"
+];
 
 export default function AdminLeadsPage() {
-  const [leads, setLeads] = useState<User[]>([]);
+  const [leads, setLeads] = useState<PlatformLead[]>([]);
+  const [availableUsers, setAvailableUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -34,32 +27,51 @@ export default function AdminLeadsPage() {
 
   // New Lead Form State
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    category: "",
-    specialization: ""
+    name: "",
+    companyName: "",
+    phone: "",
+    assignmentType: "all" as "all" | "users" | "categories",
+    assignedUsers: [] as string[],
+    assignedCategories: [] as string[]
   });
 
   useEffect(() => {
-    const usersRef = ref(database, 'users');
-    const unsubscribe = onValue(usersRef, (snapshot) => {
+    // Fetch Leads
+    const leadsRef = ref(database, 'leads');
+    const unsubscribeLeads = onValue(leadsRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const usersArray = Object.keys(data)
-          .map(key => ({ ...data[key], id: key }))
-          .filter((user: User) => user.role === 'lead') as User[];
+        const leadsArray = Object.keys(data).map(key => ({
+          ...data[key],
+          id: key
+        })) as PlatformLead[];
         
-        usersArray.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
-        setLeads(usersArray);
+        leadsArray.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+        setLeads(leadsArray);
       } else {
         setLeads([]);
       }
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    // Fetch Users (Buyers and Sellers) for assignment dropdown
+    const usersRef = ref(database, 'users');
+    const unsubscribeUsers = onValue(usersRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const usersArray = Object.keys(data)
+          .map(key => ({ ...data[key], id: key }))
+          .filter((user: User) => user.role === 'buyer' || user.role === 'seller') as User[];
+        setAvailableUsers(usersArray);
+      } else {
+        setAvailableUsers([]);
+      }
+    });
+
+    return () => {
+      unsubscribeLeads();
+      unsubscribeUsers();
+    };
   }, []);
 
   const handleAddLead = async (e: React.FormEvent) => {
@@ -67,38 +79,31 @@ export default function AdminLeadsPage() {
     setIsCreating(true);
 
     try {
-      const secondaryAuth = getSecondaryAuth();
-      // Create user account on secondary auth instance
-      const userCredential = await createUserWithEmailAndPassword(secondaryAuth, formData.email, formData.password);
-      const uid = userCredential.user.uid;
-
-      // Ensure we sign out the secondary instance to clean up
-      await signOut(secondaryAuth);
-
-      // Create Lead record in RTDB
-      const leadData: Partial<User> = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        role: 'lead',
-        category: formData.category,
-        specialization: formData.specialization,
-        phone: "",
-        credibilityScore: 100, // Starts with max trust
-        verificationStatus: 'verified', // Admin created leads are pre-verified
-        riskLevel: 'low',
-        isOnboarded: true,
-        company: { id: '', name: 'Independent Agent', registrationNumber: '', industry: formData.category, location: '', employees: 1, yearEstablished: new Date().getFullYear() },
-        verificationBadges: [],
+      const newLeadData: Omit<PlatformLead, 'id'> = {
+        name: formData.name,
+        companyName: formData.companyName,
+        phone: formData.phone,
+        assignmentType: formData.assignmentType,
+        assignedUsers: formData.assignmentType === 'users' ? formData.assignedUsers : [],
+        assignedCategories: formData.assignmentType === 'categories' ? formData.assignedCategories : [],
         createdAt: new Date(),
         updatedAt: new Date()
       };
 
-      await set(ref(database, `users/${uid}`), leadData);
+      const leadsRef = ref(database, 'leads');
+      const newLeadRef = push(leadsRef);
+      await set(newLeadRef, newLeadData);
       
       toast.success("Lead created successfully!");
       setIsAddModalOpen(false);
-      setFormData({ firstName: "", lastName: "", email: "", password: "", category: "", specialization: "" });
+      setFormData({
+        name: "",
+        companyName: "",
+        phone: "",
+        assignmentType: "all",
+        assignedUsers: [],
+        assignedCategories: []
+      });
     } catch (error: any) {
       console.error("Error creating lead:", error);
       toast.error(error.message || "Failed to create lead");
@@ -107,12 +112,30 @@ export default function AdminLeadsPage() {
     }
   };
 
+  const handleUserToggle = (userId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      assignedUsers: prev.assignedUsers.includes(userId)
+        ? prev.assignedUsers.filter(id => id !== userId)
+        : [...prev.assignedUsers, userId]
+    }));
+  };
+
+  const handleCategoryToggle = (category: string) => {
+    setFormData(prev => ({
+      ...prev,
+      assignedCategories: prev.assignedCategories.includes(category)
+        ? prev.assignedCategories.filter(c => c !== category)
+        : [...prev.assignedCategories, category]
+    }));
+  };
+
   const filteredLeads = leads.filter(lead => {
     const search = searchTerm.toLowerCase();
-    const fullName = `${lead.firstName || ''} ${lead.lastName || ''}`.toLowerCase();
-    const email = (lead.email || '').toLowerCase();
-    const cat = (lead.category || '').toLowerCase();
-    return fullName.includes(search) || email.includes(search) || cat.includes(search);
+    const name = (lead.name || '').toLowerCase();
+    const company = (lead.companyName || '').toLowerCase();
+    const phone = (lead.phone || '').toLowerCase();
+    return name.includes(search) || company.includes(search) || phone.includes(search);
   });
 
   return (
@@ -121,7 +144,7 @@ export default function AdminLeadsPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h2 className="text-4xl font-extrabold tracking-tight text-on-surface font-headline">Lead Management</h2>
-          <p className="text-on-surface-variant mt-1 font-medium">Create and manage curated platform leads and RM agents.</p>
+          <p className="text-on-surface-variant mt-1 font-medium">Create and manage curated platform leads and assign them to users.</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="relative">
@@ -146,66 +169,109 @@ export default function AdminLeadsPage() {
 
       {/* Add Lead Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-surface-container-lowest rounded-3xl p-8 max-w-xl w-full shadow-2xl animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-surface-container-lowest rounded-3xl p-8 max-w-2xl w-full shadow-2xl animate-fade-in my-8">
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="text-2xl font-bold font-headline">Create New Lead</h3>
-                <p className="text-sm text-on-surface-variant font-medium">Set credentials and assign specialization.</p>
+                <p className="text-sm text-on-surface-variant font-medium">Enter lead details and configure visibility.</p>
               </div>
               <button onClick={() => setIsAddModalOpen(false)} className="p-2 hover:bg-surface-container rounded-full text-on-surface-variant transition-colors">
                 <span className="material-symbols-outlined notranslate text-xl" translate="no">close</span>
               </button>
             </div>
 
-            <form onSubmit={handleAddLead} className="space-y-5">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">First Name</label>
-                  <input required type="text" value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Jane" />
+            <form onSubmit={handleAddLead} className="space-y-6">
+              <div className="space-y-4">
+                <h4 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider border-b border-outline-variant/10 pb-2">Basic Info</h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Full Name</label>
+                    <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Jane Doe" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Company Name</label>
+                    <input required type="text" value={formData.companyName} onChange={e => setFormData({...formData, companyName: e.target.value})} className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Acme Corp" />
+                  </div>
                 </div>
+
                 <div>
-                  <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Last Name</label>
-                  <input required type="text" value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Doe" />
+                  <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Mobile Number</label>
+                  <input required type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="+1 234 567 8900" />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Email Address</label>
-                <input required type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="lead@karmbaba.com" />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Initial Password</label>
-                <input required type="text" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} minLength={6} className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Set a strong password..." />
-                <p className="text-[10px] text-on-surface-variant mt-1">Lead will use these credentials to log in.</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Category</label>
-                  <select required value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
-                    <option value="" disabled>Select Category</option>
-                    <option value="Technology">Technology</option>
-                    <option value="Real Estate">Real Estate</option>
-                    <option value="Manufacturing">Manufacturing</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Consulting">Consulting</option>
-                    <option value="Other">Other</option>
-                  </select>
+              <div className="space-y-4">
+                <h4 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider border-b border-outline-variant/10 pb-2">Assignment Rules</h4>
+                
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="assignment" value="all" checked={formData.assignmentType === 'all'} onChange={() => setFormData({...formData, assignmentType: 'all'})} className="text-primary focus:ring-primary" />
+                    <span className="text-sm font-medium">All Users</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="assignment" value="users" checked={formData.assignmentType === 'users'} onChange={() => setFormData({...formData, assignmentType: 'users'})} className="text-primary focus:ring-primary" />
+                    <span className="text-sm font-medium">Specific Users</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="assignment" value="categories" checked={formData.assignmentType === 'categories'} onChange={() => setFormData({...formData, assignmentType: 'categories'})} className="text-primary focus:ring-primary" />
+                    <span className="text-sm font-medium">By Category</span>
+                  </label>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Specialization</label>
-                  <input required type="text" value={formData.specialization} onChange={e => setFormData({...formData, specialization: e.target.value})} className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g. B2B Sales, Mergers..." />
-                </div>
+
+                {/* Conditional Rendering based on Assignment Type */}
+                {formData.assignmentType === 'users' && (
+                  <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4 max-h-48 overflow-y-auto space-y-2">
+                    {availableUsers.map(user => (
+                      <label key={user.id} className="flex items-center gap-3 p-2 hover:bg-surface-container rounded-lg cursor-pointer transition-colors">
+                        <input 
+                          type="checkbox" 
+                          checked={formData.assignedUsers.includes(user.id)}
+                          onChange={() => handleUserToggle(user.id)}
+                          className="rounded text-primary focus:ring-primary"
+                        />
+                        <div>
+                          <p className="text-sm font-bold text-on-surface">{user.firstName} {user.lastName} <span className="text-xs font-normal text-on-surface-variant ml-2 uppercase">({user.role})</span></p>
+                          <p className="text-xs text-on-surface-variant">{user.email}</p>
+                        </div>
+                      </label>
+                    ))}
+                    {availableUsers.length === 0 && <p className="text-sm text-on-surface-variant p-2">No users found.</p>}
+                  </div>
+                )}
+
+                {formData.assignmentType === 'categories' && (
+                  <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4">
+                    <p className="text-xs text-on-surface-variant mb-3">Lead will be visible to users who selected these categories during onboarding.</p>
+                    <div className="flex flex-wrap gap-2">
+                      {AVAILABLE_CATEGORIES.map(cat => (
+                        <label key={cat} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border cursor-pointer transition-colors ${formData.assignedCategories.includes(cat) ? 'bg-primary/10 border-primary text-primary' : 'bg-surface-container-low border-outline-variant/30 text-on-surface-variant hover:border-outline-variant'}`}>
+                          <input 
+                            type="checkbox"
+                            checked={formData.assignedCategories.includes(cat)}
+                            onChange={() => handleCategoryToggle(cat)}
+                            className="hidden"
+                          />
+                          <span className="text-sm font-medium">{cat}</span>
+                          {formData.assignedCategories.includes(cat) && <span className="material-symbols-outlined notranslate text-[14px]" translate="no">check</span>}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="pt-4 border-t border-outline-variant/10 flex justify-end gap-3">
                 <button type="button" onClick={() => setIsAddModalOpen(false)} className="px-6 py-2.5 rounded-full font-bold text-sm text-on-surface-variant hover:bg-surface-container transition-colors">
                   Cancel
                 </button>
-                <button type="submit" disabled={isCreating} className="px-8 py-2.5 rounded-full font-bold text-sm bg-primary text-white hover:bg-primary-dark transition-colors shadow-md disabled:opacity-50 flex items-center gap-2">
-                  {isCreating ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Creating...</> : "Create Lead"}
+                <button 
+                  type="submit" 
+                  disabled={isCreating || (formData.assignmentType === 'users' && formData.assignedUsers.length === 0) || (formData.assignmentType === 'categories' && formData.assignedCategories.length === 0)} 
+                  className="px-8 py-2.5 rounded-full font-bold text-sm bg-primary text-white hover:bg-primary-dark transition-colors shadow-md disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isCreating ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Saving...</> : "Save Lead"}
                 </button>
               </div>
             </form>
@@ -217,52 +283,67 @@ export default function AdminLeadsPage() {
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="font-bold text-on-surface-variant">Syncing Leads from Database...</p>
+          <p className="font-bold text-on-surface-variant">Fetching Leads...</p>
         </div>
       ) : filteredLeads.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 bg-surface-container-lowest rounded-2xl border border-outline-variant/10">
           <span className="material-symbols-outlined notranslate text-6xl text-on-surface-variant opacity-30 mb-4" translate="no">person_off</span>
           <p className="font-bold text-xl font-headline">No Leads Found</p>
-          <p className="text-on-surface-variant mt-2 text-sm">Create your first lead to assign them to buyers and sellers.</p>
+          <p className="text-on-surface-variant mt-2 text-sm">Create your first lead and assign it.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredLeads.map((lead) => (
             <div key={lead.id} className="bg-surface-container-lowest rounded-2xl border border-outline-variant/10 p-6 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
-              {/* Category Ribbon */}
-              <div className="absolute top-4 right-4 bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded">
-                {lead.category || 'General'}
+              {/* Assignment Ribbon */}
+              <div className={`absolute top-4 right-4 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${
+                lead.assignmentType === 'all' ? 'bg-emerald-100 text-emerald-700' :
+                lead.assignmentType === 'categories' ? 'bg-blue-100 text-blue-700' :
+                'bg-amber-100 text-amber-700'
+              }`}>
+                {lead.assignmentType === 'all' ? 'All Users' :
+                 lead.assignmentType === 'categories' ? 'Category Match' :
+                 'Specific Users'}
               </div>
 
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-14 h-14 rounded-full bg-primary/5 border border-primary/20 text-primary flex items-center justify-center text-2xl font-black font-headline shadow-inner">
-                  {lead.firstName?.charAt(0)?.toUpperCase() || 'L'}
+              <div className="flex items-center gap-4 mb-4 mt-2">
+                <div className="w-14 h-14 rounded-full bg-primary/5 border border-primary/20 text-primary flex items-center justify-center text-2xl font-black font-headline shadow-inner shrink-0">
+                  {lead.name?.charAt(0)?.toUpperCase() || 'L'}
                 </div>
-                <div>
-                  <h3 className="font-bold text-lg text-on-surface">{lead.firstName} {lead.lastName}</h3>
-                  <p className="text-xs font-medium text-on-surface-variant mt-0.5">{lead.specialization || 'Lead Agent'}</p>
+                <div className="min-w-0">
+                  <h3 className="font-bold text-lg text-on-surface truncate">{lead.name}</h3>
+                  <p className="text-xs font-medium text-on-surface-variant mt-0.5 truncate">{lead.companyName}</p>
                 </div>
               </div>
 
               <div className="space-y-3 mb-6">
                 <div className="flex items-center gap-2 text-sm text-on-surface-variant">
-                  <span className="material-symbols-outlined notranslate text-base opacity-70" translate="no">mail</span>
-                  <span className="truncate">{lead.email}</span>
+                  <span className="material-symbols-outlined notranslate text-base opacity-70" translate="no">phone</span>
+                  <span className="truncate">{lead.phone}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-on-surface-variant">
                   <span className="material-symbols-outlined notranslate text-base opacity-70" translate="no">calendar_today</span>
-                  <span>Joined {new Date(lead.createdAt || Date.now()).toLocaleDateString()}</span>
+                  <span>Added {new Date(lead.createdAt || Date.now()).toLocaleDateString()}</span>
                 </div>
+                
+                {lead.assignmentType === 'categories' && lead.assignedCategories && (
+                  <div className="flex items-start gap-2 text-xs text-on-surface-variant mt-2 bg-surface-container-low p-2 rounded-lg">
+                    <span className="material-symbols-outlined notranslate text-[14px] mt-0.5" translate="no">category</span>
+                    <div className="flex flex-wrap gap-1">
+                      {lead.assignedCategories.map(c => (
+                        <span key={c} className="bg-surface-container-highest px-1.5 py-0.5 rounded">{c}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {lead.assignmentType === 'users' && lead.assignedUsers && (
+                  <div className="flex items-center gap-2 text-xs text-on-surface-variant mt-2 bg-surface-container-low p-2 rounded-lg">
+                    <span className="material-symbols-outlined notranslate text-[14px]" translate="no">group</span>
+                    <span>Assigned to {lead.assignedUsers.length} user(s)</span>
+                  </div>
+                )}
               </div>
 
-              <div className="pt-4 border-t border-outline-variant/10 flex items-center justify-between">
-                <div className="flex items-center gap-1 text-green-600 text-xs font-bold">
-                  <span className="material-symbols-outlined notranslate text-sm" translate="no">verified</span> Verified
-                </div>
-                <button className="text-primary text-xs font-bold uppercase tracking-widest hover:underline flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                  Manage <span className="material-symbols-outlined notranslate text-sm" translate="no">chevron_right</span>
-                </button>
-              </div>
             </div>
           ))}
         </div>

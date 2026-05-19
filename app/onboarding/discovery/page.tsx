@@ -84,17 +84,19 @@ export default function DynamicDiscoveryPage() {
                 {/* Capacity Slider */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <label className="block text-sm font-semibold text-on-surface-variant uppercase tracking-widest">Annual Capacity (MT)</label>
+                    <label className="block text-sm font-semibold text-on-surface-variant uppercase tracking-widest">
+                      Annual Capacity: <span className="text-primary">{capacity.toLocaleString()} MT</span>
+                    </label>
                     {capacity === 0 && (
-                      <span className="text-xs font-bold text-red-500 animate-pulse bg-red-50 px-2 py-0.5 rounded">Required &gt; 0</span>
+                      <span className="text-xs font-bold text-red-500 animate-pulse bg-red-50 px-2 py-0.5 rounded border border-red-200">Required &gt; 0</span>
                     )}
                   </div>
                   <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-                    <div className="flex-grow w-full">
+                    <div className="flex-grow w-full pt-1">
                       <input
                         type="range"
                         min="0"
-                        max="100000"
+                        max="50000"
                         step="500"
                         value={capacity}
                         onChange={(e) => setCapacity(Number(e.target.value))}
@@ -102,18 +104,18 @@ export default function DynamicDiscoveryPage() {
                       />
                       <div className="flex justify-between mt-2 px-1 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">
                         <span>0 MT</span>
-                        <span>100,000+ MT</span>
+                        <span>50,000 MT</span>
                       </div>
                     </div>
                     <div className="relative w-full sm:w-auto shrink-0">
                       <input 
                         type="number"
                         min="0"
-                        max="10000000"
+                        max="50000"
                         value={capacity}
                         onChange={(e) => {
                           const val = Number(e.target.value);
-                          setCapacity(val < 0 ? 0 : val);
+                          setCapacity(val < 0 ? 0 : val > 50000 ? 50000 : val);
                         }}
                         className="w-full sm:w-36 bg-orange-50 border-2 border-primary/20 focus:border-primary focus:ring-0 rounded-lg pl-4 pr-10 py-3 font-bold text-primary text-center outline-none transition-all"
                       />

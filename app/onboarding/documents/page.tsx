@@ -177,15 +177,17 @@ export default function DocumentUploadPage() {
               <div className="relative flex items-center justify-center py-4">
                 <svg className="w-40 h-40 transform -rotate-90">
                   <circle className="text-surface-container-high" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" strokeWidth="12"></circle>
-                  <circle className="text-primary" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" strokeDasharray="440" strokeDashoffset="352" strokeWidth="12"></circle>
+                  <circle className="text-primary transition-all duration-1000" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" strokeDasharray="440" strokeDashoffset={440 - (440 * (isGstVerified ? 85 : 35)) / 100} strokeWidth="12"></circle>
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-4xl font-black font-headline">20%</span>
+                  <span className="text-4xl font-black font-headline">{isGstVerified ? 85 : 35}%</span>
                   <span className="text-[10px] uppercase font-bold tracking-widest text-on-surface-variant">Current Rating</span>
                 </div>
               </div>
               <p className="text-xs text-on-surface-variant leading-relaxed text-center italic">
-                Upload mandatory documents to increase score to 85% and unlock high-limit transactions.
+                {isGstVerified 
+                  ? "GST Verified! Complete remaining steps to reach 100% and unlock high-limit transactions."
+                  : "Upload mandatory documents to increase score to 85% and unlock high-limit transactions."}
               </p>
             </div>
 

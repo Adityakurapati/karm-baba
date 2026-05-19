@@ -22,7 +22,7 @@ export default function TopHeader({
   const [showNotifs, setShowNotifs] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !user.id) return;
 
     const notifsRef = ref(database, 'notifications');
     const q = query(notifsRef, orderByChild('userId'), equalTo(user.id));

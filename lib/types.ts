@@ -33,6 +33,7 @@ export interface User {
   onboardingStep?: number;
   isAuthorized?: boolean;
   isGstVerified?: boolean;
+  isKarmBabaCertified?: boolean;
   gstDetails?: {
     gstin: string;
     legalName: string;
@@ -118,6 +119,18 @@ export interface Lead {
   nextFollowUpDate?: Date;
   rmAssignedId?: string;
   notes?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface PlatformLead {
+  id: string;
+  name: string;
+  companyName: string;
+  phone: string;
+  assignmentType: 'all' | 'users' | 'categories';
+  assignedUsers?: string[];
+  assignedCategories?: string[];
   createdAt: Date;
   updatedAt: Date;
 }

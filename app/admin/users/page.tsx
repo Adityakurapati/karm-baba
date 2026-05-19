@@ -2,14 +2,16 @@
 
 import React, { useEffect, useState } from "react";
 import { database } from "@/lib/firebase";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, update } from "firebase/database";
 import { User } from "@/lib/types";
+import toast from "react-hot-toast";
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -45,6 +47,18 @@ export default function AdminUsersPage() {
     const email = (user.email || '').toLowerCase();
     return fullName.includes(search) || email.includes(search);
   });
+
+  const handleToggleCertification = async (targetUser: User) => {
+    try {
+      const userRef = ref(database, `users/${targetUser.id}`);
+      const newStatus = !targetUser.isKarmBabaCertified;
+      await update(userRef, { isKarmBabaCertified: newStatus });
+      toast.success(`User ${newStatus ? 'marked as certified' : 'certification revoked'}`);
+    } catch (error) {
+      console.error("Error updating certification status:", error);
+      toast.error("Failed to update certification status");
+    }
+  };
 
   const getRiskBadge = (level?: string) => {
     switch(level) {
@@ -156,8 +170,11 @@ export default function AdminUsersPage() {
                     <td className="px-6 py-5">
                       <div className="flex flex-col gap-1">
                         {getVerificationBadge(user.verificationStatus, !!user.isGstVerified)}
+                        {user.isKarmBabaCertified && (
+                           <span className="flex items-center gap-1 text-primary font-bold text-[10px] uppercase tracking-widest mt-1"><span className="material-symbols-outlined notranslate text-xs" translate="no">workspace_premium</span> KB Certified</span>
+                        )}
                         {user.isAuthorized && (
-                           <span className="flex items-center gap-1 text-primary font-bold text-[10px] uppercase tracking-widest mt-1"><span className="material-symbols-outlined notranslate text-xs" translate="no">shield_person</span> Authorized</span>
+                           <span className="flex items-center gap-1 text-blue-600 font-bold text-[10px] uppercase tracking-widest mt-1"><span className="material-symbols-outlined notranslate text-xs" translate="no">shield_person</span> Authorized</span>
                         )}
                       </div>
                     </td>
@@ -183,31 +200,16 @@ export default function AdminUsersPage() {
                     </td>
 
                     {/* Actions */}
-                    <td className="px-6 py-5 text-right relative">
+                    <td className="px-6 py-5 text-right">
                       <button 
-                        className="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-full transition-colors group-hover:bg-surface-container"
+                        className="px-4 py-2 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-full font-bold text-xs transition-colors flex items-center gap-2 ml-auto"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setActiveMenu(activeMenu === user.id ? null : user.id!);
+                          setSelectedUser(user);
                         }}
                       >
-                        <span className="material-symbols-outlined notranslate text-xl" translate="no">more_horiz</span>
+                        <span className="material-symbols-outlined notranslate text-sm" translate="no">visibility</span> View User
                       </button>
-                      
-                      {activeMenu === user.id && (
-                        <div className="absolute right-8 top-12 w-48 bg-surface-container-lowest border border-outline-variant/15 shadow-xl rounded-xl py-2 z-50 animate-fade-in text-left">
-                          <button className="w-full px-4 py-2 text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-3" onClick={(e) => { e.stopPropagation(); setActiveMenu(null); }}>
-                            <span className="material-symbols-outlined notranslate text-sm" translate="no">visibility</span> View Profile
-                          </button>
-                          <button className="w-full px-4 py-2 text-sm font-medium text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-3" onClick={(e) => { e.stopPropagation(); setActiveMenu(null); }}>
-                            <span className="material-symbols-outlined notranslate text-sm" translate="no">admin_panel_settings</span> Change Role
-                          </button>
-                          <div className="h-px bg-outline-variant/10 my-1"></div>
-                          <button className="w-full px-4 py-2 text-sm font-medium text-error hover:bg-error-container/50 hover:text-error transition-colors flex items-center gap-3" onClick={(e) => { e.stopPropagation(); setActiveMenu(null); }}>
-                            <span className="material-symbols-outlined notranslate text-sm" translate="no">block</span> Suspend User
-                          </button>
-                        </div>
-                      )}
                     </td>
                   </tr>
                 ))
@@ -216,6 +218,212 @@ export default function AdminUsersPage() {
           </table>
         </div>
       </div>
+
+      {/* User Details Modal */}
+      {selectedUser && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in" onClick={() => setSelectedUser(null)}>
+          <div className="bg-surface-container-lowest rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-6 border-b border-outline-variant/10">
+              <h3 className="text-xl font-extrabold font-headline">User Profile: {selectedUser.firstName} {selectedUser.lastName}</h3>
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => {
+                    handleToggleCertification(selectedUser);
+                    setSelectedUser({ ...selectedUser, isKarmBabaCertified: !selectedUser.isKarmBabaCertified });
+                  }}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border transition-colors ${selectedUser.isKarmBabaCertified ? 'bg-primary text-white border-primary shadow-sm' : 'bg-surface-container-low text-on-surface-variant border-outline-variant hover:border-primary hover:text-primary'}`}
+                >
+                  <span className="material-symbols-outlined notranslate text-[14px]" translate="no">workspace_premium</span>
+                  {selectedUser.isKarmBabaCertified ? 'Certified' : 'Mark as Certified'}
+                </button>
+                <button onClick={() => setSelectedUser(null)} className="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+                  <span className="material-symbols-outlined notranslate" translate="no">close</span>
+                </button>
+              </div>
+            </div>
+            
+            <div className="p-6 overflow-y-auto space-y-8 custom-scrollbar">
+              {/* Basic Details */}
+              <div>
+                <h4 className="text-sm font-bold text-primary uppercase tracking-widest mb-4">Basic Information</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-surface-container-low p-4 rounded-xl">
+                    <p className="text-xs text-on-surface-variant mb-1">User ID</p>
+                    <p className="font-mono text-sm break-all">{selectedUser.id}</p>
+                  </div>
+                  <div className="bg-surface-container-low p-4 rounded-xl">
+                    <p className="text-xs text-on-surface-variant mb-1">Email</p>
+                    <p className="font-medium text-sm">{selectedUser.email}</p>
+                  </div>
+                  <div className="bg-surface-container-low p-4 rounded-xl">
+                    <p className="text-xs text-on-surface-variant mb-1">Phone</p>
+                    <p className="font-medium text-sm">{selectedUser.phone || 'N/A'}</p>
+                  </div>
+                  <div className="bg-surface-container-low p-4 rounded-xl">
+                    <p className="text-xs text-on-surface-variant mb-1">Role</p>
+                    <p className="font-medium text-sm capitalize">{selectedUser.role || 'N/A'}</p>
+                  </div>
+                  <div className="bg-surface-container-low p-4 rounded-xl">
+                    <p className="text-xs text-on-surface-variant mb-1">Language</p>
+                    <p className="font-medium text-sm capitalize">{selectedUser.language || 'en'}</p>
+                  </div>
+                  <div className="bg-surface-container-low p-4 rounded-xl">
+                    <p className="text-xs text-on-surface-variant mb-1">Last Updated</p>
+                    <p className="font-medium text-sm">{new Date(selectedUser.updatedAt || selectedUser.createdAt || Date.now()).toLocaleString()}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Company Details */}
+              {selectedUser.company && (
+                <div>
+                  <h4 className="text-sm font-bold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <span className="material-symbols-outlined notranslate text-lg" translate="no">domain</span>
+                    Company Information
+                  </h4>
+                  <div className="bg-surface-container-low rounded-xl p-5 space-y-4 border border-outline-variant/20">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-on-surface-variant mb-1">Company Name</p>
+                        <p className="font-bold text-sm">{selectedUser.company.name || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-on-surface-variant mb-1">Registration Number</p>
+                        <p className="font-bold text-sm">{selectedUser.company.registrationNumber || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-on-surface-variant mb-1">Industry</p>
+                        <p className="font-medium text-sm capitalize">{Array.isArray(selectedUser.company.industry) ? selectedUser.company.industry.join(', ') : selectedUser.company.industry || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-on-surface-variant mb-1">Location</p>
+                        <p className="font-medium text-sm">{selectedUser.company.location || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-on-surface-variant mb-1">Website</p>
+                        <p className="font-medium text-sm text-primary underline">{selectedUser.company.website || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-on-surface-variant mb-1">Employees</p>
+                        <p className="font-medium text-sm">{selectedUser.company.employees || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-on-surface-variant mb-1">Year Established</p>
+                        <p className="font-medium text-sm">{selectedUser.company.yearEstablished || 'N/A'}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Status & Verification */}
+              <div>
+                <h4 className="text-sm font-bold text-primary uppercase tracking-widest mb-4">Status & Verification</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-surface-container-low p-4 rounded-xl">
+                    <p className="text-xs text-on-surface-variant mb-2">Account Status</p>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedUser.isOnboarded ? (
+                         <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest bg-green-100 text-green-800 rounded border border-green-200">Onboarded</span>
+                      ) : (
+                         <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest bg-slate-100 text-slate-800 rounded border border-slate-200">Step {selectedUser.onboardingStep || 1}/6</span>
+                      )}
+                      {selectedUser.isAuthorized && (
+                         <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest bg-blue-100 text-blue-800 rounded border border-blue-200">Authorized</span>
+                      )}
+                      {selectedUser.isGstVerified && (
+                         <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest bg-purple-100 text-purple-800 rounded border border-purple-200">GST Verified</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="bg-surface-container-low p-4 rounded-xl">
+                    <p className="text-xs text-on-surface-variant mb-2">Risk Assessment</p>
+                    <div className="flex items-center gap-3">
+                      {getRiskBadge(selectedUser.riskLevel)}
+                      <span className="text-sm font-bold text-on-surface-variant">Score: {selectedUser.credibilityScore || 0}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* GST Details */}
+              {selectedUser.gstDetails ? (
+                <div>
+                  <h4 className="text-sm font-bold text-primary uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <span className="material-symbols-outlined notranslate text-lg" translate="no">account_balance</span>
+                    GST Information
+                  </h4>
+                  <div className="bg-surface-container-low rounded-xl p-5 space-y-4 border border-outline-variant/20">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-on-surface-variant mb-1">GSTIN Number</p>
+                        <p className="font-bold text-sm tracking-wide">{selectedUser.gstDetails.gstin || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-on-surface-variant mb-1">PAN Number</p>
+                        <p className="font-bold text-sm tracking-wide">{selectedUser.gstDetails.pan || 'N/A'}</p>
+                      </div>
+                      <div className="md:col-span-2">
+                        <p className="text-xs text-on-surface-variant mb-1">Trade Name</p>
+                        <p className="font-bold text-base">{selectedUser.gstDetails.tradeName || 'N/A'}</p>
+                      </div>
+                      <div className="md:col-span-2">
+                        <p className="text-xs text-on-surface-variant mb-1">Legal Name</p>
+                        <p className="font-medium text-sm">{selectedUser.gstDetails.legalName || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-on-surface-variant mb-1">Taxpayer Type</p>
+                        <p className="font-medium text-sm">{selectedUser.gstDetails.type || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-on-surface-variant mb-1">Registration Date</p>
+                        <p className="font-medium text-sm">{selectedUser.gstDetails.registrationDate || 'N/A'}</p>
+                      </div>
+                      <div className="md:col-span-2">
+                        <p className="text-xs text-on-surface-variant mb-1">Registered Address</p>
+                        <p className="font-medium text-sm leading-relaxed">{selectedUser.gstDetails.address || 'N/A'}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <h4 className="text-sm font-bold text-primary uppercase tracking-widest mb-4">GST Information</h4>
+                  <div className="bg-surface-container-low p-6 rounded-xl text-center border border-dashed border-outline-variant/30">
+                    <span className="material-symbols-outlined notranslate text-3xl text-on-surface-variant mb-2 opacity-50" translate="no">domain_disabled</span>
+                    <p className="text-sm text-on-surface-variant font-medium">No GST details available for this user.</p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Raw Data Dump (Collapsible or just small text) */}
+              <div>
+                <details className="group">
+                  <summary className="text-xs font-bold text-on-surface-variant hover:text-primary cursor-pointer uppercase tracking-widest flex items-center gap-1">
+                    <span className="material-symbols-outlined notranslate text-sm transition-transform group-open:rotate-90" translate="no">chevron_right</span>
+                    View Raw Developer Data
+                  </summary>
+                  <div className="mt-3 bg-[#1e1e1e] rounded-xl p-4 overflow-x-auto">
+                    <pre className="text-[10px] text-green-400 font-mono">
+                      {JSON.stringify(selectedUser, null, 2)}
+                    </pre>
+                  </div>
+                </details>
+              </div>
+
+            </div>
+            
+            <div className="p-4 border-t border-outline-variant/10 bg-surface-container-lowest flex justify-end">
+              <button 
+                onClick={() => setSelectedUser(null)}
+                className="px-6 py-2 bg-primary text-on-primary font-bold rounded-full hover:bg-primary/90 transition-colors text-sm shadow-md"
+              >
+                Close Profile
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

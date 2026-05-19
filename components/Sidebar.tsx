@@ -135,11 +135,11 @@ export default function Sidebar({ open = true, onClose, onToggle }: SidebarProps
           {/* User Profile */}
           <div className={`flex items-center gap-3 p-3 rounded-lg bg-slate-100 ${!open ? 'md:justify-center' : ''}`}>
             <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
-              {user.firstName.charAt(0).toUpperCase()}
+              {user.firstName?.charAt(0)?.toUpperCase() || 'U'}
             </div>
             {open && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-slate-900 truncate">{user.firstName} {user.lastName}</p>
+                <p className="text-sm font-bold text-slate-900 truncate">{user.firstName || 'User'} {user.lastName || ''}</p>
                 <p className="text-xs text-slate-600 capitalize">{user.role}</p>
               </div>
             )}

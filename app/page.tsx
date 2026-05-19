@@ -705,7 +705,7 @@ export default function Home() {
                   aria-label={c.ariaLabel}
                   target={c.target}
                   rel={c.rel}
-                  className="flex items-center gap-1.5 text-sm text-white/40 hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-sm"
+                  className="flex items-center gap-1.5 text-sm text-white/40 hover:text-primary transition-colors focus:outline-none rounded-sm"
                 >
                   <span className="material-symbols-outlined notranslate text-primary" translate="no" style={{ fontSize: '1rem' }} aria-hidden="true">{c.icon}</span>
                   {c.label}

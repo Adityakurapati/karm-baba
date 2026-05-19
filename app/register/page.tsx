@@ -262,38 +262,7 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Role Selection */}
-            <div>
-              <label className="block text-sm font-headline font-bold text-on-surface mb-4">
-                I want to join as:
-              </label>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  type="button"
-                  onClick={() => setRole('buyer')}
-                  className={`flex flex-col items-center justify-center p-4 border-2 rounded-xl transition-all ${
-                    role === 'buyer'
-                      ? 'border-primary bg-primary/5 text-primary'
-                      : 'border-outline-variant hover:border-primary/30 text-on-surface-variant'
-                  }`}
-                >
-                  <span className="material-symbols-outlined notranslate text-2xl mb-1" translate="no">shopping_cart</span>
-                  <span className="font-bold">Buyer</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRole('seller')}
-                  className={`flex flex-col items-center justify-center p-4 border-2 rounded-xl transition-all ${
-                    role === 'seller'
-                      ? 'border-secondary bg-secondary/5 text-secondary'
-                      : 'border-outline-variant hover:border-secondary/30 text-on-surface-variant'
-                  }`}
-                >
-                  <span className="material-symbols-outlined notranslate text-2xl mb-1" translate="no">factory</span>
-                  <span className="font-bold">Seller</span>
-                </button>
-              </div>
-            </div>
+
 
             {/* Submit Button */}
             <button

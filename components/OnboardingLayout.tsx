@@ -1,28 +1,50 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 
 interface OnboardingLayoutProps {
   children: ReactNode;
 }
 
 const steps = [
-  { icon: 'person_search', label: 'Role Selection', href: '/onboarding' },
-  { icon: 'analytics', label: 'Industry Targeting', href: '/onboarding/industry' },
-  { icon: 'assignment', label: 'Dynamic Discovery', href: '/onboarding/discovery' },
-  { icon: 'cloud_upload', label: 'Document Upload', href: '/onboarding/documents' },
-  { icon: 'verified', label: 'Verification', href: '/onboarding/verify' },
+  { icon: 'person_search', label: 'Role Selection', href: '/onboarding', stepNum: 1 },
+  { icon: 'analytics', label: 'Industry Targeting', href: '/onboarding/industry', stepNum: 2 },
+  { icon: 'assignment', label: 'Dynamic Discovery', href: '/onboarding/discovery', stepNum: 3 },
+  { icon: 'cloud_upload', label: 'Document Upload', href: '/onboarding/documents', stepNum: 4 },
+  { icon: 'verified', label: 'Verification', href: '/onboarding/verify', stepNum: 5 },
 ];
 
 export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
 
   const currentStepIndex = steps.findIndex(
     (s) => pathname === s.href || pathname.startsWith(s.href + '/')
   );
+
+  // Enforce sequential step access
+  useEffect(() => {
+    if (isLoading || !user) return;
+    
+    const allowedStep = user.onboardingStep || 1;
+    
+    if (currentStepIndex !== -1) {
+      const currentStepNum = steps[currentStepIndex].stepNum;
+      
+      // If user is trying to bypass their allowed step, redirect them back
+      if (currentStepNum > allowedStep) {
+        const targetStep = steps.find(s => s.stepNum === allowedStep);
+        if (targetStep) {
+          router.replace(targetStep.href);
+        }
+      }
+    }
+  }, [pathname, user, isLoading, router, currentStepIndex]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -51,6 +73,21 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
           {steps.map((step, index) => {
             const isActive = pathname === step.href || pathname.startsWith(step.href + '/');
             const isCompleted = currentStepIndex > index;
+            const allowedStep = user?.onboardingStep || 1;
+            const isLocked = step.stepNum > allowedStep;
+
+            if (isLocked) {
+              return (
+                <div
+                  key={step.href}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 cursor-not-allowed transition-all duration-300"
+                >
+                  <span className="material-symbols-outlined opacity-50">lock</span>
+                  <span className="font-headline opacity-50">{step.label}</span>
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={step.href}

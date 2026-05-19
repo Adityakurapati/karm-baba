@@ -12,10 +12,12 @@
     "bcrypt": "^6.0.0",
     "firebase": "^12.12.1",
     "firebase-admin": "^13.10.0",
+    "i18next": "^26.2.0",
     "next": "^15.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-hot-toast": "^2.6.0"
+    "react-hot-toast": "^2.6.0",
+    "react-i18next": "^17.0.8"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

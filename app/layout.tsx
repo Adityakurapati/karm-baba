@@ -3,6 +3,8 @@ import { Manrope, Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
 import { Toaster } from "react-hot-toast";
+import { cookies } from "next/headers";
+import { I18nProvider } from "@/components/I18nProvider";
 
 const manrope = Manrope({
   variable: "--font-headline",
@@ -31,13 +33,19 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = cookies();
+  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en';
+  const dir = locale === 'ar' ? 'rtl' : 'ltr';
+
   return (
-    <html lang="en" className="light">
+    <html lang={locale} dir={dir} className="light">
       <body className={`${manrope.variable} ${inter.variable} antialiased bg-background text-on-surface`}>
-        <AuthProvider>
-          {children}
-          <Toaster position="bottom-right" toastOptions={{ duration: 4000 }} />
-        </AuthProvider>
+        <I18nProvider initialLocale={locale}>
+          <AuthProvider>
+            {children}
+            <Toaster position="bottom-right" toastOptions={{ duration: 4000 }} />
+          </AuthProvider>
+        </I18nProvider>
       </body>
     </html>
   );

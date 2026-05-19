@@ -7,6 +7,8 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { useAuth } from '@/lib/auth-context';
 import toast from 'react-hot-toast';
 import { NotificationPreferences, NotificationCategory, NotificationChannel } from '@/lib/types';
+import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 
 const languages = [
   { code: 'en', name: 'English', native: 'English', region: 'Global', coverage: 100, status: 'primary' },
@@ -23,6 +25,8 @@ const languages = [
 
 export default function SettingsPage() {
   const { user, updateUserProfile } = useAuth();
+  const router = useRouter();
+  const { t, i18n } = useTranslation();
   
   const [activeTab, setActiveTab] = useState('profile');
   const [formData, setFormData] = useState({
@@ -33,7 +37,7 @@ export default function SettingsPage() {
     company: 'Tech Corp USA',
     country: 'USA',
   });
-  const [primaryLang, setPrimaryLang] = useState('en');
+  const [primaryLang, setPrimaryLang] = useState(i18n.language || 'en');
   const [searchLang, setSearchLang] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -141,7 +145,7 @@ export default function SettingsPage() {
         {activeTab === 'profile' && (
           <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8 animate-fade-in">
             <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">
-              Profile Information
+              {t('settings.profile', 'Profile Information')}
             </h2>
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -414,9 +418,15 @@ export default function SettingsPage() {
                       <button className="flex-1 py-2 text-primary border border-primary/20 rounded-lg text-xs font-bold hover:bg-orange-50 transition-colors">
                         Edit
                       </button>
-                      {lang.status !== 'primary' && (
+                      {primaryLang !== lang.code && (
                         <button
-                          onClick={() => setPrimaryLang(lang.code)}
+                          onClick={() => {
+                            setPrimaryLang(lang.code);
+                            document.cookie = `NEXT_LOCALE=${lang.code}; path=/; max-age=31536000; SameSite=Lax`;
+                            i18n.changeLanguage(lang.code);
+                            router.refresh();
+                            toast.success(t('settings.success', 'Settings saved successfully'));
+                          }}
                           className="flex-1 py-2 bg-primary/5 text-primary rounded-lg text-xs font-bold hover:bg-primary/10 transition-colors"
                         >
                           Set Primary

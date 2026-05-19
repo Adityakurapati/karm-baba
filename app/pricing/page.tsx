@@ -112,7 +112,7 @@ export default function PricingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-background dark:bg-background-dark font-sans overflow-x-hidden text-on-surface dark:text-white transition-colors duration-300">
       <style>{`
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
         @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
@@ -132,10 +132,10 @@ export default function PricingPage() {
         {/* ══ HERO SECTION ══ */}
         <FadeIn>
           <section className="max-w-7xl mx-auto px-8 text-center mb-20">
-            <h1 className="font-headline text-5xl md:text-6xl font-extrabold tracking-tight mb-6 text-on-surface">
+            <h1 className="font-headline text-5xl md:text-6xl font-extrabold tracking-tight mb-6 text-on-surface dark:text-white">
               Flexible Plans for <span className="text-primary">Global Trade Leaders.</span>
             </h1>
-            <p className="text-xl text-on-surface-variant max-w-2xl mx-auto">
+            <p className="text-xl text-on-surface-variant dark:text-slate-300 max-w-2xl mx-auto">
               Select a plan tailored to your execution scale. All plans include 256-bit encryption and GST verification checks as standard.
             </p>
           </section>
@@ -148,8 +148,8 @@ export default function PricingPage() {
               <div
                 className={`p-8 rounded-xl flex flex-col justify-between h-full ${
                   plan.featured
-                    ? 'featured-card relative bg-white shadow-2xl ring-2 ring-primary z-10'
-                    : 'pricing-card bg-white border border-outline-variant'
+                    ? 'featured-card relative bg-white dark:bg-slate-800 shadow-2xl ring-2 ring-primary z-10'
+                    : 'pricing-card bg-white dark:bg-slate-900 border border-outline-variant dark:border-slate-700'
                 }`}
                 style={plan.featured ? { boxShadow: '0 25px 50px rgba(255,107,53,.2)' } : {}}
               >
@@ -161,16 +161,16 @@ export default function PricingPage() {
                 )}
 
                 <div>
-                  <h3 className="font-headline text-lg font-bold text-on-surface mb-1">{plan.name}</h3>
+                  <h3 className="font-headline text-lg font-bold text-on-surface dark:text-white mb-1">{plan.name}</h3>
                   <p className="text-[10px] text-primary font-bold uppercase tracking-wider mb-2">{plan.subtitle}</p>
                   <div className="flex items-baseline gap-1 mb-6">
-                    <span className="text-3xl font-extrabold text-on-surface">{plan.price}</span>
-                    <span className="text-on-surface-variant text-sm">{plan.period}</span>
+                    <span className="text-3xl font-extrabold text-on-surface dark:text-white">{plan.price}</span>
+                    <span className="text-on-surface-variant dark:text-slate-400 text-sm">{plan.period}</span>
                   </div>
 
                   <ul className="space-y-4 mb-8">
                     {plan.features.map((feature, j) => (
-                      <li key={j} className={`flex items-center gap-2 text-sm ${plan.featured ? (j === 0 ? 'text-on-surface font-semibold' : 'text-on-surface') : 'text-on-surface-variant'}`}>
+                      <li key={j} className={`flex items-center gap-2 text-sm ${plan.featured ? (j === 0 ? 'text-on-surface dark:text-white font-semibold' : 'text-on-surface dark:text-white') : 'text-on-surface-variant dark:text-slate-300'}`}>
                         {plan.featured && j === 0 ? (
                           <span className="material-symbols-outlined text-primary text-lg filled" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
                         ) : (
@@ -189,12 +189,11 @@ export default function PricingPage() {
                     {plan.cta}
                   </button>
                 ) : plan.dark ? (
-                  <button className="w-full py-3 px-4 rounded-full text-white font-bold hover:opacity-90 transition-opacity"
-                    style={{ background: '#131b2e' }}>
+                  <button className="w-full py-3 px-4 rounded-full text-white font-bold bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors">
                     {plan.cta}
                   </button>
                 ) : (
-                  <button className="w-full py-3 px-4 rounded-full border border-outline-variant text-primary font-bold hover:bg-orange-50 transition-colors">
+                  <button className="w-full py-3 px-4 rounded-full border border-outline-variant dark:border-slate-600 text-primary font-bold hover:bg-orange-50 dark:hover:bg-slate-800 transition-colors">
                     {plan.cta}
                   </button>
                 )}
@@ -206,24 +205,24 @@ export default function PricingPage() {
         {/* ══ SECURITY / TRUST HIGHLIGHTS ══ */}
         <section className="mt-24 max-w-5xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-8">
           <FadeIn>
-            <div className="bg-orange-50/60 border border-orange-100 p-8 rounded-2xl flex items-start gap-4">
-              <div className="p-3 bg-white rounded-xl shadow-sm flex-shrink-0">
+            <div className="bg-orange-50/60 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/30 p-8 rounded-2xl flex items-start gap-4 transition-colors">
+              <div className="p-3 bg-white dark:bg-slate-800 rounded-xl shadow-sm flex-shrink-0">
                 <span className="material-symbols-outlined text-primary text-3xl">shield</span>
               </div>
               <div>
-                <h4 className="font-headline font-bold text-on-surface text-lg mb-1">Institutional Security</h4>
-                <p className="text-on-surface-variant text-sm leading-relaxed">Enterprise-grade 256-bit AES encryption protecting every byte of your trade data.</p>
+                <h4 className="font-headline font-bold text-on-surface dark:text-white text-lg mb-1">Institutional Security</h4>
+                <p className="text-on-surface-variant dark:text-slate-300 text-sm leading-relaxed">Enterprise-grade 256-bit AES encryption protecting every byte of your trade data.</p>
               </div>
             </div>
           </FadeIn>
           <FadeIn delay={100}>
-            <div className="bg-orange-50/60 border border-orange-100 p-8 rounded-2xl flex items-start gap-4">
-              <div className="p-3 bg-white rounded-xl shadow-sm flex-shrink-0">
+            <div className="bg-orange-50/60 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/30 p-8 rounded-2xl flex items-start gap-4 transition-colors">
+              <div className="p-3 bg-white dark:bg-slate-800 rounded-xl shadow-sm flex-shrink-0">
                 <span className="material-symbols-outlined text-primary text-3xl">verified_user</span>
               </div>
               <div>
-                <h4 className="font-headline font-bold text-on-surface text-lg mb-1">Compliance Guaranteed</h4>
-                <p className="text-on-surface-variant text-sm leading-relaxed">Integrated GST and KYC verification checks for every counterparty on the platform.</p>
+                <h4 className="font-headline font-bold text-on-surface dark:text-white text-lg mb-1">Compliance Guaranteed</h4>
+                <p className="text-on-surface-variant dark:text-slate-300 text-sm leading-relaxed">Integrated GST and KYC verification checks for every counterparty on the platform.</p>
               </div>
             </div>
           </FadeIn>
@@ -232,19 +231,19 @@ export default function PricingPage() {
         {/* ══ FAQ ACCORDION ══ */}
         <section className="mt-32 max-w-3xl mx-auto px-8">
           <FadeIn>
-            <h2 className="font-headline text-3xl font-extrabold text-center mb-12">Frequently Asked Questions</h2>
+            <h2 className="font-headline text-3xl font-extrabold text-center mb-12 text-on-surface dark:text-white">Frequently Asked Questions</h2>
           </FadeIn>
           <div className="space-y-4">
             {faqs.map((faq, i) => (
               <FadeIn key={i} delay={i * 80}>
-                <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-outline-variant hover:border-primary/40 transition-colors">
+                <div className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm border border-outline-variant dark:border-slate-700 hover:border-primary/40 dark:hover:border-primary/60 transition-colors">
                   <div
-                    className="px-8 py-5 flex justify-between items-center cursor-pointer hover:bg-orange-50/50 transition-colors"
+                    className="px-8 py-5 flex justify-between items-center cursor-pointer hover:bg-orange-50/50 dark:hover:bg-slate-800 transition-colors"
                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   >
-                    <span className="font-bold text-on-surface">{faq.q}</span>
+                    <span className="font-bold text-on-surface dark:text-white">{faq.q}</span>
                     <span
-                      className="material-symbols-outlined text-on-surface-variant transition-transform duration-300"
+                      className="material-symbols-outlined text-on-surface-variant dark:text-slate-400 transition-transform duration-300"
                       style={{ transform: openFaq === i ? 'rotate(180deg)' : 'rotate(0deg)' }}
                     >
                       expand_more
@@ -252,7 +251,7 @@ export default function PricingPage() {
                   </div>
                   <div className={`faq-answer ${openFaq === i ? 'open' : ''}`}
                     style={{ maxHeight: openFaq === i ? '200px' : '0', padding: openFaq === i ? '0 2rem 1.5rem 2rem' : '0 2rem' }}>
-                    <p className="text-on-surface-variant text-sm leading-relaxed">{faq.a}</p>
+                    <p className="text-on-surface-variant dark:text-slate-300 text-sm leading-relaxed">{faq.a}</p>
                   </div>
                 </div>
               </FadeIn>
@@ -263,7 +262,7 @@ export default function PricingPage() {
         {/* ══ FINAL CTA BANNER ══ */}
         <section className="mt-32 max-w-7xl mx-auto px-8">
           <FadeIn>
-            <div className="relative overflow-hidden rounded-3xl py-20 px-12 text-center text-white" style={{ background: '#111827' }}>
+            <div className="relative overflow-hidden rounded-3xl py-20 px-12 text-center text-white bg-slate-900 dark:bg-slate-950 border dark:border-slate-800 transition-colors">
               {/* Ambient glow */}
               <div className="absolute inset-0 pointer-events-none"
                 style={{ backgroundImage: 'radial-gradient(ellipse at 20% 50%, rgba(249,115,22,.15) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(255,149,0,.12) 0%, transparent 60%)' }} />
@@ -290,7 +289,7 @@ export default function PricingPage() {
       </main>
 
       {/* ══ FOOTER ══ */}
-      <footer className="w-full py-12 border-t border-white/5" style={{ background: '#0f172a' }}>
+      <footer className="w-full py-12 border-t border-slate-800 bg-background-dark">
         <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-4">
           <div className="text-lg font-bold text-primary font-headline">KARM BABA</div>
           <div className="flex gap-8">

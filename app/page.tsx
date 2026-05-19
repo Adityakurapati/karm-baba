@@ -685,14 +685,21 @@ export default function Home() {
             </div>
             <div className="flex gap-5 flex-wrap">
               {[
-                { icon: 'mail', label: 'karm@karmbaba.com' },
-                { icon: 'call', label: '+91 9034975500' },
-                { icon: 'language', label: 'karmbaba.com' },
+                { icon: 'mail', label: 'karm@karmbaba.com', href: 'mailto:karm@karmbaba.com', ariaLabel: 'Email Karm Baba' },
+                { icon: 'call', label: '+91 9034975500', href: 'tel:+919034975500', ariaLabel: 'Call Karm Baba' },
+                { icon: 'language', label: 'karmbaba.com', href: 'https://karmbaba.com', ariaLabel: 'Visit Karm Baba Website', target: '_blank', rel: 'noopener noreferrer' },
               ].map((c) => (
-                <span key={c.label} className="flex items-center gap-1.5 text-sm text-white/40">
-                  <span className="material-symbols-outlined text-primary" style={{ fontSize: '1rem' }}>{c.icon}</span>
+                <a
+                  key={c.label}
+                  href={c.href}
+                  aria-label={c.ariaLabel}
+                  target={c.target}
+                  rel={c.rel}
+                  className="flex items-center gap-1.5 text-sm text-white/40 hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-sm"
+                >
+                  <span className="material-symbols-outlined text-primary" style={{ fontSize: '1rem' }} aria-hidden="true">{c.icon}</span>
                   {c.label}
-                </span>
+                </a>
               ))}
             </div>
           </div>

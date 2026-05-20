@@ -40,7 +40,7 @@ export default async function RootLayout({
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
 
   return (
-    <html lang={locale} dir={dir} className="light">
+    <html lang={locale} dir={dir} className="light" suppressHydrationWarning>
       <body className={`${manrope.variable} ${inter.variable} antialiased bg-background text-on-surface`}>
         <I18nProvider initialLocale={locale}>
           <AuthProvider>

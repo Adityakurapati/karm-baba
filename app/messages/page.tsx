@@ -55,7 +55,7 @@ export default function MessagesPage() {
       const data = snapshot.val();
       if (data) {
         const list = Object.values(data);
-        list.sort((a: any, b: any) => (a.createdAt || 0) - (b.createdAt || 0));
+        list.sort((a: any, b: any) => (b.createdAt || 0) - (a.createdAt || 0));
         setMessages(list);
       } else {
         setMessages([]);

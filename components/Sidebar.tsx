@@ -4,8 +4,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getNavigationForRole } from '@/lib/navigation-config';
+import { database } from '@/lib/firebase';
+import { ref, onValue, query, orderByChild, equalTo } from 'firebase/database';
 
 interface SidebarProps {
   open?: boolean;
@@ -17,13 +19,37 @@ export default function Sidebar({ open = true, onClose, onToggle }: SidebarProps
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout, isLoading } = useAuth();
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  useEffect(() => {
+    if (!user || !user.id) return;
+
+    const notifsRef = ref(database, 'notifications');
+    const q = query(notifsRef, orderByChild('userId'), equalTo(user.id));
+
+    const unsubscribe = onValue(q, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const list = Object.values(data);
+        const count = list.filter((n: any) => n.type === 'message_received' && !n.read).length;
+        setUnreadMessagesCount(count);
+      } else {
+        setUnreadMessagesCount(0);
+      }
+    }, (error) => {
+      console.error('Error fetching unread message notifications:', error);
+      setUnreadMessagesCount(0);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   if (isLoading || !user) {
     return null;
   }
 
   const sections = getNavigationForRole(user.role);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -106,7 +132,7 @@ export default function Sidebar({ open = true, onClose, onToggle }: SidebarProps
                       key={item.href}
                       href={item.href}
                       onClick={onClose}
-                      className={`flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${
+                      className={`flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all relative ${
                         isActive
                           ? 'text-primary bg-primary/10 border-r-2 border-primary'
                           : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -117,6 +143,15 @@ export default function Sidebar({ open = true, onClose, onToggle }: SidebarProps
                         {item.icon}
                       </span>
                       <span className={`font-headline ${!open ? 'md:hidden' : ''}`}>{item.label}</span>
+                      
+                      {/* Pulsing red dot for new messages */}
+                      {item.href === '/messages' && unreadMessagesCount > 0 && (
+                        <span className={`relative flex h-2.5 w-2.5 ${open ? 'ml-auto' : 'absolute right-2 top-2'}`}>
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                        </span>
+                      )}
+
                       {item.badge && !open && (
                         <span className="absolute right-2 top-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                           {item.badge}
@@ -163,3 +198,4 @@ export default function Sidebar({ open = true, onClose, onToggle }: SidebarProps
     </>
   );
 }
+

@@ -12,6 +12,43 @@ interface TopHeaderProps {
   searchPlaceholder?: string;
 }
 
+// Pleasant chime double-tone synthesizer using browser Web Audio API
+const playNotificationChime = () => {
+  if (typeof window === 'undefined') return;
+  const isMuted = localStorage.getItem('notifications_muted') === 'true';
+  if (isMuted) return;
+
+  try {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const audioCtx = new AudioContextClass();
+
+    const playTone = (freq: number, start: number, duration: number) => {
+      const osc = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, start);
+
+      // Clean attack and exponential decay
+      gainNode.gain.setValueAtTime(0.15, start);
+      gainNode.gain.exponentialRampToValueAtTime(0.00001, start + duration);
+
+      osc.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      osc.start(start);
+      osc.stop(start + duration);
+    };
+
+    // Ding at 880Hz (A5) followed immediately by a pleasant high chime at 1046.50Hz (C6)
+    playTone(880, audioCtx.currentTime, 0.3);
+    playTone(1046.50, audioCtx.currentTime + 0.12, 0.4);
+  } catch (err) {
+    console.warn('Unable to play audio notification chime:', err);
+  }
+};
+
 export default function TopHeader({
   title = 'Dashboard',
   subtitle,
@@ -20,6 +57,24 @@ export default function TopHeader({
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifs, setShowNotifs] = useState(false);
+
+  // Mute states
+  const [isMuted, setIsMuted] = useState(false);
+  const [prevUnreadCount, setPrevUnreadCount] = useState<number | null>(null);
+
+  // Sync mute state from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const muted = localStorage.getItem('notifications_muted') === 'true';
+      setIsMuted(muted);
+    }
+  }, []);
+
+  const toggleMute = () => {
+    const newMuted = !isMuted;
+    setIsMuted(newMuted);
+    localStorage.setItem('notifications_muted', String(newMuted));
+  };
 
   useEffect(() => {
     if (!user || !user.id) return;
@@ -34,8 +89,18 @@ export default function TopHeader({
         // Sort by createdAt desc
         list.sort((a: any, b: any) => (b.createdAt || 0) - (a.createdAt || 0));
         setNotifications(list);
+
+        const newUnreadCount = list.filter((n: any) => !n.read).length;
+        setPrevUnreadCount((prev) => {
+          if (prev !== null && newUnreadCount > prev) {
+            // Trigger beautiful synthesized chime
+            playNotificationChime();
+          }
+          return newUnreadCount;
+        });
       } else {
         setNotifications([]);
+        setPrevUnreadCount(0);
       }
     });
 
@@ -75,21 +140,34 @@ export default function TopHeader({
         />
       </div>
       <div className="flex items-center gap-4 md:gap-6 ml-4 flex-shrink-0">
+        {/* Mute/Unmute Toggle */}
+        <button
+          onClick={toggleMute}
+          className="text-slate-500 hover:text-slate-900 transition-colors p-1.5 rounded-full hover:bg-slate-200/50 flex items-center justify-center"
+          title={isMuted ? "Unmute notification sounds" : "Mute notification sounds"}
+          aria-label={isMuted ? "Unmute sounds" : "Mute sounds"}
+        >
+          <span className="material-symbols-outlined notranslate" translate="no" style={{ fontSize: '20px' }}>
+            {isMuted ? 'volume_off' : 'volume_up'}
+          </span>
+        </button>
+
+        {/* Notifications Icon Button */}
         <div className="relative">
           <button 
             onClick={() => setShowNotifs(!showNotifs)}
-            className="text-slate-500 hover:text-slate-900 transition-colors relative"
+            className="text-slate-500 hover:text-slate-900 transition-colors relative p-1.5 rounded-full hover:bg-slate-200/50 flex items-center justify-center"
           >
-            <span className="material-symbols-outlined notranslate" translate="no">notifications</span>
+            <span className="material-symbols-outlined notranslate" translate="no" style={{ fontSize: '20px' }}>notifications</span>
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+              <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                 {unreadCount}
               </span>
             )}
           </button>
           
           {showNotifs && (
-            <div className="absolute right-0 mt-2 w-80 bg-white border border-outline-variant rounded-xl shadow-xl z-50 overflow-hidden">
+            <div className="absolute right-0 mt-2 w-80 bg-white border border-outline-variant rounded-xl shadow-xl z-50 overflow-hidden animate-fade-in">
               <div className="p-4 border-b border-outline-variant flex justify-between items-center">
                 <span className="font-bold text-on-surface">Notifications</span>
                 <span 
@@ -106,7 +184,7 @@ export default function TopHeader({
                   </div>
                 ) : (
                   notifications.map((notif) => (
-                    <div key={notif.id} className={`p-4 border-b border-outline-variant hover:bg-surface-container-low transition-colors ${!notif.read ? 'bg-primary-ultra-light' : ''}`}>
+                    <div key={notif.id} className={`p-4 border-b border-outline-variant hover:bg-surface-container-low transition-colors ${!notif.read ? 'bg-primary/5' : ''}`}>
                       <p className="font-bold text-sm text-on-surface">{notif.title}</p>
                       <p className="text-xs text-on-surface-variant mt-1">{notif.message}</p>
                       <p className="text-[10px] text-on-surface-light mt-2">
@@ -119,10 +197,11 @@ export default function TopHeader({
             </div>
           )}
         </div>
-        <button className="text-slate-500 hover:text-slate-900 transition-colors hidden md:block">
-          <span className="material-symbols-outlined notranslate" translate="no">help</span>
+
+        <button className="text-slate-500 hover:text-slate-900 transition-colors hidden md:block p-1.5 rounded-full hover:bg-slate-200/50 flex items-center justify-center">
+          <span className="material-symbols-outlined notranslate" translate="no" style={{ fontSize: '20px' }}>help</span>
         </button>
-        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary text-white flex items-center justify-center font-headline font-bold text-sm select-none" title={user ? `${user.firstName} ${user.lastName}` : 'Profile'}>
+        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary text-white flex items-center justify-center font-headline font-bold text-sm select-none shadow-sm" title={user ? `${user.firstName} ${user.lastName}` : 'Profile'}>
           {user ? (
             `${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'
           ) : (
@@ -133,3 +212,4 @@ export default function TopHeader({
     </header>
   );
 }
+

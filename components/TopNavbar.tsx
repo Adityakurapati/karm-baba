@@ -47,7 +47,7 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
   }
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-outline-variant shadow-sm">
+    <header className="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/90 backdrop-blur-md border-b border-outline-variant dark:border-slate-800 shadow-sm dark:shadow-slate-950/50">
       <div className="px-6 py-4 max-w-7xl mx-auto flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="flex items-center">
@@ -56,7 +56,7 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
             alt="KARM BABA Logo"
             width={120}
             height={80}
-            className="h-14 w-20"
+            className="h-14 w-20 dark:brightness-90"
             priority
             unoptimized
           />
@@ -70,8 +70,8 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
               href={link.href}
               onClick={() => setActiveNav(link.id)}
               className={`font-headline font-bold text-sm transition-colors ${activeNav === link.id
-                ? 'text-primary border-b-2 border-primary'
-                : 'text-on-surface-variant hover:text-primary'
+                  ? 'text-primary border-b-2 border-primary'
+                  : 'text-on-surface-variant dark:text-slate-400 hover:text-primary dark:hover:text-primary'
                 }`}
             >
               {link.label}
@@ -91,7 +91,7 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
               </Link>
               <button
                 onClick={() => logout()}
-                className="px-6 py-2 bg-slate-200 text-slate-700 font-headline font-bold rounded hover:bg-slate-300 transition-colors"
+                className="px-6 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-headline font-bold rounded hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors"
               >
                 Logout
               </button>
@@ -117,7 +117,7 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden text-on-surface"
+          className="md:hidden text-on-surface dark:text-white"
         >
           <span className="material-symbols-outlined notranslate" translate="no">menu</span>
         </button>
@@ -125,7 +125,7 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-outline-variant bg-surface p-4">
+        <div className="md:hidden border-t border-outline-variant dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
           <nav className="flex flex-col gap-4">
             {navLinks.map((link) => (
               <Link
@@ -135,13 +135,13 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
                   setActiveNav(link.id);
                   setMobileMenuOpen(false);
                 }}
-                className="text-on-surface hover:text-primary font-headline font-bold"
+                className="text-on-surface dark:text-white hover:text-primary font-headline font-bold"
               >
                 {link.label}
               </Link>
             ))}
           </nav>
-          <div className="mt-4 pt-4 border-t border-outline-variant flex gap-2">
+          <div className="mt-4 pt-4 border-t border-outline-variant dark:border-slate-800 flex gap-2">
             {isAuthenticated ? (
               <>
                 <Link
@@ -155,7 +155,7 @@ export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
                     logout();
                     setMobileMenuOpen(false);
                   }}
-                  className="flex-1 px-4 py-2 bg-slate-200 text-slate-700 font-headline font-bold rounded text-center"
+                  className="flex-1 px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-headline font-bold rounded text-center hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors"
                 >
                   Logout
                 </button>

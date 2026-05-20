@@ -579,17 +579,16 @@ export default function Home() {
 
             {/* ENTERPRISE — full width */}
             <FadeIn delay={0} className="md:col-span-3">
-              <div className="tier-card p-8 rounded-2xl flex flex-col md:flex-row md:items-center gap-8"
-                style={{ background: '#0f172a' }}>
+              <div className="tier-card p-8 rounded-2xl border border-outline-variant dark:border-slate-700 bg-white dark:bg-slate-800 flex flex-col md:flex-row md:items-center gap-8 shadow-md dark:shadow-slate-950/30">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="px-2.5 py-1 bg-primary/20 border border-primary/30 text-primary text-[10px] font-black uppercase tracking-widest rounded-full">Full Power</span>
-                    <span className="text-white/40 text-xs font-bold uppercase tracking-widest">Enterprise Plan</span>
+                    <span className="px-2.5 py-1 bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/30 text-primary text-[10px] font-black uppercase tracking-widest rounded-full">Full Power</span>
+                    <span className="text-on-surface-variant/60 dark:text-white/40 text-xs font-bold uppercase tracking-widest">Enterprise Plan</span>
                   </div>
-                  <div className="text-4xl font-headline font-black text-white mb-1">
-                    {currency === 'INR' ? '₹60,000' : '$777'} <span className="text-base font-normal text-white/50">/mo</span>
+                  <div className="text-4xl font-headline font-black text-on-surface dark:text-white mb-1">
+                    {currency === 'INR' ? '₹60,000' : '$777'} <span className="text-base font-normal text-on-surface-variant/60 dark:text-white/50">/mo</span>
                   </div>
-                  <p className="text-xs text-green-400 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹4,80,000 — Save ₹2,40,000' : 'Yearly $7,777 — Save $1,547'}</p>
+                  <p className="text-xs text-green-600 dark:text-green-400 font-bold mb-4">{currency === 'INR' ? 'Yearly ₹4,80,000 — Save ₹2,40,000' : 'Yearly $7,777 — Save $1,547'}</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
                     {[
                       '500 High-Intent Verified Leads Monthly',
@@ -603,8 +602,8 @@ export default function Home() {
                       'Dedicated Customer Success Manager',
                       'Karm AI — Full Intelligence Suite',
                     ].map((f) => (
-                      <div key={f} className="flex items-start gap-2 text-sm text-white/70">
-                        <span className="w-4 h-4 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div key={f} className="flex items-start gap-2 text-sm text-on-surface-variant dark:text-white/70">
+                        <span className="w-4 h-4 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/30 flex items-center justify-center flex-shrink-0 mt-0.5">
                           <span className="material-symbols-outlined notranslate text-primary" translate="no" style={{ fontSize: '10px' }}>check</span>
                         </span>
                         {f}
@@ -613,14 +612,14 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex flex-col items-center gap-3 md:min-w-[200px] text-center">
-                  <button className="w-full py-3 bg-primary text-white font-headline font-bold rounded-xl hover:bg-primary-dark transition-all shadow-lg shadow-orange-900/40 text-sm shimmer-btn">
+                  <button className="w-full py-3 bg-primary text-white font-headline font-bold rounded-xl hover:bg-primary-dark transition-all shadow-lg shadow-orange-200 dark:shadow-orange-900/40 text-sm shimmer-btn">
                     Contact Sales →
                   </button>
-                  <button className="w-full py-3 border-2 border-white/15 text-white/60 font-headline font-bold rounded-xl hover:border-primary hover:text-primary transition-all text-sm">
+                  <button className="w-full py-3 border-2 border-outline-variant dark:border-white/15 text-primary dark:text-white/60 font-headline font-bold rounded-xl hover:bg-primary/10 dark:hover:border-primary dark:hover:text-primary transition-all text-sm">
                     View Full Details
                   </button>
-                  <p className="text-white/25 text-xs">Custom plans available</p>
-                  <p className="text-white/25 text-xs">hello@karmbaba.com</p>
+                  <p className="text-on-surface-variant/40 dark:text-white/25 text-xs">Custom plans available</p>
+                  <p className="text-on-surface-variant/40 dark:text-white/25 text-xs">hello@karmbaba.com</p>
                 </div>
               </div>
             </FadeIn>

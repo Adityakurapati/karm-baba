@@ -38,7 +38,7 @@ export default function SettingsPage() {
     email: user?.email || '',
     phone: user?.phone || '',
     company: user?.company?.name || '',
-    country: 'Global',
+    country: '',
   });
   const [primaryLang, setPrimaryLang] = useState(user?.language || i18n.language || 'en');
   const [searchLang, setSearchLang] = useState('');
@@ -78,10 +78,19 @@ export default function SettingsPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === 'phone') {
+      const numericVal = value.replace(/\D/g, '').slice(0, 10);
+      setFormData((prev) => ({ ...prev, [name]: numericVal }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSave = async () => {
+    if (formData.phone && formData.phone.length !== 10) {
+      toast.error('Mobile number must be exactly 10 digits.');
+      return;
+    }
     try {
       const success = await updateUserProfile({
         firstName: formData.firstName,
@@ -226,7 +235,10 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-headline font-bold text-on-surface mb-2">Phone</label>
-                  <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary" />
+                  <input type="tel" name="phone" pattern="\d{10}" title="Please enter exactly 10 digits" value={formData.phone} onChange={handleChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary" />
+                  {formData.phone && formData.phone.length !== 10 && (
+                    <p className="text-error text-xs mt-1">Number must be exactly 10 digits</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-headline font-bold text-on-surface mb-2">Company</label>
@@ -235,6 +247,7 @@ export default function SettingsPage() {
                 <div>
                   <label className="block text-sm font-headline font-bold text-on-surface mb-2">Country</label>
                   <select name="country" value={formData.country} onChange={handleChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary">
+                    <option value="">Select Country</option>
                     <option value="USA">United States</option>
                     <option value="China">China</option>
                     <option value="India">India</option>

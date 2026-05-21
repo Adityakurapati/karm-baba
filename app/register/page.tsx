@@ -16,6 +16,8 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [role, setRole] = useState<UserRole>('buyer');
   
   const [loading, setLoading] = useState(false);
@@ -186,16 +188,27 @@ export default function RegisterPage() {
               <label className="block text-sm font-headline font-bold text-on-surface mb-2">
                 Password
               </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onBlur={() => handleBlur('password')}
-                placeholder="••••••••"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background ${
-                  touched.password && !passwordStrength.isValid ? 'border-error' : 'border-outline-variant'
-                }`}
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onBlur={() => handleBlur('password')}
+                  placeholder="••••••••"
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background pr-12 ${
+                    touched.password && !passwordStrength.isValid ? 'border-error' : 'border-outline-variant'
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/60 hover:text-primary transition-colors focus:outline-none flex items-center justify-center"
+                >
+                  <span className="material-symbols-outlined notranslate text-xl" translate="no">
+                    {showPassword ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
               {/* Password Strength Meter */}
               {password && (
                 <div className="mt-2">
@@ -247,16 +260,27 @@ export default function RegisterPage() {
               <label className="block text-sm font-headline font-bold text-on-surface mb-2">
                 Confirm Password
               </label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                onBlur={() => handleBlur('confirmPassword')}
-                placeholder="••••••••"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background ${
-                  touched.confirmPassword && password !== confirmPassword ? 'border-error' : 'border-outline-variant'
-                }`}
-              />
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onBlur={() => handleBlur('confirmPassword')}
+                  placeholder="••••••••"
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background pr-12 ${
+                    touched.confirmPassword && password !== confirmPassword ? 'border-error' : 'border-outline-variant'
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/60 hover:text-primary transition-colors focus:outline-none flex items-center justify-center"
+                >
+                  <span className="material-symbols-outlined notranslate text-xl" translate="no">
+                    {showConfirmPassword ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
               {touched.confirmPassword && password !== confirmPassword && (
                 <p className="text-error text-xs mt-1">Passwords do not match</p>
               )}

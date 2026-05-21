@@ -22,6 +22,8 @@ function AccountFormContent() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -127,26 +129,50 @@ function AccountFormContent() {
           <label className="block text-sm font-headline font-bold text-on-surface mb-2">
             Password
           </label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center"
+              tabIndex={-1}
+            >
+              <span className="material-symbols-outlined notranslate text-[20px]" translate="no">
+                {showPassword ? "visibility_off" : "visibility"}
+              </span>
+            </button>
+          </div>
           {errors.password && <p className="text-error text-sm mt-1">{errors.password}</p>}
         </div>
         <div>
           <label className="block text-sm font-headline font-bold text-on-surface mb-2">
             Confirm Password
           </label>
-          <input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
-          />
+          <div className="relative">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center"
+              tabIndex={-1}
+            >
+              <span className="material-symbols-outlined notranslate text-[20px]" translate="no">
+                {showConfirmPassword ? "visibility_off" : "visibility"}
+              </span>
+            </button>
+          </div>
           {errors.confirmPassword && <p className="text-error text-sm mt-1">{errors.confirmPassword}</p>}
         </div>
       </div>

@@ -10,6 +10,7 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState<string>("all");
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
@@ -45,7 +46,9 @@ export default function AdminUsersPage() {
     const search = searchTerm.toLowerCase();
     const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
     const email = (user.email || '').toLowerCase();
-    return fullName.includes(search) || email.includes(search);
+    const matchesSearch = fullName.includes(search) || email.includes(search);
+    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+    return matchesSearch && matchesRole;
   });
 
   const handleToggleCertification = async (targetUser: User) => {
@@ -84,6 +87,26 @@ export default function AdminUsersPage() {
           <p className="text-on-surface-variant mt-1 font-medium">Real-time portfolio intelligence and user management.</p>
         </div>
         <div className="flex items-center gap-3">
+          <div className="flex gap-2 bg-surface-container-low p-1 rounded-full border border-outline-variant/20 mr-2">
+            <button 
+              onClick={() => setRoleFilter("all")}
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${roleFilter === "all" ? "bg-primary text-white shadow-md" : "text-on-surface-variant hover:text-on-surface"}`}
+            >
+              All
+            </button>
+            <button 
+              onClick={() => setRoleFilter("buyer")}
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${roleFilter === "buyer" ? "bg-blue-600 text-white shadow-md" : "text-on-surface-variant hover:text-on-surface"}`}
+            >
+              Buyers
+            </button>
+            <button 
+              onClick={() => setRoleFilter("seller")}
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${roleFilter === "seller" ? "bg-purple-600 text-white shadow-md" : "text-on-surface-variant hover:text-on-surface"}`}
+            >
+              Sellers
+            </button>
+          </div>
           <div className="relative">
             <span className="material-symbols-outlined notranslate absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" translate="no">search</span>
             <input 

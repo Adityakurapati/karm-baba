@@ -17,6 +17,7 @@ export default function SellerProductsPage() {
   // Filters, Search & Modal State
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All Categories');
+  const [locationFilter, setLocationFilter] = useState('All Locations');
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
 
   useEffect(() => {
@@ -78,7 +79,11 @@ export default function SellerProductsPage() {
       categoryFilter === 'All Categories' ||
       product.category?.toLowerCase() === categoryFilter.toLowerCase();
 
-    return matchesSearch && matchesCategory;
+    const matchesLocation = 
+      locationFilter === 'All Locations' || 
+      product.location === locationFilter;
+
+    return matchesSearch && matchesCategory && matchesLocation;
   });
 
   if (authLoading || loading) return (
@@ -132,6 +137,18 @@ export default function SellerProductsPage() {
               <option value="Textiles">Textiles</option>
               <option value="Electronics">Electronics</option>
               <option value="Industrial">Industrial</option>
+            </select>
+            <select
+              value={locationFilter}
+              onChange={(e) => setLocationFilter(e.target.value)}
+              className="px-4 py-2.5 border border-outline-variant rounded-xl focus:border-primary outline-none bg-white text-on-surface text-sm transition-all"
+            >
+              <option value="All Locations">All Locations</option>
+              <option value="Global">Global</option>
+              <option value="USA">USA</option>
+              <option value="China">China</option>
+              <option value="India">India</option>
+              <option value="Germany">Germany</option>
             </select>
           </div>
 

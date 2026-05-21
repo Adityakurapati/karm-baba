@@ -71,6 +71,7 @@ export interface Product {
   name: string;
   description: string;
   category: string;
+  location?: string;
   images: string[];
   basePrice: number;
   currency: string;
@@ -128,6 +129,7 @@ export interface PlatformLead {
   name: string;
   companyName: string;
   phone: string;
+  location?: string;
   assignmentType: 'all' | 'users' | 'categories';
   assignedUsers?: string[];
   assignedCategories?: string[];

@@ -11,9 +11,12 @@ export default function LoginPage() {
   const { login, isLoading: authLoading, isAuthenticated, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [resetSent, setResetSent] = useState(false);
+  const { resetPassword } = useAuth();
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -63,6 +66,31 @@ export default function LoginPage() {
     }
   };
 
+  const handleResetPassword = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    setError('');
+    setResetSent(false);
+    
+    if (!email) {
+      setError('Please enter your email address to reset password');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const success = await resetPassword(email);
+      if (success) {
+        setResetSent(true);
+      } else {
+        setError('Failed to send reset email. Make sure the email is registered.');
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
@@ -94,6 +122,11 @@ export default function LoginPage() {
               {error}
             </div>
           )}
+          {resetSent && (
+            <div className="p-4 bg-green-50 border border-green-500 text-green-700 rounded-lg text-sm font-bold">
+              Password reset email sent! Please check your inbox.
+            </div>
+          )}
 
 
 
@@ -116,13 +149,24 @@ export default function LoginPage() {
             <label className="block text-sm font-headline font-bold text-on-surface mb-2">
               Password
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-4 py-3 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 border border-outline-variant rounded-lg focus:outline-none focus:border-primary bg-surface pr-12"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/60 hover:text-primary transition-colors focus:outline-none flex items-center justify-center"
+              >
+                <span className="material-symbols-outlined notranslate text-xl" translate="no">
+                  {showPassword ? 'visibility_off' : 'visibility'}
+                </span>
+              </button>
+            </div>
           </div>
 
           {/* Remember Me & Forgot Password */}
@@ -139,9 +183,9 @@ export default function LoginPage() {
                 Remember me
               </label>
             </div>
-            <Link href="#" className="text-sm text-primary hover:underline font-bold">
+            <button onClick={handleResetPassword} type="button" className="text-sm text-primary hover:underline font-bold">
               Forgot password?
-            </Link>
+            </button>
           </div>
 
           {/* Submit Button */}

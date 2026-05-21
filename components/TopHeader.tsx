@@ -57,6 +57,7 @@ export default function TopHeader({
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifs, setShowNotifs] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   // Mute states
   const [isMuted, setIsMuted] = useState(false);
@@ -198,14 +199,50 @@ export default function TopHeader({
           )}
         </div>
 
-        <button className="text-slate-500 hover:text-slate-900 transition-colors hidden md:block p-1.5 rounded-full hover:bg-slate-200/50 flex items-center justify-center">
-          <span className="material-symbols-outlined notranslate" translate="no" style={{ fontSize: '20px' }}>help</span>
-        </button>
-        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary text-white flex items-center justify-center font-headline font-bold text-sm select-none shadow-sm" title={user ? `${user.firstName} ${user.lastName}` : 'Profile'}>
-          {user ? (
-            `${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'
-          ) : (
-            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+        <div className="relative">
+          <button 
+            onClick={() => setShowProfileModal(!showProfileModal)}
+            className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary text-white flex items-center justify-center font-headline font-bold text-sm select-none shadow-sm hover:scale-105 transition-transform" 
+            title={user ? `${user.firstName} ${user.lastName}` : 'Profile'}
+          >
+            {user ? (
+              `${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'
+            ) : (
+              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            )}
+          </button>
+          
+          {showProfileModal && user && (
+            <div className="absolute right-0 mt-2 w-64 bg-white border border-outline-variant rounded-xl shadow-xl z-50 overflow-hidden animate-fade-in p-4">
+              <div className="flex items-center gap-3 mb-4 border-b border-outline-variant pb-3">
+                <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-headline font-bold text-lg">
+                  {`${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-on-surface truncate">{user.firstName} {user.lastName}</p>
+                  <p className="text-xs text-on-surface-variant truncate">{user.email}</p>
+                </div>
+              </div>
+              <div className="space-y-2 mb-4 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-on-surface-variant">Role:</span>
+                  <span className="font-medium capitalize">{user.role}</span>
+                </div>
+                {user.company && user.company.name && (
+                  <div className="flex justify-between">
+                    <span className="text-on-surface-variant">Company:</span>
+                    <span className="font-medium truncate max-w-[120px]">{user.company.name}</span>
+                  </div>
+                )}
+              </div>
+              <Link 
+                href="/settings" 
+                onClick={() => setShowProfileModal(false)}
+                className="w-full block text-center py-2 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-lg text-sm font-bold transition-colors"
+              >
+                Go to Settings
+              </Link>
+            </div>
           )}
         </div>
       </div>

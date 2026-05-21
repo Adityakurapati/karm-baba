@@ -14,6 +14,7 @@ export default function BuyerLeadsPage() {
   const [leads, setLeads] = useState<PlatformLead[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [locationFilter, setLocationFilter] = useState("All Locations");
   const [connectingId, setConnectingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -77,7 +78,9 @@ export default function BuyerLeadsPage() {
     const search = searchTerm.toLowerCase();
     const name = (lead.name || '').toLowerCase();
     const company = (lead.companyName || '').toLowerCase();
-    return name.includes(search) || company.includes(search);
+    const matchesSearch = name.includes(search) || company.includes(search);
+    const matchesLocation = locationFilter === "All Locations" || lead.location === locationFilter;
+    return matchesSearch && matchesLocation;
   });
 
   return (
@@ -94,15 +97,29 @@ export default function BuyerLeadsPage() {
                 Connect with verified agents and category specialists curated for you.
               </p>
             </div>
-            <div className="relative w-full md:w-auto">
-              <span className="material-symbols-outlined notranslate absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" translate="no">search</span>
-              <input 
-                type="text" 
-                placeholder="Search by name, company..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full md:w-80 pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/30 bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm font-medium"
-              />
+            <div className="flex gap-2 w-full md:w-auto">
+              <select
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
+                className="px-4 py-3 rounded-2xl border border-outline-variant/30 bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm font-medium"
+              >
+                <option value="All Locations">All Locations</option>
+                <option value="Global">Global</option>
+                <option value="USA">USA</option>
+                <option value="China">China</option>
+                <option value="India">India</option>
+                <option value="Germany">Germany</option>
+              </select>
+              <div className="relative w-full md:w-auto">
+                <span className="material-symbols-outlined notranslate absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" translate="no">search</span>
+                <input 
+                  type="text" 
+                  placeholder="Search by name, company..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full md:w-80 pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/30 bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm font-medium"
+                />
+              </div>
             </div>
           </div>
 
@@ -146,6 +163,12 @@ export default function BuyerLeadsPage() {
                       <span className="material-symbols-outlined notranslate text-[18px] opacity-70" translate="no">verified</span>
                       <span className="font-medium text-green-600">Verified Partner</span>
                     </div>
+                    {lead.location && (
+                      <div className="flex items-center gap-3 text-sm text-on-surface-variant">
+                        <span className="material-symbols-outlined notranslate text-[18px] opacity-70" translate="no">location_on</span>
+                        <span className="font-medium text-on-surface">{lead.location}</span>
+                      </div>
+                    )}
                   </div>
 
                   <button 

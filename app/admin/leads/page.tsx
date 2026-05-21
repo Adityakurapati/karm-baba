@@ -22,6 +22,7 @@ export default function AdminLeadsPage() {
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [locationFilter, setLocationFilter] = useState("All Locations");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -30,6 +31,7 @@ export default function AdminLeadsPage() {
     name: "",
     companyName: "",
     phone: "",
+    location: "Global",
     assignmentType: "all" as "all" | "users" | "categories",
     assignedUsers: [] as string[],
     assignedCategories: [] as string[]
@@ -76,6 +78,12 @@ export default function AdminLeadsPage() {
 
   const handleAddLead = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (formData.phone && formData.phone.length !== 10) {
+      toast.error('Mobile number must be exactly 10 digits.');
+      return;
+    }
+
     setIsCreating(true);
 
     try {
@@ -83,6 +91,7 @@ export default function AdminLeadsPage() {
         name: formData.name,
         companyName: formData.companyName,
         phone: formData.phone,
+        location: formData.location,
         assignmentType: formData.assignmentType,
         assignedUsers: formData.assignmentType === 'users' ? formData.assignedUsers : [],
         assignedCategories: formData.assignmentType === 'categories' ? formData.assignedCategories : [],
@@ -100,6 +109,7 @@ export default function AdminLeadsPage() {
         name: "",
         companyName: "",
         phone: "",
+        location: "Global",
         assignmentType: "all",
         assignedUsers: [],
         assignedCategories: []
@@ -135,7 +145,11 @@ export default function AdminLeadsPage() {
     const name = (lead.name || '').toLowerCase();
     const company = (lead.companyName || '').toLowerCase();
     const phone = (lead.phone || '').toLowerCase();
-    return name.includes(search) || company.includes(search) || phone.includes(search);
+    
+    const matchesSearch = name.includes(search) || company.includes(search) || phone.includes(search);
+    const matchesLocation = locationFilter === "All Locations" || lead.location === locationFilter;
+    
+    return matchesSearch && matchesLocation;
   });
 
   return (
@@ -147,15 +161,29 @@ export default function AdminLeadsPage() {
           <p className="text-on-surface-variant mt-1 font-medium">Create and manage curated platform leads and assign them to users.</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <span className="material-symbols-outlined notranslate absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" translate="no">search</span>
-            <input 
-              type="text" 
-              placeholder="Search leads..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 pr-4 py-3 rounded-full border border-outline-variant/30 bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm w-72 text-sm font-medium"
-            />
+          <div className="flex gap-2">
+            <select
+              value={locationFilter}
+              onChange={(e) => setLocationFilter(e.target.value)}
+              className="pl-4 pr-8 py-3 rounded-full border border-outline-variant/30 bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm text-sm font-medium"
+            >
+              <option value="All Locations">All Locations</option>
+              <option value="Global">Global</option>
+              <option value="USA">USA</option>
+              <option value="China">China</option>
+              <option value="India">India</option>
+              <option value="Germany">Germany</option>
+            </select>
+            <div className="relative">
+              <span className="material-symbols-outlined notranslate absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" translate="no">search</span>
+              <input 
+                type="text" 
+                placeholder="Search leads..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-12 pr-4 py-3 rounded-full border border-outline-variant/30 bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm w-72 text-sm font-medium"
+              />
+            </div>
           </div>
           <button 
             onClick={() => setIsAddModalOpen(true)}
@@ -196,9 +224,27 @@ export default function AdminLeadsPage() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Mobile Number</label>
-                  <input required type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="+1 234 567 8900" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Mobile Number</label>
+                    <input required type="tel" pattern="\d{10}" title="Please enter exactly 10 digits" value={formData.phone} onChange={e => {
+                      const numericVal = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      setFormData({...formData, phone: numericVal});
+                    }} className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="1234567890" />
+                    {formData.phone && formData.phone.length !== 10 && (
+                      <p className="text-error text-xs mt-1">Number must be exactly 10 digits</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Location</label>
+                    <select value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                      <option value="Global">Global</option>
+                      <option value="USA">USA</option>
+                      <option value="China">China</option>
+                      <option value="India">India</option>
+                      <option value="Germany">Germany</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -325,6 +371,13 @@ export default function AdminLeadsPage() {
                   <span className="material-symbols-outlined notranslate text-base opacity-70" translate="no">calendar_today</span>
                   <span>Added {new Date(lead.createdAt || Date.now()).toLocaleDateString()}</span>
                 </div>
+                
+                {lead.location && (
+                  <div className="flex items-center gap-2 text-sm text-on-surface-variant">
+                    <span className="material-symbols-outlined notranslate text-base opacity-70" translate="no">location_on</span>
+                    <span>{lead.location}</span>
+                  </div>
+                )}
                 
                 {lead.assignmentType === 'categories' && lead.assignedCategories && (
                   <div className="flex items-start gap-2 text-xs text-on-surface-variant mt-2 bg-surface-container-low p-2 rounded-lg">

@@ -184,15 +184,25 @@ export default function TopHeader({
                     No notifications
                   </div>
                 ) : (
-                  notifications.map((notif) => (
-                    <div key={notif.id} className={`p-4 border-b border-outline-variant hover:bg-surface-container-low transition-colors ${!notif.read ? 'bg-primary/5' : ''}`}>
-                      <p className="font-bold text-sm text-on-surface">{notif.title}</p>
-                      <p className="text-xs text-on-surface-variant mt-1">{notif.message}</p>
-                      <p className="text-[10px] text-on-surface-light mt-2">
-                        {new Date(notif.createdAt).toLocaleTimeString()}
-                      </p>
-                    </div>
-                  ))
+                  notifications.map((notif) => {
+                    const content = (
+                      <div className={`p-4 border-b border-outline-variant hover:bg-surface-container-low transition-colors ${!notif.read ? 'bg-primary/5' : ''}`}>
+                        <p className="font-bold text-sm text-on-surface">{notif.title}</p>
+                        <p className="text-xs text-on-surface-variant mt-1">{notif.message}</p>
+                        <p className="text-[10px] text-on-surface-light mt-2">
+                          {new Date(notif.createdAt).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    );
+                    
+                    return notif.link ? (
+                      <Link key={notif.id} href={notif.link} onClick={() => setShowNotifs(false)}>
+                        {content}
+                      </Link>
+                    ) : (
+                      <div key={notif.id}>{content}</div>
+                    );
+                  })
                 )}
               </div>
             </div>

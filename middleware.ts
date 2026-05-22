@@ -47,6 +47,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/_next/') || 
     pathname.includes('favicon.ico') ||
     pathname === '/pricing' ||
+    pathname.startsWith('/lead') ||
     pathname === '/requirements'; // The public requirements board
 
   // If it's a public route, just let it pass

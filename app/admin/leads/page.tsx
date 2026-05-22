@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { database } from "@/lib/firebase";
-import { ref, onValue, push, set } from "firebase/database";
+import { ref, onValue, push, set, update } from "firebase/database";
 import { PlatformLead, User } from "@/lib/types";
 import toast from "react-hot-toast";
 
@@ -31,6 +31,7 @@ export default function AdminLeadsPage() {
     name: "",
     companyName: "",
     phone: "",
+    code: "",
     location: "Global",
     assignmentType: "all" as "all" | "users" | "categories",
     assignedUsers: [] as string[],
@@ -76,6 +77,18 @@ export default function AdminLeadsPage() {
     };
   }, []);
 
+  const handleUpdateCode = async (leadId: string, currentCode?: string) => {
+    const newCode = prompt("Enter new login code for this lead:", currentCode || "");
+    if (newCode !== null) {
+      try {
+        await update(ref(database, `leads/${leadId}`), { code: newCode });
+        toast.success("Login code updated successfully");
+      } catch (error: any) {
+        toast.error("Failed to update login code");
+      }
+    }
+  };
+
   const handleAddLead = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -91,6 +104,7 @@ export default function AdminLeadsPage() {
         name: formData.name,
         companyName: formData.companyName,
         phone: formData.phone,
+        code: formData.code,
         location: formData.location,
         assignmentType: formData.assignmentType,
         assignedUsers: formData.assignmentType === 'users' ? formData.assignedUsers : [],
@@ -109,6 +123,7 @@ export default function AdminLeadsPage() {
         name: "",
         companyName: "",
         phone: "",
+        code: "",
         location: "Global",
         assignmentType: "all",
         assignedUsers: [],
@@ -235,6 +250,13 @@ export default function AdminLeadsPage() {
                       <p className="text-error text-xs mt-1">Number must be exactly 10 digits</p>
                     )}
                   </div>
+                  <div>
+                    <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Login Code</label>
+                    <input required type="text" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g. 123456" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Location</label>
                     <select value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
@@ -370,6 +392,16 @@ export default function AdminLeadsPage() {
                 <div className="flex items-center gap-2 text-sm text-on-surface-variant">
                   <span className="material-symbols-outlined notranslate text-base opacity-70" translate="no">calendar_today</span>
                   <span>Added {new Date(lead.createdAt || Date.now()).toLocaleDateString()}</span>
+                </div>
+                
+                <div className="flex items-center justify-between text-sm text-on-surface-variant bg-surface-container-lowest border border-outline-variant/20 p-2 rounded-lg mt-2">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined notranslate text-base opacity-70" translate="no">password</span>
+                    <span>Code: <strong className="text-on-surface">{lead.code || 'Not Set'}</strong></span>
+                  </div>
+                  <button onClick={() => handleUpdateCode(lead.id, lead.code)} className="text-xs font-bold text-primary hover:underline">
+                    Edit
+                  </button>
                 </div>
                 
                 {lead.location && (

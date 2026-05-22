@@ -4,17 +4,19 @@ import React, { useEffect, useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { database } from "@/lib/firebase";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, set, serverTimestamp } from "firebase/database";
 import { PlatformLead } from "@/lib/types";
 import { useAuth } from "@/lib/auth-context";
-import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function SellerLeadsPage() {
   const { user } = useAuth();
   const [leads, setLeads] = useState<PlatformLead[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [connectingId, setConnectingId] = useState<string | null>(null);
+  const [connections, setConnections] = useState<Record<string, 'pending' | 'approved'>>({});
+  const [requestingId, setRequestingId] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (!user) return;
@@ -64,13 +66,47 @@ export default function SellerLeadsPage() {
     return () => unsubscribe();
   }, [user]);
 
-  const handleConnect = (leadId: string) => {
-    setConnectingId(leadId);
-    // Simulate connection delay
-    setTimeout(() => {
-      toast.success("Connection request sent successfully!");
-      setConnectingId(null);
-    }, 1200);
+  // Fetch connections
+  useEffect(() => {
+    if (!user) return;
+    const connectionsRef = ref(database, 'lead_connections');
+    const unsubscribe = onValue(connectionsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const userConnections: Record<string, 'pending' | 'approved'> = {};
+        Object.keys(data).forEach(key => {
+          if (key.endsWith(`_${user.id}`)) {
+            const leadId = key.split('_')[0];
+            userConnections[leadId] = data[key].status;
+          }
+        });
+        setConnections(userConnections);
+      } else {
+        setConnections({});
+      }
+    });
+    return () => unsubscribe();
+  }, [user]);
+
+  const handleConnect = async (leadId: string) => {
+    const status = connections[leadId];
+    if (status === 'approved') {
+      router.push(`/messages?tab=leads&leadId=${leadId}`);
+    } else if (!status) {
+      setRequestingId(leadId);
+      try {
+        const threadId = `${leadId}_${user?.id}`;
+        await set(ref(database, `lead_connections/${threadId}`), {
+          status: 'pending',
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setRequestingId(null);
+      }
+    }
   };
 
   const filteredLeads = leads.filter(lead => {
@@ -148,20 +184,47 @@ export default function SellerLeadsPage() {
                     </div>
                   </div>
 
-                  <button 
-                    onClick={() => handleConnect(lead.id)}
-                    disabled={connectingId === lead.id}
-                    className="w-full py-3 rounded-xl font-bold font-headline text-sm bg-surface-container-low text-on-surface hover:bg-primary hover:text-white transition-all duration-300 shadow-sm flex items-center justify-center gap-2 group/btn disabled:opacity-70 disabled:cursor-wait"
-                  >
-                    {connectingId === lead.id ? (
-                      <><div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div> Connecting...</>
-                    ) : (
-                      <>
-                        <span className="material-symbols-outlined notranslate text-[18px] group-hover/btn:scale-110 transition-transform" translate="no">handshake</span>
-                        Request Connection
-                      </>
-                    )}
-                  </button>
+                  {(() => {
+                    const status = connections[lead.id];
+                    if (status === 'approved') {
+                      return (
+                        <button 
+                          onClick={() => handleConnect(lead.id)}
+                          className="w-full py-3 rounded-xl font-bold font-headline text-sm bg-primary text-white hover:bg-primary-dark transition-all duration-300 shadow-sm flex items-center justify-center gap-2 group/btn"
+                        >
+                          <span className="material-symbols-outlined notranslate text-[18px] group-hover/btn:scale-110 transition-transform" translate="no">chat</span>
+                          Message Lead
+                        </button>
+                      );
+                    } else if (status === 'pending') {
+                      return (
+                        <button 
+                          disabled
+                          className="w-full py-3 rounded-xl font-bold font-headline text-sm bg-surface-container text-on-surface-variant transition-all duration-300 shadow-sm flex items-center justify-center gap-2 opacity-80 cursor-not-allowed"
+                        >
+                          <span className="material-symbols-outlined notranslate text-[18px]" translate="no">schedule</span>
+                          Connection Pending
+                        </button>
+                      );
+                    } else {
+                      return (
+                        <button 
+                          onClick={() => handleConnect(lead.id)}
+                          disabled={requestingId === lead.id}
+                          className="w-full py-3 rounded-xl font-bold font-headline text-sm bg-surface-container-low text-on-surface hover:bg-primary hover:text-white transition-all duration-300 shadow-sm flex items-center justify-center gap-2 group/btn disabled:opacity-70 disabled:cursor-wait"
+                        >
+                          {requestingId === lead.id ? (
+                            <><div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div> Requesting...</>
+                          ) : (
+                            <>
+                              <span className="material-symbols-outlined notranslate text-[18px] group-hover/btn:scale-110 transition-transform" translate="no">handshake</span>
+                              Request Connection
+                            </>
+                          )}
+                        </button>
+                      );
+                    }
+                  })()}
                 </div>
               ))}
             </div>

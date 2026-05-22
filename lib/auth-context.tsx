@@ -118,12 +118,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               token,
               expiresAt,
             });
+            setIsLoading(false);
           } else {
-            console.error('User profile not found in database');
-            setUser(null);
-            setSession(null);
+            // Fallback check for admins node
+            get(ref(database, `admins/${firebaseUser.uid}`)).then(async (adminSnap) => {
+              if (adminSnap.exists()) {
+                const adminData = adminSnap.val();
+                const formattedAdmin: User = {
+                  ...adminData,
+                  isOnboarded: true,
+                  onboardingStep: 5,
+                  createdAt: adminData.createdAt ? new Date(adminData.createdAt) : new Date(),
+                  updatedAt: adminData.updatedAt ? new Date(adminData.updatedAt) : new Date(),
+                };
+                const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+                const token = await firebaseUser.getIdToken();
+                try {
+                  await fetch('/api/auth/session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token, expiresIn: 3600 })
+                  });
+                } catch (err) { }
+                setUser(formattedAdmin);
+                setSession({
+                  userId: formattedAdmin.id,
+                  email: formattedAdmin.email,
+                  role: 'admin',
+                  companyName: formattedAdmin.company?.name || 'KARM BABA',
+                  token,
+                  expiresAt,
+                });
+              } else {
+                console.error('User profile not found in database (checked users and admins)');
+                setUser(null);
+                setSession(null);
+              }
+              setIsLoading(false);
+            });
           }
-          setIsLoading(false);
         }, (error) => {
           console.error('Error fetching user profile:', error);
           setUser(null);

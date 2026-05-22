@@ -129,6 +129,7 @@ export interface PlatformLead {
   name: string;
   companyName: string;
   phone: string;
+  code?: string;
   location?: string;
   assignmentType: 'all' | 'users' | 'categories';
   assignedUsers?: string[];

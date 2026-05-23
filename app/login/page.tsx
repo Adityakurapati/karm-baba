@@ -8,7 +8,7 @@ import { useAuth } from '@/lib/auth-context';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isLoading: authLoading, isAuthenticated, user } = useAuth();
+  const { login, loginWithProvider, isLoading: authLoading, isAuthenticated, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -87,6 +87,21 @@ export default function LoginPage() {
     } catch (err) {
       setError('An error occurred. Please try again.');
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleProviderLogin = async (providerName: 'google' | 'microsoft' | 'facebook') => {
+    setError('');
+    setLoading(true);
+    try {
+      const success = await loginWithProvider(providerName);
+      if (!success) {
+        setError(`Failed to sign in with ${providerName}.`);
+        setLoading(false);
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
       setLoading(false);
     }
   };
@@ -197,8 +212,47 @@ export default function LoginPage() {
             {loading ? 'Signing In...' : 'Sign In'}
           </button>
 
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-outline-variant"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-background text-on-surface-variant font-bold">OR</span>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <button
+              type="button"
+              onClick={() => handleProviderLogin('google')}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-3 py-3 border border-outline-variant rounded-lg hover:bg-surface-variant transition-colors disabled:opacity-50 font-bold"
+            >
+              <Image src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width={20} height={20} />
+              Continue with Google
+            </button>
+            <button
+              type="button"
+              onClick={() => handleProviderLogin('microsoft')}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-3 py-3 border border-outline-variant rounded-lg hover:bg-surface-variant transition-colors disabled:opacity-50 font-bold"
+            >
+              <Image src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/microsoft.svg" alt="Microsoft" width={20} height={20} />
+              Continue with Microsoft
+            </button>
+            <button
+              type="button"
+              onClick={() => handleProviderLogin('facebook')}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-3 py-3 border border-outline-variant rounded-lg hover:bg-surface-variant transition-colors disabled:opacity-50 font-bold"
+            >
+              <Image src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/facebook.svg" alt="Facebook" width={20} height={20} />
+              Continue with Facebook
+            </button>
+          </div>
+
           {/* Sign Up Link */}
-          <p className="text-center text-on-surface-variant">
+          <p className="text-center text-on-surface-variant mt-6">
             Don&apos;t have an account?{' '}
             <Link href="/register" className="text-primary hover:underline font-bold">
               Sign Up

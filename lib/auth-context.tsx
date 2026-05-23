@@ -3,12 +3,17 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthSession, UserRole } from './types';
 import { auth, database } from './firebase';
-import { 
+import {
   onAuthStateChanged, 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   signOut,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  GoogleAuthProvider,
+  OAuthProvider,
+  FacebookAuthProvider,
+  signInWithPopup,
+  getAdditionalUserInfo
 } from 'firebase/auth';
 import { ref, get, set, child, update, onValue, push } from 'firebase/database';
 import toast from 'react-hot-toast';
@@ -20,6 +25,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<boolean>;
+  loginWithProvider: (providerName: 'google' | 'microsoft' | 'facebook', role?: UserRole) => Promise<boolean>;
   register: (email: string, password: string, firstName: string, lastName: string, role: UserRole, verificationCode: string) => Promise<boolean>;
   logout: () => void;
   hasRole: (role: UserRole) => boolean;
@@ -258,6 +264,80 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const loginWithProvider = async (providerName: 'google' | 'microsoft' | 'facebook', role: UserRole = 'buyer'): Promise<boolean> => {
+    setIsLoading(true);
+    try {
+      let provider;
+      switch (providerName) {
+        case 'google':
+          provider = new GoogleAuthProvider();
+          break;
+        case 'microsoft':
+          provider = new OAuthProvider('microsoft.com');
+          break;
+        case 'facebook':
+          provider = new FacebookAuthProvider();
+          break;
+        default:
+          throw new Error('Unsupported provider');
+      }
+
+      const userCredential = await signInWithPopup(auth, provider);
+      const uid = userCredential.user.uid;
+      const additionalUserInfo = getAdditionalUserInfo(userCredential);
+
+      // Check if this is a newly created user from OAuth
+      if (additionalUserInfo?.isNewUser) {
+        // Create user profile in Realtime Database
+        const newUser = {
+          id: uid,
+          email: userCredential.user.email || '',
+          firstName: additionalUserInfo.profile?.given_name || additionalUserInfo.profile?.first_name || userCredential.user.displayName?.split(' ')[0] || '',
+          lastName: additionalUserInfo.profile?.family_name || additionalUserInfo.profile?.last_name || userCredential.user.displayName?.split(' ').slice(1).join(' ') || '',
+          role: role,
+          company: {
+            id: `comp_${Math.random().toString(36).substring(2, 11)}`,
+            name: '',
+            registrationNumber: '',
+            industry: '',
+            location: '',
+            employees: 0,
+            yearEstablished: new Date().getFullYear(),
+          },
+          phone: userCredential.user.phoneNumber || '',
+          credibilityScore: 50,
+          verificationStatus: 'pending',
+          verificationBadges: [],
+          riskLevel: 'medium',
+          isOnboarded: false,
+          onboardingStep: 1,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        await set(ref(database, `users/${uid}`), newUser);
+      }
+
+      // Log session
+      try {
+        const sessionData = {
+          timestamp: new Date().toISOString(),
+          device: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown Device',
+        };
+        await push(ref(database, `user_sessions/${uid}`), sessionData);
+      } catch (sessionErr) {
+        console.error('Failed to log session:', sessionErr);
+      }
+
+      return true;
+    } catch (err) {
+      console.error(`${providerName} login error:`, err);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const register = async (email: string, password: string, firstName: string, lastName: string, role: UserRole, verificationCode: string): Promise<boolean> => {
     setIsLoading(true);
     try {
@@ -390,6 +470,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading,
     isAuthenticated: !!user,
     login,
+    loginWithProvider,
     register,
     logout,
     hasRole,

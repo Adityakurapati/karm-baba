@@ -10,7 +10,7 @@ import { validatePassword, isValidEmail } from '@/lib/validation';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register, isLoading: authLoading } = useAuth();
+  const { register, loginWithProvider, isLoading: authLoading } = useAuth();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -112,6 +112,23 @@ export default function RegisterPage() {
     } catch (err: any) {
       setError(err.message || 'An error occurred. Please try again.');
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleProviderLogin = async (providerName: 'google' | 'microsoft' | 'facebook') => {
+    setError('');
+    setLoading(true);
+    try {
+      const success = await loginWithProvider(providerName, role);
+      if (success) {
+        router.push('/onboarding');
+      } else {
+        setError(`Registration failed with ${providerName}.`);
+        setLoading(false);
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
       setLoading(false);
     }
   };
@@ -348,8 +365,47 @@ export default function RegisterPage() {
               {loading ? (showVerification ? 'Verifying...' : 'Sending Code...') : (showVerification ? 'Verify & Create Account' : 'Continue')}
             </button>
 
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-outline-variant"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-surface text-on-surface-variant font-bold">OR</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={() => handleProviderLogin('google')}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-3 py-3 border border-outline-variant rounded-lg hover:bg-surface-variant transition-colors disabled:opacity-50 font-bold"
+              >
+                <Image src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width={20} height={20} />
+                Sign up with Google
+              </button>
+              <button
+                type="button"
+                onClick={() => handleProviderLogin('microsoft')}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-3 py-3 border border-outline-variant rounded-lg hover:bg-surface-variant transition-colors disabled:opacity-50 font-bold"
+              >
+                <Image src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/microsoft.svg" alt="Microsoft" width={20} height={20} />
+                Sign up with Microsoft
+              </button>
+              <button
+                type="button"
+                onClick={() => handleProviderLogin('facebook')}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-3 py-3 border border-outline-variant rounded-lg hover:bg-surface-variant transition-colors disabled:opacity-50 font-bold"
+              >
+                <Image src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/facebook.svg" alt="Facebook" width={20} height={20} />
+                Sign up with Facebook
+              </button>
+            </div>
+
             {/* Login Link */}
-            <p className="text-center text-on-surface-variant">
+            <p className="text-center text-on-surface-variant mt-6">
               Already have an account?{' '}
               <Link href="/login" className="text-primary hover:underline font-bold">
                 Sign In

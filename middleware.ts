@@ -36,9 +36,11 @@ function isTokenExpired(token: string): boolean {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('auth_token')?.value;
+  const adminToken = request.cookies.get('admin_auth_token')?.value;
 
   // Define route categories
-  const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/register') || pathname.startsWith('/admin/login');
+  const isNormalAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/register');
+  const isAdminAuthRoute = pathname.startsWith('/admin/login');
   
   // Public routes that don't need protection
   const isPublicRoute = 
@@ -48,38 +50,41 @@ export function middleware(request: NextRequest) {
     pathname.includes('favicon.ico') ||
     pathname === '/pricing' ||
     pathname.startsWith('/lead') ||
-    pathname === '/requirements'; // The public requirements board
+    pathname === '/requirements';
 
-  // If it's a public route, just let it pass
-  if (isPublicRoute && !isAuthRoute) {
+  if (isPublicRoute && !isNormalAuthRoute && !isAdminAuthRoute) {
     return NextResponse.next();
   }
 
-  // 1. Handle missing token
-  if (!token) {
-    if (!isAuthRoute && !isPublicRoute) {
-      // Redirect to login if trying to access protected route without token
-      const loginPath = pathname.startsWith('/admin') ? '/admin/login' : '/login';
-      const url = new URL(loginPath, request.url);
-      url.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(url);
+  // Admin Routes Logic
+  if (pathname.startsWith('/admin')) {
+    const adminExpired = adminToken ? isTokenExpired(adminToken) : true;
+
+    if (adminExpired) {
+      if (!isAdminAuthRoute) {
+        const response = NextResponse.redirect(new URL('/admin/login?session_expired=true', request.url));
+        response.cookies.delete('admin_auth_token');
+        return response;
+      }
+      return NextResponse.next();
+    } else {
+      if (isAdminAuthRoute) {
+        return NextResponse.redirect(new URL('/admin/users', request.url));
+      }
+      return NextResponse.next();
     }
-    return NextResponse.next();
   }
 
-  // 2. Handle token expiration
-  const expired = isTokenExpired(token);
-  
+  // Normal Routes Logic
+  const expired = token ? isTokenExpired(token) : true;
+
   if (expired) {
-    if (!isAuthRoute && !isPublicRoute) {
-      // Token is expired, clear the cookie and redirect to login
-      const loginPath = pathname.startsWith('/admin') ? '/admin/login' : '/login';
-      const response = NextResponse.redirect(new URL(`${loginPath}?session_expired=true`, request.url));
+    if (!isNormalAuthRoute && !isPublicRoute) {
+      const response = NextResponse.redirect(new URL('/login?session_expired=true', request.url));
       response.cookies.delete('auth_token');
       return response;
     }
-    // If they are on an auth route with an expired token, delete the cookie and let them log in
-    if (isAuthRoute) {
+    if (isNormalAuthRoute) {
       const response = NextResponse.next();
       response.cookies.delete('auth_token');
       return response;
@@ -87,18 +92,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3. Handle authenticated users trying to access auth pages
-  if (isAuthRoute && !expired) {
-    // Let admin login page handle its own redirection to avoid dashboard auto-redirect
-    // for non-admin users trying to access the admin portal.
-    if (pathname.startsWith('/admin/login')) {
-      return NextResponse.next();
-    }
-    // Redirect authenticated users to dashboard
+  // Token is valid
+  if (isNormalAuthRoute && !expired) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  // 4. Token is valid, allow access to protected routes
   return NextResponse.next();
 }
 

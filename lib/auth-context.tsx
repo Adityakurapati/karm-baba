@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             await fetch('/api/auth/session', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ token: 'mock_token', expiresIn: 86400 })
+              body: JSON.stringify({ token: 'mock_token', expiresIn: 86400, role: 'admin' })
             });
           } catch (err) {
             console.error('Failed to sync mock session:', err);
@@ -109,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               await fetch('/api/auth/session', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token, expiresIn: 3600 })
+                body: JSON.stringify({ token, expiresIn: 3600, role: formattedUser.role })
               });
             } catch (err) {
               console.error('Failed to sync session:', err);
@@ -143,7 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   await fetch('/api/auth/session', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, expiresIn: 3600 })
+                    body: JSON.stringify({ token, expiresIn: 3600, role: 'admin' })
                   });
                 } catch (err) { }
                 setUser(formattedAdmin);
@@ -160,6 +160,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setUser(null);
                 setSession(null);
               }
+              setIsLoading(false);
+            }).catch((err) => {
+              console.error('Error fetching admin profile:', err);
+              setUser(null);
+              setSession(null);
               setIsLoading(false);
             });
           }
@@ -217,7 +222,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await fetch('/api/auth/session', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: 'mock_token', expiresIn: 86400 })
+            body: JSON.stringify({ token: 'mock_token', expiresIn: 86400, role: 'admin' })
           });
         } catch (err) {
           console.error('Failed to sync mock session:', err);
@@ -238,6 +243,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           sessionStorage.setItem('mock_admin', JSON.stringify(mockAdmin));
         }
         
+        setIsLoading(false);
         return true;
       }
 

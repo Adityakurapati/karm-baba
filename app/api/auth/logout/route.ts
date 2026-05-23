@@ -4,9 +4,19 @@ export async function POST() {
   try {
     const response = NextResponse.json({ success: true }, { status: 200 });
 
-    // Clear the session cookie by setting maxAge to 0
+    // Clear the session cookies by setting maxAge to 0
     response.cookies.set({
       name: 'auth_token',
+      value: '',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 0,
+    });
+    
+    response.cookies.set({
+      name: 'admin_auth_token',
       value: '',
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

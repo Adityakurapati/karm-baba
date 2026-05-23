@@ -8,12 +8,13 @@ const FIREBASE_DATABASE_URL = "https://thirdeye-1e99c-default-rtdb.asia-southeas
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    let { email, password, firstName, lastName, role } = body;
+    let { email, password, firstName, lastName, role, verificationCode } = body;
 
     // Sanitize inputs
     email = sanitizeInput(email);
     firstName = sanitizeInput(firstName);
     lastName = sanitizeInput(lastName);
+
 
     // 1. Backend Validation
     if (!email || !password || !firstName || !lastName || !role) {
@@ -28,6 +29,23 @@ export async function POST(request: Request) {
     if (!passwordValidation.isValid) {
       return NextResponse.json({ error: 'Password does not meet security requirements' }, { status: 400 });
     }
+
+    if (!verificationCode) {
+      return NextResponse.json({ error: 'Verification code is required' }, { status: 400 });
+    }
+
+    // Verify the code from RTDB
+    const emailSafe = email.replace(/[^a-zA-Z0-9]/g, '_');
+    const verifyResponse = await fetch(`${FIREBASE_DATABASE_URL}/verification_codes/${emailSafe}.json`);
+    const verifyData = await verifyResponse.json();
+
+    if (!verifyData || verifyData.code !== verificationCode) {
+      return NextResponse.json({ error: 'Invalid or expired verification code' }, { status: 400 });
+    }
+
+    // Code is valid, we could optionally delete it now or let it be overwritten next time
+    await fetch(`${FIREBASE_DATABASE_URL}/verification_codes/${emailSafe}.json`, { method: 'DELETE' });
+
 
     // 2. Create User in Firebase Auth (handles duplicate email checks automatically)
     const signUpResponse = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`, {

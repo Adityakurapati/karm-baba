@@ -20,7 +20,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (email: string, password: string, firstName: string, lastName: string, role: UserRole) => Promise<boolean>;
+  register: (email: string, password: string, firstName: string, lastName: string, role: UserRole, verificationCode: string) => Promise<boolean>;
   logout: () => void;
   hasRole: (role: UserRole) => boolean;
   canAccess: (roles: UserRole[]) => boolean;
@@ -258,7 +258,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (email: string, password: string, firstName: string, lastName: string, role: UserRole): Promise<boolean> => {
+  const register = async (email: string, password: string, firstName: string, lastName: string, role: UserRole, verificationCode: string): Promise<boolean> => {
     setIsLoading(true);
     try {
       // Call the backend registration API
@@ -267,7 +267,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, firstName, lastName, role }),
+        body: JSON.stringify({ email, password, firstName, lastName, role, verificationCode }),
       });
 
       const data = await response.json();

@@ -22,6 +22,10 @@ export default function RegisterPage() {
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  const [showVerification, setShowVerification] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationSent, setVerificationSent] = useState(false);
 
   const [touched, setTouched] = useState({
     firstName: false,
@@ -75,11 +79,35 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      const success = await register(email, password, firstName, lastName, role);
-      if (success) {
-        router.push('/onboarding');
+      if (!showVerification) {
+        // Step 1: Send verification code
+        const response = await fetch('/api/send-verification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+          setShowVerification(true);
+          setVerificationSent(true);
+        } else {
+          setError(data.error || 'Failed to send verification code.');
+        }
       } else {
-        setError('Registration failed. Email might already be in use.');
+        // Step 2: Register with code
+        if (!verificationCode || verificationCode.length !== 6) {
+          setError('Please enter a valid 6-digit verification code.');
+          setLoading(false);
+          return;
+        }
+
+        const success = await register(email, password, firstName, lastName, role, verificationCode);
+        if (success) {
+          router.push('/onboarding');
+        } else {
+          setError('Registration failed. Code might be invalid or email already in use.');
+        }
       }
     } catch (err: any) {
       setError(err.message || 'An error occurred. Please try again.');
@@ -286,15 +314,38 @@ export default function RegisterPage() {
               )}
             </div>
 
+            {/* Verification Code Step */}
+            {showVerification && (
+              <div className="p-6 bg-surface-variant/50 rounded-xl border border-primary/20">
+                <h3 className="font-headline font-bold text-lg mb-2">Verify your email</h3>
+                <p className="text-sm text-on-surface-variant mb-4">
+                  We've sent a 6-digit code to <strong>{email}</strong>. Please enter it below to complete registration.
+                </p>
+                <div>
+                  <label className="block text-sm font-headline font-bold text-on-surface mb-2">
+                    Verification Code
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value.replace(/[^0-9]/g, ''))}
+                    placeholder="123456"
+                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background border-outline-variant text-center tracking-[0.5em] text-xl font-bold"
+                  />
+                </div>
+              </div>
+            )}
+
 
 
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading || !isFormValid()}
+              disabled={loading || !isFormValid() || (showVerification && verificationCode.length !== 6)}
               className="w-full py-4 bg-primary text-white font-headline font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 text-lg shadow-lg shadow-primary/20"
             >
-              {loading ? 'Creating Account...' : 'Get Started'}
+              {loading ? (showVerification ? 'Verifying...' : 'Sending Code...') : (showVerification ? 'Verify & Create Account' : 'Continue')}
             </button>
 
             {/* Login Link */}

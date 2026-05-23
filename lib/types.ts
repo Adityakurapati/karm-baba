@@ -240,6 +240,13 @@ export interface AuthSession {
 // ADMIN TYPES
 // ========================================
 
+export interface PlatformCategory {
+  id: string;
+  title: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface DealPipelineMetrics {
   totalDeals: number;
   byStage: Record<string, number>;

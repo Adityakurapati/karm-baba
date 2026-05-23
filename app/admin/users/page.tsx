@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { database } from "@/lib/firebase";
-import { ref, onValue, update } from "firebase/database";
-import { User } from "@/lib/types";
+import { ref, onValue, update, push, set, remove } from "firebase/database";
+import { User, PlatformCategory } from "@/lib/types";
 import toast from "react-hot-toast";
 
 export default function AdminUsersPage() {
@@ -14,6 +14,12 @@ export default function AdminUsersPage() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
+  // Categories State
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [categories, setCategories] = useState<PlatformCategory[]>([]);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+
   // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = () => setActiveMenu(null);
@@ -23,7 +29,7 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     const usersRef = ref(database, 'users');
-    const unsubscribe = onValue(usersRef, (snapshot) => {
+    const unsubscribeUsers = onValue(usersRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
         const usersArray = Object.keys(data).map(key => ({
@@ -39,8 +45,57 @@ export default function AdminUsersPage() {
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    const categoriesRef = ref(database, 'categories');
+    const unsubscribeCategories = onValue(categoriesRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const catsArray = Object.keys(data).map(key => ({
+          ...data[key],
+          id: key
+        })) as PlatformCategory[];
+        setCategories(catsArray);
+      } else {
+        setCategories([]);
+      }
+    });
+
+    return () => {
+      unsubscribeUsers();
+      unsubscribeCategories();
+    };
   }, []);
+
+  const handleAddCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCategoryName.trim()) return;
+    setIsAddingCategory(true);
+    try {
+      const catData = {
+        title: newCategoryName.trim(),
+        createdAt: new Date().toISOString()
+      };
+      const categoriesRef = ref(database, 'categories');
+      const newCatRef = push(categoriesRef);
+      await set(newCatRef, catData);
+      setNewCategoryName("");
+      toast.success("Category added");
+    } catch (error) {
+      toast.error("Failed to add category");
+    } finally {
+      setIsAddingCategory(false);
+    }
+  };
+
+  const handleDeleteCategory = async (catId: string) => {
+    if (confirm("Are you sure you want to delete this category?")) {
+      try {
+        await remove(ref(database, `categories/${catId}`));
+        toast.success("Category deleted");
+      } catch (error) {
+        toast.error("Failed to delete category");
+      }
+    }
+  };
 
   const filteredUsers = users.filter(user => {
     const search = searchTerm.toLowerCase();
@@ -87,6 +142,13 @@ export default function AdminUsersPage() {
           <p className="text-on-surface-variant mt-1 font-medium">Real-time portfolio intelligence and user management.</p>
         </div>
         <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setIsCategoryModalOpen(true)}
+            className="px-4 py-2 bg-surface-container-high border border-outline-variant/30 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest rounded-full text-sm font-bold flex items-center gap-2 transition-colors mr-2"
+          >
+            <span className="material-symbols-outlined notranslate text-[18px]" translate="no">category</span>
+            Manage Categories
+          </button>
           <div className="flex gap-2 bg-surface-container-low p-1 rounded-full border border-outline-variant/20 mr-2">
             <button 
               onClick={() => setRoleFilter("all")}
@@ -443,6 +505,56 @@ export default function AdminUsersPage() {
               >
                 Close Profile
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Categories Modal */}
+      {isCategoryModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in" onClick={() => setIsCategoryModalOpen(false)}>
+          <div className="bg-surface-container-lowest rounded-2xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-6 border-b border-outline-variant/10">
+              <h3 className="text-xl font-extrabold font-headline">Manage Categories</h3>
+              <button onClick={() => setIsCategoryModalOpen(false)} className="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+                <span className="material-symbols-outlined notranslate" translate="no">close</span>
+              </button>
+            </div>
+            <div className="p-6">
+              <form onSubmit={handleAddCategory} className="flex gap-2 mb-6">
+                <input 
+                  type="text" 
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  placeholder="New category name..."
+                  className="flex-1 bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                />
+                <button 
+                  type="submit" 
+                  disabled={isAddingCategory || !newCategoryName.trim()}
+                  className="px-4 py-2 bg-primary text-white rounded-xl font-bold text-sm disabled:opacity-50 hover:bg-primary-dark transition-colors"
+                >
+                  Add
+                </button>
+              </form>
+
+              <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                {categories.length === 0 ? (
+                  <p className="text-sm text-center text-on-surface-variant py-4">No categories added yet.</p>
+                ) : (
+                  categories.map(cat => (
+                    <div key={cat.id} className="flex items-center justify-between p-3 bg-surface-container-low rounded-xl border border-outline-variant/10">
+                      <span className="text-sm font-bold text-on-surface">{cat.title}</span>
+                      <button 
+                        onClick={() => handleDeleteCategory(cat.id)}
+                        className="p-1.5 text-on-surface-variant hover:bg-error/10 hover:text-error rounded-lg transition-colors"
+                      >
+                        <span className="material-symbols-outlined notranslate text-[18px]" translate="no">delete</span>
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
         </div>

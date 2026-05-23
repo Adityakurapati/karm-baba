@@ -258,9 +258,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return true;
     } catch (err) {
       console.error('Login error:', err);
-      return false;
-    } finally {
       setIsLoading(false);
+      return false;
     }
   };
 
@@ -286,14 +285,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const uid = userCredential.user.uid;
       const additionalUserInfo = getAdditionalUserInfo(userCredential);
 
-      // Check if this is a newly created user from OAuth
-      if (additionalUserInfo?.isNewUser) {
-        // Create user profile in Realtime Database
+      const userSnap = await get(ref(database, `users/${uid}`));
+      const adminSnap = await get(ref(database, `admins/${uid}`));
+
+      // Create user profile in Realtime Database if it doesn't exist to enforce onboarding
+      if (!userSnap.exists() && !adminSnap.exists()) {
         const newUser = {
           id: uid,
           email: userCredential.user.email || '',
-          firstName: additionalUserInfo.profile?.given_name || additionalUserInfo.profile?.first_name || userCredential.user.displayName?.split(' ')[0] || '',
-          lastName: additionalUserInfo.profile?.family_name || additionalUserInfo.profile?.last_name || userCredential.user.displayName?.split(' ').slice(1).join(' ') || '',
+          firstName: additionalUserInfo?.profile?.given_name || additionalUserInfo?.profile?.first_name || userCredential.user.displayName?.split(' ')[0] || '',
+          lastName: additionalUserInfo?.profile?.family_name || additionalUserInfo?.profile?.last_name || userCredential.user.displayName?.split(' ').slice(1).join(' ') || '',
           role: role,
           company: {
             id: `comp_${Math.random().toString(36).substring(2, 11)}`,
@@ -332,9 +333,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return true;
     } catch (err) {
       console.error(`${providerName} login error:`, err);
-      return false;
-    } finally {
       setIsLoading(false);
+      return false;
     }
   };
 
@@ -362,9 +362,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return true;
     } catch (err: any) {
       console.error('Registration error:', err.message || err);
-      return false;
-    } finally {
       setIsLoading(false);
+      return false;
     }
   };
 

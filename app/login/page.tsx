@@ -106,6 +106,17 @@ export default function LoginPage() {
     }
   };
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mb-4"></div>
+          <p className="text-on-surface-variant font-bold">Checking session...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
@@ -231,6 +242,7 @@ export default function LoginPage() {
               <Image src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width={20} height={20} />
               Continue with Google
             </button>
+            {/*
             <button
               type="button"
               onClick={() => handleProviderLogin('microsoft')}
@@ -249,6 +261,7 @@ export default function LoginPage() {
               <Image src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/facebook.svg" alt="Facebook" width={20} height={20} />
               Continue with Facebook
             </button>
+            */}
           </div>
 
           {/* Sign Up Link */}

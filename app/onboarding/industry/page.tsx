@@ -4,20 +4,38 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import OnboardingLayout from '@/components/OnboardingLayout';
 import { useAuth } from '@/lib/auth-context';
-
-const industries = [
-  { id: 'agriculture', icon: 'agriculture', title: 'Agriculture', match: 3, tags: ['AgriTech', 'Logistics'], span: 1 },
-  { id: 'pharma', icon: 'medical_services', title: 'Pharma & Life Sciences', match: 4, tags: ['Drug Discovery', 'Supply Chain', 'Clinical Trials'], span: 1 },
-  { id: 'automotive', icon: 'directions_car', title: 'Automotive', match: 2, tags: ['EV Systems', 'Autonomy'], span: 1 },
-  { id: 'textiles', icon: 'apparel', title: 'Textiles & Apparel', match: 3, tags: ['Sustainable Fibers', 'Smart Fabrics', 'Industrial Weaving'], desc: 'Focus on sustainable sourcing and vertical manufacturing systems.', marketFit: 82, span: 2 },
-  { id: 'machinery', icon: 'precision_manufacturing', title: 'Machinery', match: 3, tags: ['Heavy Tech'], span: 1 },
-];
+import { database } from '@/lib/firebase';
+import { ref, onValue } from 'firebase/database';
+import { PlatformCategory } from '@/lib/types';
 
 export default function IndustryTargetingPage() {
   const router = useRouter();
   const { user, updateUserProfile, isLoading: authLoading } = useAuth();
-  const [selected, setSelected] = useState<string[]>(['pharma']);
+  const [selected, setSelected] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [industries, setIndustries] = useState<PlatformCategory[]>([]);
+  const [loadingIndustries, setLoadingIndustries] = useState(true);
+
+  useEffect(() => {
+    const categoriesRef = ref(database, 'categories');
+    const unsubscribe = onValue(categoriesRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const catsArray = Object.keys(data).map(key => ({
+          ...data[key],
+          id: key
+        })) as PlatformCategory[];
+        // Sort by creation or title
+        catsArray.sort((a, b) => a.title.localeCompare(b.title));
+        setIndustries(catsArray);
+      } else {
+        setIndustries([]);
+      }
+      setLoadingIndustries(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (user?.company?.industry) {
@@ -29,9 +47,9 @@ export default function IndustryTargetingPage() {
     }
   }, [user]);
 
-  const toggle = (id: string) => {
+  const toggle = (title: string) => {
     setSelected((prev) =>
-      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+      prev.includes(title) ? prev.filter((s) => s !== title) : [...prev, title]
     );
   };
 
@@ -92,86 +110,33 @@ export default function IndustryTargetingPage() {
           <p className="text-on-surface-variant text-lg max-w-2xl">Select the primary commercial sectors where your influence and expertise are most concentrated. Our AI will calibrate your deal flow accordingly.</p>
         </div>
 
-        {/* Industry Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {industries.map((ind) => {
-            const isSelected = selected.includes(ind.id);
-            const isWide = ind.span === 2;
-
-            if (isWide) {
-              return (
-                <div
-                  key={ind.id}
-                  onClick={() => toggle(ind.id)}
-                  className={`col-span-1 md:col-span-2 bg-white p-8 rounded-xl transition-all duration-300 hover:bg-orange-50/30 group relative cursor-pointer overflow-hidden ${
-                    isSelected ? 'border-2 border-primary' : 'border border-transparent hover:border-primary/20'
-                  }`}
-                >
-                  {isSelected && (
-                    <div className="absolute top-4 right-4 text-primary">
-                      <span className="material-symbols-outlined notranslate" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                    </div>
-                  )}
-                  <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
-                    <div className="w-20 h-20 bg-orange-50 rounded-2xl flex items-center justify-center text-primary shrink-0">
-                      <span className="material-symbols-outlined notranslate text-4xl" translate="no">{ind.icon}</span>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold mb-2 font-headline">{ind.title}</h3>
-                      <p className="text-sm text-on-surface-variant mb-4">{ind.desc}</p>
-                      <div className="flex flex-wrap gap-3">
-                        {ind.tags.map((tag) => (
-                          <span key={tag} className="px-4 py-1.5 bg-orange-50 rounded-full text-xs font-bold text-primary flex items-center gap-2">
-                            <span className="material-symbols-outlined notranslate text-sm" translate="no">check</span> {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    {ind.marketFit && (
-                      <div className="bg-orange-50 p-4 rounded-xl text-center min-w-[120px]">
-                        <div className="text-2xl font-black text-primary">{ind.marketFit}%</div>
-                        <div className="text-[10px] uppercase font-bold tracking-widest text-on-surface-variant">Market Fit</div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            }
+        {/* Industry Selection Grid */}
+        <div className="flex flex-wrap gap-4">
+          {loadingIndustries ? (
+            <div className="w-full flex flex-col items-center justify-center py-12">
+              <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+              <p className="text-on-surface-variant font-bold">Loading industries...</p>
+            </div>
+          ) : industries.length === 0 ? (
+            <div className="w-full text-center py-12 text-on-surface-variant">
+              No industries found. Please contact support.
+            </div>
+          ) : industries.map((ind) => {
+            const isSelected = selected.includes(ind.title);
 
             return (
-              <div
+              <button
                 key={ind.id}
-                onClick={() => toggle(ind.id)}
-                className={`bg-white p-8 rounded-xl transition-all duration-300 hover:bg-orange-50/30 group relative cursor-pointer overflow-hidden ${
-                  isSelected ? 'border-2 border-primary' : 'border border-transparent hover:border-primary/20'
+                onClick={() => toggle(ind.title)}
+                className={`px-6 py-4 rounded-xl text-sm font-bold font-headline transition-all duration-300 flex items-center gap-3 border shadow-sm ${
+                  isSelected 
+                    ? 'bg-primary text-white border-primary shadow-primary/20 scale-105' 
+                    : 'bg-white text-on-surface-variant border-outline-variant/30 hover:border-primary/50 hover:text-primary hover:bg-orange-50/30'
                 }`}
               >
-                {isSelected && (
-                  <div className="absolute top-4 right-4 text-primary">
-                    <span className="material-symbols-outlined notranslate" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                  </div>
-                )}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 transition-all group-hover:scale-150"></div>
-                <div className="relative z-10">
-                  <div className="w-14 h-14 bg-orange-50 rounded-xl flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined notranslate text-3xl" translate="no">{ind.icon}</span>
-                  </div>
-                  <h3 className="text-xl font-bold mb-4 font-headline">{ind.title}</h3>
-                  <div className="flex items-center gap-2 mb-6">
-                    <span className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Match Potential</span>
-                    <div className="flex gap-1">
-                      {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className={`h-1.5 w-4 rounded-full ${i <= ind.match ? 'bg-primary' : 'bg-outline-variant/30'}`}></div>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {ind.tags.map((tag) => (
-                      <span key={tag} className={`px-3 py-1 rounded-full text-xs font-medium ${isSelected ? 'bg-primary text-white' : 'bg-orange-50 text-primary'}`}>{tag}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
+                {isSelected && <span className="material-symbols-outlined notranslate text-[18px]" translate="no">check_circle</span>}
+                {ind.title}
+              </button>
             );
           })}
         </div>
@@ -182,7 +147,7 @@ export default function IndustryTargetingPage() {
             <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">{selected.length}</div>
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Sectors Selected</p>
-              <p className="text-sm font-semibold">{selected.map(s => industries.find(i => i.id === s)?.title).filter(Boolean).join(', ') || 'None'}</p>
+              <p className="text-sm font-semibold">{selected.join(', ') || 'None'}</p>
             </div>
           </div>
           <button

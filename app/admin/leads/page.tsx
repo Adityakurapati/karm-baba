@@ -3,23 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { database } from "@/lib/firebase";
 import { ref, onValue, push, set, update, remove } from "firebase/database";
-import { PlatformLead, User } from "@/lib/types";
+import { PlatformLead, User, PlatformCategory } from "@/lib/types";
 import toast from "react-hot-toast";
-
-const AVAILABLE_CATEGORIES = [
-  "Technology",
-  "Real Estate",
-  "Manufacturing",
-  "Finance",
-  "Consulting",
-  "Pharmacy",
-  "Agriculture",
-  "Other"
-];
 
 export default function AdminLeadsPage() {
   const [leads, setLeads] = useState<PlatformLead[]>([]);
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<PlatformCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("All Locations");
@@ -72,9 +62,22 @@ export default function AdminLeadsPage() {
       }
     });
 
+    // Fetch Categories
+    const categoriesRef = ref(database, 'categories');
+    const unsubscribeCategories = onValue(categoriesRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const catsArray = Object.keys(data).map(key => ({ ...data[key], id: key })) as PlatformCategory[];
+        setAvailableCategories(catsArray);
+      } else {
+        setAvailableCategories([]);
+      }
+    });
+
     return () => {
       unsubscribeLeads();
       unsubscribeUsers();
+      unsubscribeCategories();
     };
   }, []);
 
@@ -364,18 +367,18 @@ export default function AdminLeadsPage() {
                   <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4">
                     <p className="text-xs text-on-surface-variant mb-3">Lead will be visible to users who selected these categories during onboarding.</p>
                     <div className="flex flex-wrap gap-2">
-                      {AVAILABLE_CATEGORIES.map(cat => (
-                        <label key={cat} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border cursor-pointer transition-colors ${formData.assignedCategories.includes(cat) ? 'bg-primary/10 border-primary text-primary' : 'bg-surface-container-low border-outline-variant/30 text-on-surface-variant hover:border-outline-variant'}`}>
+                      {availableCategories.length > 0 ? availableCategories.map(cat => (
+                        <label key={cat.id} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border cursor-pointer transition-colors ${formData.assignedCategories.includes(cat.title) ? 'bg-primary/10 border-primary text-primary' : 'bg-surface-container-low border-outline-variant/30 text-on-surface-variant hover:border-outline-variant'}`}>
                           <input 
                             type="checkbox"
-                            checked={formData.assignedCategories.includes(cat)}
-                            onChange={() => handleCategoryToggle(cat)}
+                            checked={formData.assignedCategories.includes(cat.title)}
+                            onChange={() => handleCategoryToggle(cat.title)}
                             className="hidden"
                           />
-                          <span className="text-sm font-medium">{cat}</span>
-                          {formData.assignedCategories.includes(cat) && <span className="material-symbols-outlined notranslate text-[14px]" translate="no">check</span>}
+                          <span className="text-sm font-medium">{cat.title}</span>
+                          {formData.assignedCategories.includes(cat.title) && <span className="material-symbols-outlined notranslate text-[14px]" translate="no">check</span>}
                         </label>
-                      ))}
+                      )) : <p className="text-sm text-on-surface-variant">No categories found. Create some in the Categories tab.</p>}
                     </div>
                   </div>
                 )}

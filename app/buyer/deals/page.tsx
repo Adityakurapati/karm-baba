@@ -12,6 +12,7 @@ export default function BuyerDealsPage() {
   const { user, isLoading: authLoading } = useAuth();
   const [deals, setDeals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [usersMap, setUsersMap] = useState<Record<string, {name: string, company: string}>>({});
 
   // Filter & Detail Modal State
   const [activeTab, setActiveTab] = useState('All');
@@ -41,6 +42,26 @@ export default function BuyerDealsPage() {
 
     return () => unsubscribe();
   }, [user]);
+
+  // Fetch users for mapping IDs to names
+  useEffect(() => {
+    const usersRef = ref(database, 'users');
+    const unsubscribe = onValue(usersRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const map: Record<string, {name: string, company: string}> = {};
+        Object.keys(data).forEach(key => {
+          const u = data[key];
+          map[key] = {
+            name: `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Unknown User',
+            company: u.company?.name || 'Unknown Company'
+          };
+        });
+        setUsersMap(map);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Escape key handler to close modal
   useEffect(() => {
@@ -172,9 +193,9 @@ export default function BuyerDealsPage() {
                       {deal.title}
                     </h3>
                     <div className="text-xs text-on-surface-variant mb-2">
-                      <span className="font-bold block text-[10px] uppercase text-on-surface-variant/80 tracking-wider">Supplier ID</span>
-                      <p className="font-bold text-on-surface truncate mt-0.5" title={deal.sellerId}>
-                        {deal.sellerId}
+                      <span className="font-bold block text-[10px] uppercase text-on-surface-variant/80 tracking-wider">Supplier Name</span>
+                      <p className="font-bold text-on-surface truncate mt-0.5" title={usersMap[deal.sellerId]?.name || deal.sellerId}>
+                        {usersMap[deal.sellerId]?.name || deal.sellerId}
                       </p>
                     </div>
                   </div>
@@ -274,9 +295,9 @@ export default function BuyerDealsPage() {
                 {/* Metrics Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-surface-container-low rounded-xl border border-outline-variant">
                   <div className="space-y-1">
-                    <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Supplier ID</p>
-                    <p className="text-sm font-black text-on-surface truncate" title={selectedDeal.sellerId}>
-                      {selectedDeal.sellerId}
+                    <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Supplier Name</p>
+                    <p className="text-sm font-black text-on-surface truncate" title={usersMap[selectedDeal.sellerId]?.name || selectedDeal.sellerId}>
+                      {usersMap[selectedDeal.sellerId]?.name || selectedDeal.sellerId}
                     </p>
                   </div>
                   <div className="space-y-1">

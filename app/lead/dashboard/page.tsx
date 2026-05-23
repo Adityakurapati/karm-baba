@@ -91,7 +91,11 @@ export default function LeadDashboard() {
         if (lead.assignmentType === 'users' && lead.assignedUsers) {
           usersArray = usersArray.filter(u => lead.assignedUsers!.includes(u.id));
         } else if (lead.assignmentType === 'categories' && lead.assignedCategories) {
-          usersArray = usersArray.filter(u => u.category && lead.assignedCategories!.includes(u.category));
+          usersArray = usersArray.filter(u => {
+            if (!u.category) return false;
+            const uCats = Array.isArray(u.category) ? u.category : [u.category];
+            return uCats.some(c => lead.assignedCategories!.includes(c));
+          });
         }
         // if 'all', keep all buyers/sellers
 
@@ -106,7 +110,11 @@ export default function LeadDashboard() {
     if (categoryFilter === 'All') {
       setFilteredUsers(assignedUsers);
     } else {
-      setFilteredUsers(assignedUsers.filter(u => u.category === categoryFilter));
+      setFilteredUsers(assignedUsers.filter(u => {
+        if (!u.category) return false;
+        const uCats = Array.isArray(u.category) ? u.category : [u.category];
+        return uCats.includes(categoryFilter);
+      }));
     }
   }, [categoryFilter, assignedUsers]);
 
@@ -429,7 +437,9 @@ export default function LeadDashboard() {
                         </span>
                       </div>
                       <p className="text-xs text-on-surface-variant truncate">{user.company.name}</p>
-                      <p className="text-[10px] text-on-surface-variant/70 truncate mt-0.5">{user.category || 'No Category'}</p>
+                      <p className="text-[10px] text-on-surface-variant/70 truncate mt-0.5">
+                        {Array.isArray(user.category) ? user.category.join(', ') : (user.category || 'No Category')}
+                      </p>
                     </div>
                     {connections[user.id] === 'pending' && (
                       <button 

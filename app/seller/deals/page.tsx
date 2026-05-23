@@ -14,6 +14,7 @@ export default function SellerDealsPage() {
   const [deals, setDeals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDeal, setSelectedDeal] = useState<any | null>(null);
+  const [usersMap, setUsersMap] = useState<Record<string, {name: string, company: string}>>({});
 
   useEffect(() => {
     if (!user) return;
@@ -39,6 +40,26 @@ export default function SellerDealsPage() {
 
     return () => unsubscribe();
   }, [user]);
+
+  // Fetch users for mapping IDs to names
+  useEffect(() => {
+    const usersRef = ref(database, 'users');
+    const unsubscribe = onValue(usersRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const map: Record<string, {name: string, company: string}> = {};
+        Object.keys(data).forEach(key => {
+          const u = data[key];
+          map[key] = {
+            name: `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Unknown User',
+            company: u.company?.name || 'Unknown Company'
+          };
+        });
+        setUsersMap(map);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Escape key handler to close modal
   useEffect(() => {
@@ -156,8 +177,8 @@ export default function SellerDealsPage() {
                   {/* Top content */}
                   <div className="min-h-0 flex-1 flex flex-col">
                     <div className="flex justify-between items-center gap-1 mb-1.5">
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 bg-surface-container-high text-on-surface rounded truncate max-w-[50%]" title={`Buyer ID: ${deal.buyerId}`}>
-                        Buyer: {deal.buyerId?.slice(0, 6)}...
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 bg-surface-container-high text-on-surface rounded truncate max-w-[50%]" title={`Buyer: ${usersMap[deal.buyerId]?.name || deal.buyerId}`}>
+                        Buyer: {usersMap[deal.buyerId]?.name || deal.buyerId}
                       </span>
                       <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-bold border shrink-0 ${getStatusColor(deal.status)}`}>
                         {getStatusText(deal.status)}
@@ -207,7 +228,7 @@ export default function SellerDealsPage() {
               <div className="flex justify-between items-center px-6 py-4 border-b border-outline-variant bg-surface-container-low">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold px-2 py-0.5 bg-primary/10 text-primary rounded uppercase tracking-wider">
-                    Buyer ID: {selectedDeal.buyerId}
+                    Buyer: {usersMap[selectedDeal.buyerId]?.name || selectedDeal.buyerId}
                   </span>
                   <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold border ${getStatusColor(selectedDeal.status)}`}>
                     {getStatusText(selectedDeal.status)}

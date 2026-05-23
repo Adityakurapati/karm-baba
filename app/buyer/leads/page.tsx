@@ -46,11 +46,29 @@ export default function BuyerLeadsPage() {
             const userIndustry = Array.isArray(user.company?.industry)
               ? user.company?.industry
               : user.company?.industry ? [user.company.industry] : [];
+            // Map admin lead categories to onboarding category IDs for proper matching
+            const categoryMap: Record<string, string[]> = {
+              "Pharmacy": ["pharma", "pharmacy", "pharma & life sciences"],
+              "Agriculture": ["agriculture"],
+              "Automotive": ["automotive"],
+              "Textiles & Apparel": ["textiles", "apparel"],
+              "Machinery": ["machinery"],
+              "Technology": ["technology"],
+              "Real Estate": ["real_estate", "real estate"],
+              "Finance": ["finance"],
+              "Consulting": ["consulting"],
+              "Manufacturing": ["manufacturing"],
+              "Other": ["other"]
+            };
             
             // If the lead is assigned to ANY category the user has selected
-            return lead.assignedCategories?.some(cat => 
-              userCategories.includes(cat) || userIndustry.includes(cat)
-            );
+            return lead.assignedCategories?.some(cat => {
+              const mappedCats = categoryMap[cat] || [cat.toLowerCase()];
+              return mappedCats.some(mappedCat => 
+                userCategories.some(uc => uc.toLowerCase() === mappedCat) || 
+                userIndustry.some(ui => ui.toLowerCase() === mappedCat)
+              );
+            });
           }
           
           return false;

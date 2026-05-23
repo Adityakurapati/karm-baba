@@ -45,7 +45,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (user?.id) {
-      const sessionsRef = query(ref(database, `users/${user.id}/sessions`), limitToLast(10));
+      const sessionsRef = query(ref(database, `user_sessions/${user.id}`), limitToLast(10));
       const unsubscribe = onValue(sessionsRef, (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();

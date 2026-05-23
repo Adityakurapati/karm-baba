@@ -15,7 +15,7 @@ export default function AdminLogin() {
 
   useEffect(() => {
     if (isAuthenticated && !authLoading && user?.role === 'admin') {
-      router.push("/admin");
+      router.push("/admin/users");
     }
   }, [isAuthenticated, authLoading, user, router]);
 

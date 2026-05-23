@@ -22,6 +22,7 @@ export default function DealDetailPage({ params }: PageProps) {
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [usersMap, setUsersMap] = useState<Record<string, {name: string, company: string}>>({});
 
   // Fetch deal and messages from Firebase
   useEffect(() => {
@@ -64,6 +65,26 @@ export default function DealDetailPage({ params }: PageProps) {
       };
     });
   }, [params]);
+
+  // Fetch users for mapping IDs to names
+  useEffect(() => {
+    const usersRef = ref(database, 'users');
+    const unsubscribe = onValue(usersRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const map: Record<string, {name: string, company: string}> = {};
+        Object.keys(data).forEach(key => {
+          const u = data[key];
+          map[key] = {
+            name: `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Unknown User',
+            company: u.company?.name || 'Unknown Company'
+          };
+        });
+        setUsersMap(map);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !user || !dealId) return;
@@ -183,12 +204,16 @@ export default function DealDetailPage({ params }: PageProps) {
             {/* Deal Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
               <div className="p-4 bg-surface-container rounded-lg">
-                <p className="text-sm text-on-surface-variant mb-1">Buyer ID</p>
-                <p className="font-headline font-bold text-on-surface truncate">{deal.buyerId}</p>
+                <p className="text-sm text-on-surface-variant mb-1">Buyer</p>
+                <p className="font-headline font-bold text-on-surface truncate" title={deal.buyerId}>
+                  {usersMap[deal.buyerId]?.name || deal.buyerId}
+                </p>
               </div>
               <div className="p-4 bg-surface-container rounded-lg">
-                <p className="text-sm text-on-surface-variant mb-1">Seller ID</p>
-                <p className="font-headline font-bold text-on-surface truncate">{deal.sellerId}</p>
+                <p className="text-sm text-on-surface-variant mb-1">Seller</p>
+                <p className="font-headline font-bold text-on-surface truncate" title={deal.sellerId}>
+                  {usersMap[deal.sellerId]?.name || deal.sellerId}
+                </p>
               </div>
               <div className="p-4 bg-surface-container rounded-lg">
                 <p className="text-sm text-on-surface-variant mb-1">Created</p>

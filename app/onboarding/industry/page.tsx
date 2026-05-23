@@ -45,6 +45,7 @@ export default function IndustryTargetingPage() {
           ...(user.company || {}),
           industry: selected,
         },
+        category: selected,
         onboardingStep: 3
       });
       

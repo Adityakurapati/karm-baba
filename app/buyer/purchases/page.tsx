@@ -12,6 +12,7 @@ export default function BoughtProductsPage() {
   const { user, isLoading: authLoading } = useAuth();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [usersMap, setUsersMap] = useState<Record<string, {name: string, company: string}>>({});
 
   useEffect(() => {
     if (!user) return;
@@ -37,6 +38,26 @@ export default function BoughtProductsPage() {
 
     return () => unsubscribe();
   }, [user]);
+
+  // Fetch users for mapping IDs to names
+  useEffect(() => {
+    const usersRef = ref(database, 'users');
+    const unsubscribe = onValue(usersRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const map: Record<string, {name: string, company: string}> = {};
+        Object.keys(data).forEach(key => {
+          const u = data[key];
+          map[key] = {
+            name: `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Unknown User',
+            company: u.company?.name || 'Unknown Company'
+          };
+        });
+        setUsersMap(map);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   if (authLoading || loading) return (
     <DashboardLayout>
@@ -93,8 +114,10 @@ export default function BoughtProductsPage() {
                           <p className="font-bold text-primary">{order.currency} {order.price?.toLocaleString()}</p>
                         </div>
                         <div>
-                          <p className="text-on-surface-variant font-medium">Seller ID</p>
-                          <p className="font-bold text-on-surface truncate max-w-[150px]">{order.sellerId}</p>
+                          <p className="text-on-surface-variant font-medium">Seller</p>
+                          <p className="font-bold text-on-surface truncate max-w-[150px]" title={order.sellerId}>
+                            {usersMap[order.sellerId]?.name || order.sellerId}
+                          </p>
                         </div>
                       </div>
                     </div>

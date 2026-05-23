@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { database } from '@/lib/firebase';
 import { ref, onValue, query, orderByChild, equalTo, update } from 'firebase/database';
 import { useAuth } from '@/lib/auth-context';
@@ -58,6 +58,18 @@ export default function TopHeader({
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifs, setShowNotifs] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setShowNotifs(false);
+        setShowProfileModal(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Mute states
   const [isMuted, setIsMuted] = useState(false);
@@ -140,7 +152,7 @@ export default function TopHeader({
           type="text"
         />
       </div>
-      <div className="flex items-center gap-4 md:gap-6 ml-4 flex-shrink-0">
+      <div ref={containerRef} className="flex items-center gap-4 md:gap-6 ml-4 flex-shrink-0">
         {/* Mute/Unmute Toggle */}
         <button
           onClick={toggleMute}
@@ -156,7 +168,10 @@ export default function TopHeader({
         {/* Notifications Icon Button */}
         <div className="relative">
           <button 
-            onClick={() => setShowNotifs(!showNotifs)}
+            onClick={() => {
+              setShowNotifs(!showNotifs);
+              setShowProfileModal(false);
+            }}
             className="text-slate-500 hover:text-slate-900 transition-colors relative p-1.5 rounded-full hover:bg-slate-200/50 flex items-center justify-center"
           >
             <span className="material-symbols-outlined notranslate" translate="no" style={{ fontSize: '20px' }}>notifications</span>
@@ -211,7 +226,10 @@ export default function TopHeader({
 
         <div className="relative">
           <button 
-            onClick={() => setShowProfileModal(!showProfileModal)}
+            onClick={() => {
+              setShowProfileModal(!showProfileModal);
+              setShowNotifs(false);
+            }}
             className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary text-white flex items-center justify-center font-headline font-bold text-sm select-none shadow-sm hover:scale-105 transition-transform" 
             title={user ? `${user.firstName} ${user.lastName}` : 'Profile'}
           >

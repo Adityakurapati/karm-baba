@@ -46,7 +46,7 @@ export interface User {
   };
   notificationPreferences?: NotificationPreferences;
   language?: string;
-  category?: string;
+  category?: string | string[];
   specialization?: string;
   createdAt: Date;
   updatedAt: Date;

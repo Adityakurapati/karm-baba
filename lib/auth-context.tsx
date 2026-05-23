@@ -244,7 +244,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           timestamp: new Date().toISOString(),
           device: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown Device',
         };
-        await push(ref(database, `users/${uid}/sessions`), sessionData);
+        await push(ref(database, `user_sessions/${uid}`), sessionData);
       } catch (sessionErr) {
         console.error('Failed to log session:', sessionErr);
       }
@@ -319,7 +319,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const updateUserProfile = async (data: Partial<User>): Promise<boolean> => {
-    if (!user) return false;
+    if (!user || !user.id) return false;
     try {
       const updates: any = { ...data };
       updates.updatedAt = new Date().toISOString();

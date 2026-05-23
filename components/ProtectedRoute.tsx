@@ -34,9 +34,14 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
         router.push('/onboarding');
       }
     } else if (!isLoading && allowedRoles && user && !allowedRoles.includes(user.role)) {
-      const target = user.role === 'admin' ? '/admin' : '/dashboard';
-      console.log('[ProtectedRoute] Role mismatch. Redirecting to:', target);
-      router.push(target);
+      if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) {
+        console.log('[ProtectedRoute] Role mismatch for admin path. Redirecting to /admin/login');
+        router.push('/admin/login');
+      } else {
+        const target = user.role === 'admin' ? '/admin/users' : '/dashboard';
+        console.log('[ProtectedRoute] Role mismatch. Redirecting to:', target);
+        router.push(target);
+      }
     }
   }, [isLoading, isAuthenticated, user, allowedRoles, router]);
 

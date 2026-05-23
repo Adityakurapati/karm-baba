@@ -17,6 +17,7 @@ function MessagesContent() {
   const [messages, setMessages] = useState<any[]>([]);
   const [messageText, setMessageText] = useState('');
   const [loading, setLoading] = useState(true);
+  const [usersMap, setUsersMap] = useState<Record<string, {name: string, company: string}>>({});
   
   const [platformLeads, setPlatformLeads] = useState<PlatformLead[]>([]);
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
@@ -58,6 +59,26 @@ function MessagesContent() {
     return () => unsubscribe();
   }, [user]);
 
+  // Fetch all users to map IDs to Names
+  useEffect(() => {
+    const usersRef = ref(database, 'users');
+    const unsubscribe = onValue(usersRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const map: Record<string, {name: string, company: string}> = {};
+        Object.keys(data).forEach(key => {
+          const u = data[key];
+          map[key] = {
+            name: `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Unknown User',
+            company: u.company?.name || 'Unknown Company'
+          };
+        });
+        setUsersMap(map);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
   // Fetch user's deals
   useEffect(() => {
     if (!user) return;
@@ -96,7 +117,10 @@ function MessagesContent() {
         list = list.filter(lead => {
           if (lead.assignmentType === 'all') return true;
           if (lead.assignmentType === 'users' && lead.assignedUsers?.includes(user.id)) return true;
-          if (lead.assignmentType === 'categories' && user.category && lead.assignedCategories?.includes(user.category)) return true;
+          if (lead.assignmentType === 'categories' && user.category) {
+            const uCats = Array.isArray(user.category) ? user.category : [user.category];
+            if (uCats.some(c => lead.assignedCategories?.includes(c))) return true;
+          }
           return false;
         });
         setPlatformLeads(list);
@@ -246,7 +270,9 @@ function MessagesContent() {
                       >
                         <p className="font-bold text-on-surface text-sm mb-1">{deal.title}</p>
                         <p className="text-xs text-on-surface-variant mb-1">
-                          {user?.role === 'buyer' ? `Seller: ${deal.sellerId}` : `Buyer: ${deal.buyerId}`}
+                          {user?.role === 'buyer' 
+                            ? `Seller: ${usersMap[deal.sellerId]?.name || deal.sellerId}` 
+                            : `Buyer: ${usersMap[deal.buyerId]?.name || deal.buyerId}`}
                         </p>
                         <p className="text-xs text-on-surface-light truncate italic">
                           {deal.status.replace('_', ' ').toUpperCase()}
@@ -298,7 +324,9 @@ function MessagesContent() {
                           {selectedDeal.title}
                         </h3>
                         <p className="text-on-surface-variant text-sm">
-                          {user?.role === 'buyer' ? `Seller ID: ${selectedDeal.sellerId}` : `Buyer ID: ${selectedDeal.buyerId}`}
+                          {user?.role === 'buyer' 
+                            ? `Seller: ${usersMap[selectedDeal.sellerId]?.name || selectedDeal.sellerId}` 
+                            : `Buyer: ${usersMap[selectedDeal.buyerId]?.name || selectedDeal.buyerId}`}
                         </p>
                       </div>
                       <Link

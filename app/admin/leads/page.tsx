@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { database } from "@/lib/firebase";
-import { ref, onValue, push, set, update } from "firebase/database";
+import { ref, onValue, push, set, update, remove } from "firebase/database";
 import { PlatformLead, User } from "@/lib/types";
 import toast from "react-hot-toast";
 
@@ -25,6 +25,7 @@ export default function AdminLeadsPage() {
   const [locationFilter, setLocationFilter] = useState("All Locations");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [editingLeadId, setEditingLeadId] = useState<string | null>(null);
 
   // New Lead Form State
   const [formData, setFormData] = useState({
@@ -89,7 +90,49 @@ export default function AdminLeadsPage() {
     }
   };
 
-  const handleAddLead = async (e: React.FormEvent) => {
+  const closeModal = () => {
+    setIsAddModalOpen(false);
+    setEditingLeadId(null);
+    setFormData({
+      name: "",
+      companyName: "",
+      phone: "",
+      code: "",
+      location: "Global",
+      assignmentType: "all",
+      assignedUsers: [],
+      assignedCategories: []
+    });
+  };
+
+  const handleEditLead = (lead: PlatformLead) => {
+    setEditingLeadId(lead.id);
+    setFormData({
+      name: lead.name || "",
+      companyName: lead.companyName || "",
+      phone: lead.phone || "",
+      code: lead.code || "",
+      location: lead.location || "Global",
+      assignmentType: lead.assignmentType || "all",
+      assignedUsers: lead.assignedUsers || [],
+      assignedCategories: lead.assignedCategories || []
+    });
+    setIsAddModalOpen(true);
+  };
+
+  const handleDeleteLead = async (leadId: string) => {
+    if (window.confirm("Are you sure you want to delete this lead? This action cannot be undone.")) {
+      try {
+        await remove(ref(database, `leads/${leadId}`));
+        toast.success("Lead deleted successfully!");
+      } catch (error: any) {
+        console.error("Error deleting lead:", error);
+        toast.error("Failed to delete lead");
+      }
+    }
+  };
+
+  const handleSaveLead = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (formData.phone && formData.phone.length !== 10) {
@@ -100,7 +143,7 @@ export default function AdminLeadsPage() {
     setIsCreating(true);
 
     try {
-      const newLeadData: Omit<PlatformLead, 'id'> = {
+      const leadData: any = {
         name: formData.name,
         companyName: formData.companyName,
         phone: formData.phone,
@@ -109,29 +152,24 @@ export default function AdminLeadsPage() {
         assignmentType: formData.assignmentType,
         assignedUsers: formData.assignmentType === 'users' ? formData.assignedUsers : [],
         assignedCategories: formData.assignmentType === 'categories' ? formData.assignedCategories : [],
-        createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date().toISOString()
       };
 
-      const leadsRef = ref(database, 'leads');
-      const newLeadRef = push(leadsRef);
-      await set(newLeadRef, newLeadData);
+      if (editingLeadId) {
+        await update(ref(database, `leads/${editingLeadId}`), leadData);
+        toast.success("Lead updated successfully!");
+      } else {
+        leadData.createdAt = new Date().toISOString();
+        const leadsRef = ref(database, 'leads');
+        const newLeadRef = push(leadsRef);
+        await set(newLeadRef, leadData);
+        toast.success("Lead created successfully!");
+      }
       
-      toast.success("Lead created successfully!");
-      setIsAddModalOpen(false);
-      setFormData({
-        name: "",
-        companyName: "",
-        phone: "",
-        code: "",
-        location: "Global",
-        assignmentType: "all",
-        assignedUsers: [],
-        assignedCategories: []
-      });
+      closeModal();
     } catch (error: any) {
-      console.error("Error creating lead:", error);
-      toast.error(error.message || "Failed to create lead");
+      console.error("Error saving lead:", error);
+      toast.error(error.message || "Failed to save lead");
     } finally {
       setIsCreating(false);
     }
@@ -201,7 +239,20 @@ export default function AdminLeadsPage() {
             </div>
           </div>
           <button 
-            onClick={() => setIsAddModalOpen(true)}
+            onClick={() => {
+              setEditingLeadId(null);
+              setFormData({
+                name: "",
+                companyName: "",
+                phone: "",
+                code: "",
+                location: "Global",
+                assignmentType: "all",
+                assignedUsers: [],
+                assignedCategories: []
+              });
+              setIsAddModalOpen(true);
+            }}
             className="flex items-center gap-2 px-8 py-3 rounded-full font-headline text-sm font-bold bg-primary text-white shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all"
           >
             <span className="material-symbols-outlined notranslate text-lg" translate="no">person_add</span>
@@ -216,15 +267,15 @@ export default function AdminLeadsPage() {
           <div className="bg-surface-container-lowest rounded-3xl p-8 max-w-2xl w-full shadow-2xl animate-fade-in my-8">
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h3 className="text-2xl font-bold font-headline">Create New Lead</h3>
+                <h3 className="text-2xl font-bold font-headline">{editingLeadId ? "Edit Lead" : "Create New Lead"}</h3>
                 <p className="text-sm text-on-surface-variant font-medium">Enter lead details and configure visibility.</p>
               </div>
-              <button onClick={() => setIsAddModalOpen(false)} className="p-2 hover:bg-surface-container rounded-full text-on-surface-variant transition-colors">
+              <button type="button" onClick={closeModal} className="p-2 hover:bg-surface-container rounded-full text-on-surface-variant transition-colors">
                 <span className="material-symbols-outlined notranslate text-xl" translate="no">close</span>
               </button>
             </div>
 
-            <form onSubmit={handleAddLead} className="space-y-6">
+            <form onSubmit={handleSaveLead} className="space-y-6">
               <div className="space-y-4">
                 <h4 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider border-b border-outline-variant/10 pb-2">Basic Info</h4>
                 
@@ -331,7 +382,7 @@ export default function AdminLeadsPage() {
               </div>
 
               <div className="pt-4 border-t border-outline-variant/10 flex justify-end gap-3">
-                <button type="button" onClick={() => setIsAddModalOpen(false)} className="px-6 py-2.5 rounded-full font-bold text-sm text-on-surface-variant hover:bg-surface-container transition-colors">
+                <button type="button" onClick={closeModal} className="px-6 py-2.5 rounded-full font-bold text-sm text-on-surface-variant hover:bg-surface-container transition-colors">
                   Cancel
                 </button>
                 <button 
@@ -339,7 +390,7 @@ export default function AdminLeadsPage() {
                   disabled={isCreating || (formData.assignmentType === 'users' && formData.assignedUsers.length === 0) || (formData.assignmentType === 'categories' && formData.assignedCategories.length === 0)} 
                   className="px-8 py-2.5 rounded-full font-bold text-sm bg-primary text-white hover:bg-primary-dark transition-colors shadow-md disabled:opacity-50 flex items-center gap-2"
                 >
-                  {isCreating ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Saving...</> : "Save Lead"}
+                  {isCreating ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Saving...</> : (editingLeadId ? "Save Changes" : "Save Lead")}
                 </button>
               </div>
             </form>
@@ -363,15 +414,26 @@ export default function AdminLeadsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredLeads.map((lead) => (
             <div key={lead.id} className="bg-surface-container-lowest rounded-2xl border border-outline-variant/10 p-6 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
-              {/* Assignment Ribbon */}
-              <div className={`absolute top-4 right-4 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${
-                lead.assignmentType === 'all' ? 'bg-emerald-100 text-emerald-700' :
-                lead.assignmentType === 'categories' ? 'bg-blue-100 text-blue-700' :
-                'bg-amber-100 text-amber-700'
-              }`}>
-                {lead.assignmentType === 'all' ? 'All Users' :
-                 lead.assignmentType === 'categories' ? 'Category Match' :
-                 'Specific Users'}
+              {/* Assignment Ribbon and Actions */}
+              <div className="absolute top-4 right-4 flex flex-col items-end gap-2">
+                <div className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${
+                  lead.assignmentType === 'all' ? 'bg-emerald-100 text-emerald-700' :
+                  lead.assignmentType === 'categories' ? 'bg-blue-100 text-blue-700' :
+                  'bg-amber-100 text-amber-700'
+                }`}>
+                  {lead.assignmentType === 'all' ? 'All Users' :
+                   lead.assignmentType === 'categories' ? 'Category Match' :
+                   'Specific Users'}
+                </div>
+                
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button onClick={() => handleEditLead(lead)} className="p-1.5 bg-surface-container-high hover:bg-primary hover:text-white text-on-surface-variant rounded-lg transition-colors" title="Edit Lead">
+                    <span className="material-symbols-outlined notranslate text-[16px]" translate="no">edit</span>
+                  </button>
+                  <button onClick={() => handleDeleteLead(lead.id)} className="p-1.5 bg-surface-container-high hover:bg-error hover:text-white text-on-surface-variant rounded-lg transition-colors" title="Delete Lead">
+                    <span className="material-symbols-outlined notranslate text-[16px]" translate="no">delete</span>
+                  </button>
+                </div>
               </div>
 
               <div className="flex items-center gap-4 mb-4 mt-2">

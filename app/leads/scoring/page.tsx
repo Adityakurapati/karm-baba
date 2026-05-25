@@ -27,8 +27,8 @@ export default function LeadScoringPage() {
   };
 
   return (
-    <DashboardLayout>
-      <TopHeader searchPlaceholder="Search leads..." />
+    <DashboardLayout searchPlaceholder="Search leads...">
+
       
       <div className="flex-1 overflow-auto p-4 md:p-8">
         {/* Header */}

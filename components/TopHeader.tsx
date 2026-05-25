@@ -10,6 +10,7 @@ interface TopHeaderProps {
   title?: string;
   subtitle?: string;
   searchPlaceholder?: string;
+  onMenuClick?: () => void;
 }
 
 // Pleasant chime double-tone synthesizer using browser Web Audio API
@@ -53,11 +54,13 @@ export default function TopHeader({
   title = 'Dashboard',
   subtitle,
   searchPlaceholder = 'Search accounts, deals, or documents...',
+  onMenuClick,
 }: TopHeaderProps) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifs, setShowNotifs] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -101,9 +104,17 @@ export default function TopHeader({
         const list = Object.values(data);
         // Sort by createdAt desc
         list.sort((a: any, b: any) => (b.createdAt || 0) - (a.createdAt || 0));
-        setNotifications(list);
+        
+        // Separate messages from other notifications
+        const messageNotifs = list.filter((n: any) => n.type === 'message_received');
+        const otherNotifs = list.filter((n: any) => n.type !== 'message_received');
+        
+        setNotifications(otherNotifs);
+        
+        const unreadMsgs = messageNotifs.filter((n: any) => !n.read).length;
+        setUnreadMessagesCount(unreadMsgs);
 
-        const newUnreadCount = list.filter((n: any) => !n.read).length;
+        const newUnreadCount = otherNotifs.filter((n: any) => !n.read).length;
         setPrevUnreadCount((prev) => {
           if (prev !== null && newUnreadCount > prev) {
             // Trigger beautiful synthesized chime
@@ -113,6 +124,7 @@ export default function TopHeader({
         });
       } else {
         setNotifications([]);
+        setUnreadMessagesCount(0);
         setPrevUnreadCount(0);
       }
     });
@@ -142,7 +154,17 @@ export default function TopHeader({
   const unreadCount = notifications.filter(n => !n.read).length;
   return (
     <header className="bg-slate-50/80 backdrop-blur-md flex justify-between items-center h-14 md:h-16 px-4 md:px-8 border-b border-slate-200/20">
-      <div className="relative w-full md:w-96">
+      <div className="flex items-center gap-2 flex-1 md:flex-initial mr-4">
+        {onMenuClick && (
+          <button
+            onClick={onMenuClick}
+            className="md:hidden mr-1 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center p-1.5 rounded-full hover:bg-slate-200/50"
+            title="Open menu"
+          >
+            <span className="material-symbols-outlined notranslate text-xl" translate="no">menu</span>
+          </button>
+        )}
+        <div className="relative w-full md:w-96">
         <span className="material-symbols-outlined notranslate absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" translate="no">
           search
         </span>
@@ -151,6 +173,7 @@ export default function TopHeader({
           placeholder={searchPlaceholder}
           type="text"
         />
+      </div>
       </div>
       <div ref={containerRef} className="flex items-center gap-4 md:gap-6 ml-4 flex-shrink-0">
         {/* Mute/Unmute Toggle */}
@@ -164,6 +187,19 @@ export default function TopHeader({
             {isMuted ? 'volume_off' : 'volume_up'}
           </span>
         </button>
+
+        {/* Messages Icon Button */}
+        <Link 
+          href="/messages"
+          className="text-slate-500 hover:text-slate-900 transition-colors relative p-1.5 rounded-full hover:bg-slate-200/50 flex items-center justify-center"
+        >
+          <span className="material-symbols-outlined notranslate" translate="no" style={{ fontSize: '20px' }}>mail</span>
+          {unreadMessagesCount > 0 && (
+            <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+              {unreadMessagesCount}
+            </span>
+          )}
+        </Link>
 
         {/* Notifications Icon Button */}
         <div className="relative">
@@ -263,13 +299,33 @@ export default function TopHeader({
                   </div>
                 )}
               </div>
-              <Link 
-                href="/settings" 
-                onClick={() => setShowProfileModal(false)}
-                className="w-full block text-center py-2 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-lg text-sm font-bold transition-colors"
-              >
-                Go to Settings
-              </Link>
+              <div className="flex flex-col gap-2">
+                <Link 
+                  href="/profile" 
+                  onClick={() => setShowProfileModal(false)}
+                  className="w-full block text-center py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-sm font-bold transition-colors"
+                >
+                  View Profile
+                </Link>
+                <Link 
+                  href="/settings" 
+                  onClick={() => setShowProfileModal(false)}
+                  className="w-full block text-center py-2 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-lg text-sm font-bold transition-colors"
+                >
+                  Settings
+                </Link>
+                <button 
+                  onClick={async () => {
+                    setShowProfileModal(false);
+                    if (logout) {
+                      await logout();
+                    }
+                  }}
+                  className="w-full block text-center py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm font-bold transition-colors mt-2"
+                >
+                  Logout
+                </button>
+              </div>
             </div>
           )}
         </div>

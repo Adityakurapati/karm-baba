@@ -79,8 +79,8 @@ export default function VerifiedNetworkPage() {
   };
 
   return (
-    <DashboardLayout>
-      <TopHeader searchPlaceholder="Search network members..." />
+    <DashboardLayout searchPlaceholder="Search network members...">
+
       
       <div className="flex-1 overflow-auto p-8">
         {/* Header */}

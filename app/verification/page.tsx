@@ -18,8 +18,8 @@ export default function VerificationPage() {
   const isKarmBabaCertified = user.isKarmBabaCertified === true;
 
   return (
-    <DashboardLayout>
-      <TopHeader title="Certification & Trust" searchPlaceholder="Search verification data..." />
+    <DashboardLayout title="Certification & Trust" searchPlaceholder="Search verification data...">
+
 
       <main className="flex-1 overflow-auto p-4 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
         {/* Header Section */}

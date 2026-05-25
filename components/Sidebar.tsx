@@ -164,38 +164,9 @@ export default function Sidebar({ open = true, onClose, onToggle }: SidebarProps
             </div>
           ))}
         </nav>
-
-        {/* Footer */}
-        <div className={`mt-auto space-y-4 border-t border-slate-200 pt-4 ${open ? 'px-6' : 'md:px-2 px-6'}`}>
-          {/* User Profile */}
-          <div className={`flex items-center gap-3 p-3 rounded-lg bg-slate-100 ${!open ? 'md:justify-center' : ''}`}>
-            <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
-              {user.firstName?.charAt(0)?.toUpperCase() || 'U'}
-            </div>
-            {open && (
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-slate-900 truncate">{user.firstName || 'User'} {user.lastName || ''}</p>
-                <p className="text-xs text-slate-600 capitalize">{user.role}</p>
-              </div>
-            )}
-          </div>
-
-          {/* Action Buttons */}
-          <div className="space-y-1">
-            <button
-              onClick={handleLogout}
-              className={`flex items-center gap-3 w-full p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all text-sm ${
-                !open ? 'md:justify-center' : ''
-              }`}
-              title={!open ? "Logout" : undefined}
-            >
-              <span className="material-symbols-outlined notranslate" translate="no" style={{fontSize: '20px'}}>logout</span>
-              <span className={!open ? 'md:hidden' : ''}>Logout</span>
-            </button>
-          </div>
-        </div>
       </aside>
     </>
   );
 }
+
 

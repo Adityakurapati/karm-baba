@@ -12,8 +12,8 @@ interface OnboardingLayoutProps {
 
 const steps = [
   { icon: 'person_search', label: 'Role Selection', href: '/onboarding', stepNum: 1 },
-  { icon: 'analytics', label: 'Industry Targeting', href: '/onboarding/industry', stepNum: 2 },
-  { icon: 'assignment', label: 'Dynamic Discovery', href: '/onboarding/discovery', stepNum: 3 },
+  { icon: 'manage_accounts', label: 'Account Details', href: '/onboarding/account', stepNum: 2 },
+  { icon: 'assignment', label: 'Discovery & Sectors', href: '/onboarding/discovery', stepNum: 3 },
   { icon: 'cloud_upload', label: 'Document Upload', href: '/onboarding/documents', stepNum: 4 },
   { icon: 'verified', label: 'Verification', href: '/onboarding/verify', stepNum: 5 },
 ];

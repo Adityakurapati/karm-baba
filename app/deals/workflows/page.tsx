@@ -72,8 +72,8 @@ export default function WorkflowsPage() {
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
   return (
-    <DashboardLayout>
-      <TopHeader title="CRM Automation" searchPlaceholder="Search workflows..." />
+    <DashboardLayout title="CRM Automation" searchPlaceholder="Search workflows...">
+
 
       <main className="flex-1 overflow-auto p-4 md:p-8 space-y-8">
         {/* Header */}

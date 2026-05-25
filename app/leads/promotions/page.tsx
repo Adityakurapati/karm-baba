@@ -53,8 +53,8 @@ export default function PromotionsPage() {
   const [activeView, setActiveView] = useState<'overview' | 'campaigns' | 'creatives'>('overview');
 
   return (
-    <DashboardLayout>
-      <TopHeader title="Ads & Promotions" searchPlaceholder="Search campaigns..." />
+    <DashboardLayout title="Ads & Promotions" searchPlaceholder="Search campaigns...">
+
 
       <main className="flex-1 overflow-auto p-4 md:p-8 space-y-8">
         {/* Header */}

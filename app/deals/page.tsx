@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Sidebar from '@/components/Sidebar';
+import DashboardLayout from '@/components/DashboardLayout';
 
 export default function DealsPage() {
   const [filterStatus, setFilterStatus] = useState('all');
@@ -84,21 +84,10 @@ export default function DealsPage() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      {/* Main Content */}
-      <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}>
-        {/* Header */}
-        <header className="bg-white border-b border-outline-variant p-4 md:p-6 flex justify-between items-center gap-3">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-on-surface hover:text-primary transition-colors flex-shrink-0"
-          >
-            <span className="material-symbols-outlined notranslate" translate="no">menu</span>
-          </button>
-          <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface flex-1 ml-2 md:ml-4">
+    <DashboardLayout title="Deal Management" searchPlaceholder="Search deals...">
+      <div className="p-4 md:p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface">
             Deal Management
           </h1>
           <Link
@@ -107,11 +96,9 @@ export default function DealsPage() {
           >
             Create Deal
           </Link>
-        </header>
+        </div>
 
-        {/* Content */}
-        <div className="p-4 md:p-6 overflow-auto">
-          {/* Filters */}
+        {/* Filters */}
           <div className="mb-6 flex gap-2 md:gap-3 flex-wrap">
             {['all', 'In Negotiation', 'Pending Verification', 'Contract Signed', 'Completed'].map(
               (status) => (
@@ -191,8 +178,7 @@ export default function DealsPage() {
               </Link>
             </div>
           )}
-        </div>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

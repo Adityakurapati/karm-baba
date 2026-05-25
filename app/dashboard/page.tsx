@@ -8,8 +8,8 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 export default function DashboardPage() {
   return (
     <ProtectedRoute>
-      <DashboardLayout>
-        <TopHeader title="KARM BABA Dashboard" searchPlaceholder="Search deals, leads, or documents..." />
+      <DashboardLayout title="KARM BABA Dashboard" searchPlaceholder="Search deals, leads, or documents...">
+
 
         <main className="flex-1 overflow-auto p-4 md:p-8">
           {/* Top App Bar Info */}

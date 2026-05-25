@@ -7,7 +7,7 @@ import Link from 'next/link';
 export default function PremiumProfilePage() {
   return (
     <DashboardLayout>
-      <TopHeader />
+
       
       <div className="flex-1 overflow-auto p-8">
         {/* Header */}

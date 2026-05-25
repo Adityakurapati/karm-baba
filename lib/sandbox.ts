@@ -121,7 +121,7 @@ export async function verifyPanAadhaarStatus(pan: string, aadhaar: string) {
       pan,
       aadhaar_number: aadhaar,
       consent: "y",
-      reason: "Verification",
+      reason: "For Testing",
     }),
   });
 
@@ -131,6 +131,63 @@ export async function verifyPanAadhaarStatus(pan: string, aadhaar: string) {
     success: json.code === 200,
     aadhaarSeedingStatus: json.data?.aadhaar_seeding_status,
     message: json.data?.message,
+    error: json.message,
+  };
+}
+
+export async function generateAadhaarOTP(aadhaar: string) {
+  const apiKey = process.env.QUICKO_API_KEY;
+  const token = await getAuthToken();
+
+  const res = await fetch(`${BASE_URL}/kyc/aadhaar/okyc/otp`, {
+    method: 'POST',
+    headers: {
+      Authorization: token,
+      'x-api-key': apiKey!,
+      'x-api-version': '1.0',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      "@entity": "in.co.sandbox.kyc.aadhaar.okyc.otp.request",
+      "aadhaar_number": aadhaar,
+      "consent": "y",
+      "reason": "For KYC"
+    }),
+  });
+
+  const json = await res.json();
+  return {
+    success: json.code === 200,
+    reference_id: json.data?.reference_id,
+    message: json.message || json.data?.message,
+    error: json.message,
+  };
+}
+
+export async function verifyAadhaarOTP(referenceId: string, otp: string) {
+  const apiKey = process.env.QUICKO_API_KEY;
+  const token = await getAuthToken();
+
+  const res = await fetch(`${BASE_URL}/kyc/aadhaar/okyc/otp/verify`, {
+    method: 'POST',
+    headers: {
+      Authorization: token,
+      'x-api-key': apiKey!,
+      'x-api-version': '1.0',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      "@entity": "in.co.sandbox.kyc.aadhaar.okyc.request",
+      "reference_id": referenceId.toString(),
+      "otp": otp.toString()
+    }),
+  });
+
+  const json = await res.json();
+  return {
+    success: json.code === 200,
+    data: json.data,
+    message: json.message || json.data?.message,
     error: json.message,
   };
 }

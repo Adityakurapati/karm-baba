@@ -34,8 +34,8 @@ export default function DocumentUploadPage() {
   };
 
   return (
-    <DashboardLayout>
-      <TopHeader searchPlaceholder="Search documents..." />
+    <DashboardLayout searchPlaceholder="Search documents...">
+
       
       <div className="flex-1 overflow-auto p-8">
         {/* Header */}

@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 import { isValidEmail } from '@/lib/validation';
 
 const FIREBASE_DATABASE_URL = "https://thirdeye-1e99c-default-rtdb.asia-southeast1.firebasedatabase.app";
+const FIREBASE_API_KEY = "AIzaSyAj7RTpWvjoni-xQTJfddKJUwzdqsdCc34";
 
 export async function POST(request: Request) {
   try {
@@ -11,6 +12,25 @@ export async function POST(request: Request) {
 
     if (!email || !isValidEmail(email)) {
       return NextResponse.json({ error: 'Valid email is required' }, { status: 400 });
+    }
+
+    // Check if email is already registered by querying RTDB users
+    try {
+      const usersRes = await fetch(`${FIREBASE_DATABASE_URL}/users.json`);
+      if (usersRes.ok) {
+        const usersData = await usersRes.json();
+        if (usersData) {
+          const isRegistered = Object.values(usersData).some(
+            (user: any) => user?.email?.toLowerCase() === email.toLowerCase()
+          );
+          if (isRegistered) {
+            return NextResponse.json({ error: 'Email is already registered. Please log in instead.' }, { status: 409 });
+          }
+        }
+      }
+    } catch (checkErr) {
+      console.warn('Could not verify existing email:', checkErr);
+      // Proceed with verification code if check fails, register API will catch it later
     }
 
     // Generate a 6-digit verification code

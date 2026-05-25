@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Sidebar from '@/components/Sidebar';
+import DashboardLayout from '@/components/DashboardLayout';
 
 export default function NetworkPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -98,27 +98,13 @@ export default function NetworkPage() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      {/* Main Content */}
-      <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}>
-        {/* Header */}
-        <header className="bg-white border-b border-outline-variant p-4 md:p-6 flex justify-between items-center">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-on-surface hover:text-primary transition-colors"
-          >
-            <span className="material-symbols-outlined notranslate" translate="no">menu</span>
-          </button>
-          <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface flex-1 ml-4">
+    <DashboardLayout title="Verified Network" searchPlaceholder="Search by name or location...">
+      <div className="p-4 md:p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface">
             Verified Network
           </h1>
-        </header>
-
-        {/* Content */}
-        <div className="p-4 md:p-6 overflow-auto">
+        </div>
           {/* Search and Filter */}
           <div className="mb-6 space-y-4">
             <div className="relative">
@@ -229,8 +215,7 @@ export default function NetworkPage() {
               <p className="text-on-surface-variant mb-4">No contacts found</p>
             </div>
           )}
-        </div>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

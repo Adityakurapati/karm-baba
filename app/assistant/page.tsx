@@ -47,7 +47,7 @@ export default function AIAssistantPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-      <TopHeader />
+
       
       <div className="flex-1 overflow-auto flex flex-col">
         {/* Header */}

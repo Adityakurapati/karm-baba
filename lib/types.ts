@@ -2,7 +2,7 @@
 // USER TYPES
 // ========================================
 
-export type UserRole = 'buyer' | 'seller' | 'admin' | 'guest' | 'lead';
+export type UserRole = 'buyer' | 'seller' | 'admin' | 'guest' | 'lead' | 'individual' | 'business';
 
 export interface Company {
   id: string;

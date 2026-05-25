@@ -30,7 +30,7 @@ export default function SettingsPage() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
 
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState('security');
   const [sessions, setSessions] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',
@@ -188,12 +188,12 @@ export default function SettingsPage() {
       l.region.toLowerCase().includes(searchLang.toLowerCase())
   );
 
-  const tabs = ['profile', 'security', 'notifications', 'billing', 'languages'];
+  const tabs = ['security', 'notifications', 'billing', 'languages'];
 
   return (
     <ProtectedRoute>
-      <DashboardLayout>
-        <TopHeader title="Settings" searchPlaceholder="Search settings..." />
+      <DashboardLayout title="Settings" searchPlaceholder="Search settings...">
+
 
         <main className="flex-1 overflow-auto p-4 md:p-8 max-w-6xl mx-auto w-full">
           {/* Tabs */}
@@ -212,54 +212,7 @@ export default function SettingsPage() {
             ))}
           </div>
 
-          {/* Profile Tab */}
-          {activeTab === 'profile' && (
-            <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8 animate-fade-in">
-              <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4 md:mb-6">
-                {t('settings.profile', 'Profile Information')}
-              </h2>
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-headline font-bold text-on-surface mb-2">First Name</label>
-                    <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-headline font-bold text-on-surface mb-2">Last Name</label>
-                    <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-headline font-bold text-on-surface mb-2">Email</label>
-                  <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary" />
-                </div>
-                <div>
-                  <label className="block text-sm font-headline font-bold text-on-surface mb-2">Phone</label>
-                  <input type="tel" name="phone" pattern="\d{10}" title="Please enter exactly 10 digits" value={formData.phone} onChange={handleChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary" />
-                  {formData.phone && formData.phone.length !== 10 && (
-                    <p className="text-error text-xs mt-1">Number must be exactly 10 digits</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-headline font-bold text-on-surface mb-2">Company</label>
-                  <input type="text" name="company" value={formData.company} onChange={handleChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary" />
-                </div>
-                <div>
-                  <label className="block text-sm font-headline font-bold text-on-surface mb-2">Country</label>
-                  <select name="country" value={formData.country} onChange={handleChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg focus:outline-none focus:border-primary">
-                    <option value="">Select Country</option>
-                    <option value="USA">United States</option>
-                    <option value="China">China</option>
-                    <option value="India">India</option>
-                    <option value="Germany">Germany</option>
-                  </select>
-                </div>
-                <button onClick={handleSave} className="w-full md:w-auto px-8 py-3 bg-primary text-white font-headline font-bold rounded-lg hover:bg-primary-dark transition-colors">
-                  Save Changes
-                </button>
-              </div>
-            </div>
-          )}
+          {/* Profile tab removed, moved to dedicated page */}
 
           {/* Security Tab */}
           {activeTab === 'security' && (
@@ -268,8 +221,17 @@ export default function SettingsPage() {
               <div className="space-y-6">
                 <div className="pb-6 border-b border-outline-variant">
                   <h3 className="font-headline font-bold text-on-surface mb-2">Change Password</h3>
-                  <p className="text-on-surface-variant text-sm mb-4">Send a secure link to your email to update your password.</p>
-                  <button onClick={handlePasswordChange} className="w-full sm:w-auto px-6 py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors">Send Reset Link</button>
+                  {(user as any).authProvider !== 'google.com' ? (
+                    <>
+                      <p className="text-on-surface-variant text-sm mb-4">Send a secure link to your email to update your password.</p>
+                      <button onClick={handlePasswordChange} className="w-full sm:w-auto px-6 py-2 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary hover:text-white transition-colors">Send Reset Link</button>
+                    </>
+                  ) : (
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center gap-3">
+                      <span className="material-symbols-outlined notranslate text-slate-500" translate="no">google</span>
+                      <p className="text-slate-600 text-sm font-medium">Logged in via Google. Password management is handled by your Google Account.</p>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <h3 className="font-headline font-bold text-on-surface mb-2">Active Sessions (Last 10)</h3>

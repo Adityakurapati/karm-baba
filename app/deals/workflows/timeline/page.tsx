@@ -79,8 +79,8 @@ export default function TimelinePage() {
   const [viewMode, setViewMode] = useState<'timeline' | 'calendar' | 'list'>('timeline');
 
   return (
-    <DashboardLayout>
-      <TopHeader title="Automation Timeline" searchPlaceholder="Search scheduled events..." />
+    <DashboardLayout title="Automation Timeline" searchPlaceholder="Search scheduled events...">
+
 
       <main className="flex-1 overflow-auto p-4 md:p-8 space-y-8">
         {/* Header */}

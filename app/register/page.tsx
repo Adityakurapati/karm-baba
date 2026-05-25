@@ -27,6 +27,7 @@ export default function RegisterPage() {
   const [verificationCode, setVerificationCode] = useState('');
   const [verificationSent, setVerificationSent] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
 
   const [touched, setTouched] = useState({
     firstName: false,
@@ -45,6 +46,16 @@ export default function RegisterPage() {
   useEffect(() => {
     setPasswordStrength(validatePassword(password));
   }, [password]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
 
   const handleBlur = (field: string) => {
     setTouched(prev => ({ ...prev, [field]: true }));
@@ -93,6 +104,7 @@ export default function RegisterPage() {
         if (response.ok) {
           setShowVerification(true);
           setVerificationSent(true);
+          setResendTimer(60);
         } else {
           setError(data.error || 'Failed to send verification code.');
         }
@@ -121,6 +133,30 @@ export default function RegisterPage() {
       }
     } catch (err: any) {
       setError(err.message || 'An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (resendTimer > 0) return;
+    setLoading(true);
+    setError('');
+    try {
+      const response = await fetch('/api/send-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setResendTimer(60);
+        // We could show a success toast here if toast was imported
+      } else {
+        setError(data.error || 'Failed to resend verification code.');
+      }
+    } catch (err: any) {
+      setError(err.message || 'An error occurred while resending.');
     } finally {
       setLoading(false);
     }
@@ -269,6 +305,16 @@ export default function RegisterPage() {
                     placeholder="123456"
                     className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background border-outline-variant text-center tracking-[0.5em] text-xl font-bold"
                   />
+                </div>
+                <div className="flex justify-between items-center mt-4">
+                  <button
+                    type="button"
+                    onClick={handleResendCode}
+                    disabled={resendTimer > 0 || loading}
+                    className="text-sm text-primary hover:underline font-bold disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
+                  >
+                    {resendTimer > 0 ? `Resend Code in ${resendTimer}s` : 'Resend Code'}
+                  </button>
                 </div>
               </div>
             )}

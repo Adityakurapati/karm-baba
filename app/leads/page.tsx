@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Sidebar from '@/components/Sidebar';
+import DashboardLayout from '@/components/DashboardLayout';
 
 export default function LeadsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -75,28 +75,13 @@ export default function LeadsPage() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      {/* Main Content */}
-      <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}>
-        {/* Header */}
-        <header className="bg-white border-b border-outline-variant p-4 md:p-6 flex justify-between items-center">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-on-surface hover:text-primary transition-colors"
-          >
-            <span className="material-symbols-outlined notranslate" translate="no">menu</span>
-          </button>
-          <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface flex-1 ml-4">
+    <DashboardLayout title="Lead Management" searchPlaceholder="Search leads...">
+      <div className="p-4 md:p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-xl md:text-2xl font-headline font-black text-on-surface">
             Lead Management
           </h1>
-        </header>
-
-        {/* Content */}
-        <div className="p-4 md:p-6 overflow-auto">
-          {/* Filters */}
+        </div>
           <div className="mb-6 flex gap-2 md:gap-3 flex-wrap">
             {['all', 'hot', 'warm', 'cold'].map((score) => (
               <button
@@ -196,9 +181,8 @@ export default function LeadsPage() {
                 </tbody>
               </table>
             </div>
-          </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

@@ -24,7 +24,7 @@ export default function CertificationCenterPage() {
 
   return (
     <DashboardLayout>
-      <TopHeader />
+
       
       <div className="flex-1 overflow-auto p-8">
         {/* Header */}

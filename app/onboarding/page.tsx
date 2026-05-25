@@ -23,6 +23,14 @@ const roles = [
     features: ['Production Monitoring', 'Direct Channel Liquidity'],
     color: 'secondary',
   },
+  {
+    id: 'individual',
+    icon: 'person',
+    title: 'Non-Business / Individual',
+    desc: 'Join as an individual professional or entity without a registered business. Verify your identity to participate in the ecosystem.',
+    features: ['Identity Verification', 'Ecosystem Access'],
+    color: 'slate',
+  },
 ];
 
 export default function OnboardingRoleSelectionPage() {
@@ -53,7 +61,7 @@ export default function OnboardingRoleSelectionPage() {
       }
       
       if (success) {
-        router.push('/onboarding/industry');
+        router.push(`/onboarding/account?role=${selectedRole}`);
       } else {
         alert('Failed to save your selection. Please try again.');
       }
@@ -106,7 +114,9 @@ export default function OnboardingRoleSelectionPage() {
 
               {/* Icon */}
               <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-8 ${
-                role.color === 'primary' ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'
+                role.color === 'primary' ? 'bg-primary/10 text-primary' : 
+                role.color === 'secondary' ? 'bg-secondary/10 text-secondary' :
+                'bg-slate-100 text-slate-600'
               } group-hover:scale-110 transition-transform`}>
                 <span className="material-symbols-outlined notranslate text-4xl" translate="no">{role.icon}</span>
               </div>
@@ -118,7 +128,10 @@ export default function OnboardingRoleSelectionPage() {
                 <ul className="space-y-3">
                   {role.features.map((f) => (
                     <li key={f} className="flex items-center gap-2 text-sm text-on-surface-variant">
-                      <span className={`material-symbols-outlined notranslate text-sm ${role.color === 'primary' ? 'text-primary' : 'text-secondary'}`} translate="no">token</span>
+                      <span className={`material-symbols-outlined notranslate text-sm ${
+                        role.color === 'primary' ? 'text-primary' : 
+                        role.color === 'secondary' ? 'text-secondary' : 'text-slate-600'
+                      }`} translate="no">token</span>
                       {f}
                     </li>
                   ))}

@@ -12,8 +12,8 @@ export default function TradeExecutionPage() {
   ];
 
   return (
-    <DashboardLayout>
-      <TopHeader searchPlaceholder="Search trades..." />
+    <DashboardLayout searchPlaceholder="Search trades...">
+
       
       <div className="flex-1 overflow-auto p-4 md:p-8">
         <div className="mb-6 md:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">

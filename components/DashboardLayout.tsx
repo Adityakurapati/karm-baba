@@ -2,16 +2,25 @@
 
 import { ReactNode, useState } from 'react';
 import Sidebar from './Sidebar';
+import TopHeader from './TopHeader';
 
 interface DashboardLayoutProps {
   children: ReactNode;
+  title?: string;
+  searchPlaceholder?: string;
+  hideHeader?: boolean;
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+export default function DashboardLayout({ 
+  children, 
+  title, 
+  searchPlaceholder, 
+  hideHeader = false 
+}: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="h-screen bg-background">
+    <div className="h-screen bg-background flex overflow-hidden">
       {/* Sidebar - Fixed Position */}
       <Sidebar 
         open={sidebarOpen} 
@@ -19,23 +28,22 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         onToggle={() => setSidebarOpen(!sidebarOpen)} 
       />
 
-      {/* Mobile Header Bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-white border-b border-slate-200 h-14 flex items-center px-4">
-        <button
-          onClick={() => setSidebarOpen(true)}
-          className="text-on-surface hover:text-primary transition-colors"
-        >
-          <span className="material-symbols-outlined notranslate" translate="no">menu</span>
-        </button>
-        <span className="ml-3 font-headline font-bold text-primary text-lg">KARM BABA</span>
-      </div>
-
       {/* Main Content Area - Offset by Sidebar Width on desktop */}
-      <main className={`h-screen flex flex-col overflow-hidden transition-all duration-300 pt-14 md:pt-0 ${
+      <main className={`flex-1 flex flex-col h-screen overflow-hidden transition-all duration-300 ${
         sidebarOpen ? 'md:ml-72' : 'md:ml-20'
       }`}>
-        {children}
+        {!hideHeader && (
+          <TopHeader 
+            title={title} 
+            searchPlaceholder={searchPlaceholder} 
+            onMenuClick={() => setSidebarOpen(true)}
+          />
+        )}
+        <div className="flex-1 overflow-y-auto">
+          {children}
+        </div>
       </main>
     </div>
   );
 }
+

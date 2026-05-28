@@ -1,0 +1,52 @@
+{
+  "rules": {
+    "organizations": {
+      // Super admins can read/write all. Others can read if they are members.
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'super_admin'",
+      "$orgId": {
+        ".read": "auth != null && (root.child('organizationMembers').child($orgId).child(auth.uid).exists() || root.child('users').child(auth.uid).child('role').val() === 'super_admin')",
+        // Anyone can create an org. Updates require organization_admin or super_admin.
+        ".write": "auth != null && (!data.exists() || root.child('users').child(auth.uid).child('role').val() === 'super_admin' || root.child('organizationMembers').child($orgId).child(auth.uid).child('role').val() === 'organization_admin')"
+      }
+    },
+    "organizationSettings": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'super_admin'",
+      "$orgId": {
+        // Members can read settings
+        ".read": "auth != null && (root.child('organizationMembers').child($orgId).child(auth.uid).exists() || root.child('users').child(auth.uid).child('role').val() === 'super_admin')",
+        // Only org admins can update settings
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'super_admin' || root.child('organizationMembers').child($orgId).child(auth.uid).child('role').val() === 'organization_admin')"
+      }
+    },
+    "organizationMembers": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'super_admin'",
+      "$orgId": {
+        // Members can see other members
+        ".read": "auth != null && (root.child('organizationMembers').child($orgId).child(auth.uid).exists() || root.child('users').child(auth.uid).child('role').val() === 'super_admin')",
+        // Only org admins can add/remove/update members
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'super_admin' || root.child('organizationMembers').child($orgId).child(auth.uid).child('role').val() === 'organization_admin')"
+      }
+    },
+    "organizationInvitations": {
+      // Only org admins can read/write invitations
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'super_admin'",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'super_admin'",
+      "$inviteId": {
+         // Custom logic to verify org membership would go here, simplified for now
+         ".read": "auth != null",
+         ".write": "auth != null"
+      }
+    },
+    "organizationAnalytics": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'super_admin'",
+      "$orgId": {
+        ".read": "auth != null && (root.child('organizationMembers').child($orgId).child(auth.uid).exists() || root.child('users').child(auth.uid).child('role').val() === 'super_admin')",
+        ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'super_admin'"
+      }
+    },
+    "organizationApprovalLogs": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'super_admin'",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'super_admin'"
+    }
+  }
+}

@@ -436,7 +436,7 @@ export default function LeadDashboard() {
                           {user.role}
                         </span>
                       </div>
-                      <p className="text-xs text-on-surface-variant truncate">{user.company.name}</p>
+                      <p className="text-xs text-on-surface-variant truncate">{user.company?.name || `${user.firstName} ${user.lastName}`}</p>
                       <p className="text-[10px] text-on-surface-variant/70 truncate mt-0.5">
                         {Array.isArray(user.category) ? user.category.join(', ') : (user.category || 'No Category')}
                       </p>
@@ -473,7 +473,7 @@ export default function LeadDashboard() {
                       {selectedUser.firstName} {selectedUser.lastName}
                     </h3>
                     <p className="text-xs text-on-surface-variant font-medium">
-                      {selectedUser.company.name} • {selectedUser.role}
+                      {selectedUser.company?.name || `${selectedUser.firstName} ${selectedUser.lastName}`} • {selectedUser.role}
                     </p>
                   </div>
                 </div>

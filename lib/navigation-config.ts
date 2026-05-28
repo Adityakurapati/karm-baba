@@ -13,7 +13,7 @@ export interface NavSection {
   items: NavItem[];
 }
 
-export const navigationConfig: Record<UserRole, NavSection[]> = {
+export const navigationConfig: Partial<Record<UserRole, NavSection[]>> = {
   buyer: [
     {
       title: 'Main',

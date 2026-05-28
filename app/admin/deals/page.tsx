@@ -125,7 +125,7 @@ export default function AdminDealsPage() {
                         >
                           <p className="font-bold text-on-surface text-sm mb-1">{deal.title}</p>
                           <p className="text-xs text-on-surface-variant mb-2">
-                            {buyer?.company.name} → {seller?.company.name}
+                            {buyer?.company?.name || `${buyer?.firstName} ${buyer?.lastName}`} → {seller?.company?.name || `${seller?.firstName} ${seller?.lastName}`}
                           </p>
                           <div className="flex justify-between items-center">
                             <span className="text-sm font-bold text-primary">
@@ -189,10 +189,10 @@ export default function AdminDealsPage() {
                           <p className="font-bold text-on-surface">{deal.title}</p>
                         </td>
                         <td className="px-6 py-4">
-                          <p className="text-sm text-on-surface-variant">{buyer?.company.name}</p>
+                          <p className="text-sm text-on-surface-variant">{buyer?.company?.name || `${buyer?.firstName} ${buyer?.lastName}`}</p>
                         </td>
                         <td className="px-6 py-4">
-                          <p className="text-sm text-on-surface-variant">{seller?.company.name}</p>
+                          <p className="text-sm text-on-surface-variant">{seller?.company?.name || `${seller?.firstName} ${seller?.lastName}`}</p>
                         </td>
                         <td className="px-6 py-4">
                           <p className="font-bold text-on-surface">${deal.expectedValue.toLocaleString()}</p>

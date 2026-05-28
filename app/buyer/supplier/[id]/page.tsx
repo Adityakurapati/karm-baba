@@ -47,7 +47,7 @@ export default function SupplierProfilePage({ params }: PageProps) {
 
   return (
     <ProtectedRoute allowedRoles={['buyer']}>
-      <DashboardLayout title={`${supplier.company.name} - Profile`} searchPlaceholder="Search inside profile...">
+      <DashboardLayout title={`${supplier.company?.name || `${supplier.firstName} ${supplier.lastName}`} - Profile`} searchPlaceholder="Search inside profile...">
         <div className="flex-1 overflow-auto p-4 md:p-8 max-w-7xl mx-auto w-full">
           {/* Back Navigation */}
           <button 
@@ -64,12 +64,12 @@ export default function SupplierProfilePage({ params }: PageProps) {
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
                 <div className="w-20 h-20 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-headline font-black text-3xl shadow-sm border border-primary/20 shrink-0">
-                  {supplier.company.name.charAt(0)}
+                  {(supplier.company?.name || supplier.firstName || 'U').charAt(0)}
                 </div>
                 <div>
                   <div className="flex items-center gap-3 flex-wrap mb-2">
                     <h1 className="text-2xl md:text-3xl font-black font-headline text-on-surface">
-                      {supplier.company.name}
+                      {supplier.company?.name || `${supplier.firstName} ${supplier.lastName}`}
                     </h1>
                     <span className="bg-green-50 border border-green-200 text-green-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
                       <span className="material-symbols-outlined notranslate text-[12px] filled" translate="no">verified</span>
@@ -78,20 +78,20 @@ export default function SupplierProfilePage({ params }: PageProps) {
                   </div>
                   <p className="text-on-surface-variant flex items-center gap-1.5 text-sm font-medium">
                     <span className="material-symbols-outlined notranslate text-sm text-slate-400" translate="no">location_on</span>
-                    {supplier.company.location}
+                    {supplier?.company?.location}
                   </p>
                   <div className="flex gap-2 mt-4 flex-wrap">
                     <span className="bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 border border-slate-200">
                       <span className="material-symbols-outlined notranslate text-[14px]" translate="no">work</span>
-                      {supplier.company.industry}
+                      {supplier?.company?.industry}
                     </span>
                     <span className="bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 border border-slate-200">
                       <span className="material-symbols-outlined notranslate text-[14px]" translate="no">groups</span>
-                      {supplier.company.employees} Employees
+                      {supplier?.company?.employees} Employees
                     </span>
                     <span className="bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 border border-slate-200">
                       <span className="material-symbols-outlined notranslate text-[14px]" translate="no">calendar_month</span>
-                      Est. {supplier.company.yearEstablished}
+                      Est. {supplier?.company?.yearEstablished}
                     </span>
                   </div>
                 </div>
@@ -145,13 +145,13 @@ export default function SupplierProfilePage({ params }: PageProps) {
                   <div className="bg-white rounded-2xl border border-outline-variant p-6 md:p-8 space-y-6">
                     <h3 className="text-xl font-headline font-black text-on-surface">About the Company</h3>
                     <p className="text-on-surface-variant text-sm leading-relaxed">
-                      {supplier.company.name} is a premier verified merchant in the global trade arena. Specializing in high-standard B2B commerce and logistics execution, we maintain a robust operational framework to deliver world-class products. With a commitment to quality standards and seamless logistics execution, we support trade pipelines globally.
+                      {supplier.company?.name || `${supplier.firstName} ${supplier.lastName}`} is a premier verified merchant in the global trade arena. Specializing in high-standard B2B commerce and logistics execution, we maintain a robust operational framework to deliver world-class products. With a commitment to quality standards and seamless logistics execution, we support trade pipelines globally.
                     </p>
                     <div className="grid grid-cols-2 gap-6 pt-4 border-t border-outline-variant/30">
                       <div>
                         <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Website</span>
-                        <a href={`https://${supplier.company.website}`} target="_blank" rel="noreferrer" className="text-primary font-bold text-sm hover:underline flex items-center gap-1">
-                          {supplier.company.website || 'Not Specified'}
+                        <a href={`https://${supplier?.company?.website}`} target="_blank" rel="noreferrer" className="text-primary font-bold text-sm hover:underline flex items-center gap-1">
+                          {supplier?.company?.website || 'Not Specified'}
                           <span className="material-symbols-outlined notranslate text-xs" translate="no">open_in_new</span>
                         </a>
                       </div>

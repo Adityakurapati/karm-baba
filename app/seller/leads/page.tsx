@@ -44,7 +44,7 @@ export default function SellerLeadsPage() {
               : user.category ? [user.category] : [];
             const userIndustry = Array.isArray(user.company?.industry)
               ? user.company?.industry
-              : user.company?.industry ? [user.company.industry] : [];
+              : user.company?.industry ? [user?.company?.industry] : [];
             
             // If the lead is assigned to ANY category the user has selected
             return lead.assignedCategories?.some(cat => 

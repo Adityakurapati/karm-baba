@@ -209,7 +209,7 @@ export default function AdminAnalyticsPage() {
                     <div key={item.seller.id} className="flex items-center justify-between p-3 border border-outline-variant rounded-lg">
                       <div>
                         <p className="font-bold text-on-surface">
-                          {idx + 1}. {item.seller.company.name}
+                          {idx + 1}. {item.seller.company?.name || `${item.seller.firstName} ${item.seller.lastName}` || 'Unknown Seller'}
                         </p>
                         <p className="text-xs text-on-surface-variant">
                           {allDeals.filter(d => d.sellerId === item.seller.id).length} deals
@@ -242,7 +242,7 @@ export default function AdminAnalyticsPage() {
                     <div key={item.buyer.id} className="flex items-center justify-between p-3 border border-outline-variant rounded-lg">
                       <div>
                         <p className="font-bold text-on-surface">
-                          {idx + 1}. {item.buyer.company.name}
+                          {idx + 1}. {item.buyer.company?.name || `${item.buyer.firstName} ${item.buyer.lastName}` || 'Unknown Buyer'}
                         </p>
                         <p className="text-xs text-on-surface-variant">
                           {allDeals.filter(d => d.buyerId === item.buyer.id).length} deals

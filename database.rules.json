@@ -1,0 +1,28 @@
+{
+  "rules": {
+    "businesses": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$businessId": {
+        ".read": "auth != null && (data.child('createdBy').val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "auth != null && (data.child('createdBy').val() === auth.uid || !data.exists() || root.child('users').child(auth.uid).child('role').val() === 'admin')"
+      }
+    },
+    "businessDocuments": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$businessId": {
+        ".read": "auth != null && (root.child('businesses').child($businessId).child('createdBy').val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "auth != null && (root.child('businesses').child($businessId).child('createdBy').val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin')"
+      }
+    },
+    "businessHistory": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$businessId": {
+        ".read": "auth != null && (root.child('businesses').child($businessId).child('createdBy').val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "auth != null && (root.child('businesses').child($businessId).child('createdBy').val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin')"
+      }
+    }
+  }
+}

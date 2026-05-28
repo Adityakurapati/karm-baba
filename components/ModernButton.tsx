@@ -1,6 +1,6 @@
 import React from 'react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ModernButtonProps {
@@ -24,6 +24,7 @@ const variantStyles: Record<ButtonVariant, string> = {
   outline: 'border-2 border-primary text-primary bg-white hover:bg-primary/5',
   ghost: 'text-primary hover:bg-primary/10',
   danger: 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:shadow-lg',
+  success: 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:shadow-lg',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

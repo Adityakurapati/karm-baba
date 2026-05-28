@@ -91,10 +91,10 @@ export default function CombinedDiscoveryPage() {
     if (user) {
       // 1. Industry prepopulate
       if (user.company?.industry) {
-        if (Array.isArray(user.company.industry) && user.company.industry.length > 0) {
-          setSelectedIndustries(user.company.industry);
-        } else if (typeof user.company.industry === 'string' && user.company.industry !== '') {
-          setSelectedIndustries([user.company.industry]);
+        if (Array.isArray(user?.company?.industry) && user?.company?.industry.length > 0) {
+          setSelectedIndustries(user?.company?.industry);
+        } else if (typeof user?.company?.industry === 'string' && user?.company?.industry !== '') {
+          setSelectedIndustries([user?.company?.industry]);
         }
       } else if (user.category) {
         if (Array.isArray(user.category)) {
@@ -106,7 +106,7 @@ export default function CombinedDiscoveryPage() {
 
       // 2. Location prepopulate
       if (user.company?.location) {
-        const parts = user.company.location.split(',').map(p => p.trim());
+        const parts = user?.company?.location.split(',').map(p => p.trim());
         if (parts.length >= 3) {
           const loadedCity = parts[0];
           const loadedState = parts[1];

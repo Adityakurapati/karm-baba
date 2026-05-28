@@ -1,130 +1,105 @@
 'use client';
 
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import TopNavbar from '@/components/TopNavbar';
+import Sidebar from '@/components/Sidebar';
+import { ModernCard } from '@/components/ModernCard';
+import { ModernButton } from '@/components/ModernButton';
+import { ModernBadge } from '@/components/ModernBadge';
 import { useAuth } from '@/lib/auth-context';
-import DashboardLayout from '@/components/DashboardLayout';
-import TopHeader from '@/components/TopHeader';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { UserIcon, EnvelopeIcon, PhoneIcon, BriefcaseIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline';
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  const router = useRouter();
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-surface-container flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+      </div>
+    );
+  }
 
   return (
-    <ProtectedRoute>
-      <DashboardLayout title="My Profile" searchPlaceholder="Search profile data...">
-
-        
-        <main className="flex-1 overflow-auto p-4 md:p-8 max-w-6xl mx-auto w-full">
-          <div className="bg-white rounded-2xl border border-outline-variant p-8 shadow-sm">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-8 border-b border-outline-variant pb-8">
-              <div className="w-24 h-24 rounded-full bg-primary/10 text-primary flex items-center justify-center font-headline font-black text-4xl shrink-0">
-                {`${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}
-              </div>
-              <div className="flex-1">
-                <h1 className="text-3xl font-extrabold font-headline text-on-surface mb-2">
-                  {user.firstName} {user.lastName}
-                </h1>
-                <p className="text-on-surface-variant font-medium">{user.email}</p>
-                <div className="flex gap-2 mt-4 flex-wrap">
-                  <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                    {user.role}
-                  </span>
-                  {user.phone && (
-                    <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                      <span className="material-symbols-outlined notranslate text-[14px]" translate="no">call</span>
-                      {user.phone}
-                    </span>
-                  )}
-                  {user.company?.registrationNumber && (
-                    <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-green-200">
-                      <span className="material-symbols-outlined notranslate text-[14px]" translate="no">verified</span>
-                      GST Verified
-                    </span>
-                  )}
-                  {user.role === 'individual' && (user.onboardingStep || 0) >= 2 && (
-                    <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-green-200">
-                      <span className="material-symbols-outlined notranslate text-[14px]" translate="no">verified</span>
-                      Identity Verified
-                    </span>
-                  )}
-                  <span className="bg-orange-50 text-primary px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-orange-200 shadow-sm shadow-primary/10">
-                    <span className="material-symbols-outlined notranslate text-[14px]" translate="no">workspace_premium</span>
-                    Karm Baba Verified
-                  </span>
-                </div>
-              </div>
-              <div>
-                <button className="px-6 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20">
-                  Edit Profile
-                </button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="font-headline font-bold text-lg mb-4 text-on-surface">Personal Information</h3>
-                <div className="space-y-4">
-                  <div className="bg-surface-container p-4 rounded-xl">
-                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Full Name</span>
-                    <p className="font-semibold text-on-surface">{user.firstName} {user.lastName}</p>
-                  </div>
-                  <div className="bg-surface-container p-4 rounded-xl">
-                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Email Address</span>
-                    <p className="font-semibold text-on-surface">{user.email}</p>
-                  </div>
-                  <div className="bg-surface-container p-4 rounded-xl">
-                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Phone Number</span>
-                    <p className="font-semibold text-on-surface">{user.phone || 'Not Provided'}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-headline font-bold text-lg mb-4 text-on-surface">Business & Identity Details</h3>
-                <div className="space-y-4">
-                  {user.role !== 'individual' ? (
-                    <>
-                      <div className="bg-surface-container p-4 rounded-xl">
-                        <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Company Name</span>
-                        <p className="font-semibold text-on-surface">{user.company?.name || 'Not Provided'}</p>
-                      </div>
-                      <div className="bg-surface-container p-4 rounded-xl">
-                        <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">GST IN</span>
-                        <p className="font-semibold text-on-surface">{user.company?.registrationNumber || 'Not Provided'}</p>
-                      </div>
-                      <div className="bg-surface-container p-4 rounded-xl">
-                        <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Location</span>
-                        <p className="font-semibold text-on-surface">{user.company?.location || 'Not Provided'}</p>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="bg-surface-container p-4 rounded-xl">
-                        <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">PAN Number</span>
-                        <p className="font-semibold text-on-surface">Verified (Hidden for security)</p>
-                      </div>
-                      <div className="bg-surface-container p-4 rounded-xl">
-                        <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Aadhar Number</span>
-                        <p className="font-semibold text-on-surface">Verified (Hidden for security)</p>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
+    <div className="min-h-screen bg-surface-container flex">
+      <Sidebar />
+      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+        <TopNavbar />
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-24">
+          <div className="max-w-4xl mx-auto space-y-6">
             
-            <div className="mt-8 pt-8 border-t border-outline-variant flex justify-center">
-               <div className="bg-green-50 p-6 rounded-2xl border border-green-200 text-center max-w-lg w-full">
-                 <span className="material-symbols-outlined notranslate text-green-600 text-4xl mb-2" translate="no">shield_person</span>
-                 <h4 className="font-bold text-green-800 text-lg">Fully Authenticated Account</h4>
-                 <p className="text-sm text-green-700 mt-1">Your identity and documentation have been verified by the Karm Baba trust protocol.</p>
-               </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-display font-bold text-on-surface">My Profile</h1>
+                <p className="text-on-surface-variant mt-1">Manage your account information</p>
+              </div>
+              <ModernButton variant="primary" onClick={() => router.push('/profile/edit')}>
+                Edit Profile
+              </ModernButton>
             </div>
 
+            <ModernCard className="p-0 overflow-hidden">
+              <div className="bg-primary/5 h-32 w-full"></div>
+              <div className="px-8 pb-8 relative">
+                <div className="absolute -top-16 border-4 border-white rounded-full bg-surface-container-high h-32 w-32 flex items-center justify-center overflow-hidden shadow-soft">
+                  {user.profileImage ? (
+                    <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-4xl font-bold text-primary">{user.firstName?.[0]}{user.lastName?.[0]}</span>
+                  )}
+                </div>
+                
+                <div className="mt-20 flex justify-between items-start">
+                  <div>
+                    <h2 className="text-2xl font-bold text-on-surface">{user.firstName} {user.lastName}</h2>
+                    <div className="flex items-center gap-3 mt-2">
+                      <ModernBadge variant="primary" className="capitalize">{user.role.replace('_', ' ')}</ModernBadge>
+                      <ModernBadge variant={user.status === 'Active' ? 'success' : 'warning'}>{user.status || 'Active'}</ModernBadge>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-4">Contact Information</h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3 text-on-surface">
+                          <EnvelopeIcon className="w-5 h-5 text-on-surface-variant" />
+                          <span>{user.email}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-on-surface">
+                          <PhoneIcon className="w-5 h-5 text-on-surface-variant" />
+                          <span>{user.phone || 'Not provided'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-4">Professional Information</h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3 text-on-surface">
+                          <BriefcaseIcon className="w-5 h-5 text-on-surface-variant" />
+                          <span>{user.designation || 'Not provided'}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-on-surface">
+                          <BuildingOfficeIcon className="w-5 h-5 text-on-surface-variant" />
+                          <span>{user.department || 'Not provided'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </ModernCard>
           </div>
         </main>
-      </DashboardLayout>
-    </ProtectedRoute>
+      </div>
+    </div>
   );
 }

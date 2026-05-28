@@ -45,7 +45,7 @@ export default function BuyerLeadsPage() {
               : user.category ? [user.category] : [];
             const userIndustry = Array.isArray(user.company?.industry)
               ? user.company?.industry
-              : user.company?.industry ? [user.company.industry] : [];
+              : user.company?.industry ? [user?.company?.industry] : [];
             // Map admin lead categories to onboarding category IDs for proper matching
             const categoryMap: Record<string, string[]> = {
               "Pharmacy": ["pharma", "pharmacy", "pharma & life sciences"],

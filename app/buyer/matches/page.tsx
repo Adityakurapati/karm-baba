@@ -33,17 +33,17 @@ export default function SupplierMatchesPage() {
   // Apply filtering
   const filteredSellers = matchedSellers.filter(seller => {
     const matchesSearch = 
-      seller.company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      seller.company.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      seller.company.industry.toString().toLowerCase().includes(searchTerm.toLowerCase());
+      (seller.company?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (seller.company?.location || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (seller.company?.industry?.toString() || '').toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesIndustry = 
       selectedIndustry === 'All Industries' || 
-      seller.company.industry.toString().toLowerCase().includes(selectedIndustry.toLowerCase().split(' ')[0]);
+      seller?.company?.industry.toString().toLowerCase().includes(selectedIndustry.toLowerCase().split(' ')[0]);
 
     let matchesLocation = true;
     if (selectedLocation !== 'All Locations') {
-      const loc = seller.company.location.toLowerCase();
+      const loc = (seller?.company?.location || '').toLowerCase();
       if (selectedLocation === 'India') {
         matchesLocation = loc.includes('india');
       } else if (selectedLocation === 'Europe') {
@@ -121,11 +121,11 @@ export default function SupplierMatchesPage() {
                     <div className="flex justify-between items-start mb-4">
                       <div>
                         <h3 className="text-lg font-headline font-bold text-on-surface mb-1">
-                          {seller.company.name}
+                          {seller.company?.name || `${seller.firstName} ${seller.lastName}`}
                         </h3>
                         <p className="text-sm text-on-surface-variant flex items-center gap-1">
                           <span className="material-symbols-outlined notranslate text-xs text-slate-400" translate="no">location_on</span>
-                          {seller.company.location}
+                          {seller?.company?.location}
                         </p>
                       </div>
                       <div className="text-right">
@@ -141,7 +141,7 @@ export default function SupplierMatchesPage() {
                   <div className="p-6 border-b border-outline-variant space-y-3 flex-1">
                     <div>
                       <p className="text-xs text-on-surface-variant mb-1 uppercase font-bold tracking-wider">Industry</p>
-                      <p className="font-bold text-on-surface text-sm">{seller.company.industry}</p>
+                      <p className="font-bold text-on-surface text-sm">{seller?.company?.industry}</p>
                     </div>
                     <div>
                       <p className="text-xs text-on-surface-variant mb-1 uppercase font-bold tracking-wider">Credibility Score</p>

@@ -2,7 +2,7 @@
 // USER TYPES
 // ========================================
 
-export type UserRole = 'buyer' | 'seller' | 'admin' | 'guest' | 'lead' | 'individual' | 'business';
+export type UserRole = 'super_admin' | 'admin' | 'manager' | 'analyst' | 'vendor_user' | 'buyer' | 'seller' | 'guest' | 'lead' | 'individual' | 'business';
 
 export interface Company {
   id: string;
@@ -22,7 +22,13 @@ export interface User {
   firstName: string;
   lastName: string;
   role: UserRole;
-  company: Company;
+  company?: Company;
+  organizationId?: string;
+  designation?: string;
+  department?: string;
+  status?: 'Active' | 'Inactive' | 'Blocked' | 'Pending Approval' | 'Deleted';
+  lastLogin?: Date;
+  createdBy?: string;
   phone: string;
   profileImage?: string;
   credibilityScore: number;
@@ -282,3 +288,191 @@ export type NotificationChannel = 'email' | 'whatsapp' | 'inApp';
 export type NotificationCategory = 'dealUpdates' | 'newMatches' | 'messages' | 'accountUpdates';
 
 export type NotificationPreferences = Record<NotificationCategory, Record<NotificationChannel, boolean>>;
+
+// ========================================
+// BUSINESS PROFILE TYPES
+// ========================================
+
+export interface BusinessProfile {
+  id: string; // The {businessId}
+  organizationId: string;
+  businessName: string;
+  legalName: string;
+  gstin: string;
+  pan: string;
+  cin?: string;
+  industryType: string;
+  businessCategory: string;
+  companySize: string;
+  annualRevenueRange: string;
+  yearEstablished: number;
+  websiteUrl?: string;
+  linkedinUrl?: string;
+  headquartersAddress: string;
+  state: string;
+  country: string;
+  pincode: string;
+  contactInformation: {
+    contactPersonName: string;
+    contactEmail: string;
+    contactMobileNumber: string;
+  };
+  status: 'active' | 'inactive' | 'suspended';
+  verificationStatus: 'Pending' | 'Verified' | 'Rejected' | 'Needs Review';
+  riskScore: number;
+  credibilityScore: number;
+  gstVerificationResponse?: any;
+  panVerificationResponse?: any;
+  verificationTimestamp?: Date;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface BusinessDocument {
+  id: string; // The {documentId}
+  businessId: string;
+  documentType: string;
+  fileUrl: string;
+  uploadedBy: string;
+  uploadedAt: Date;
+  verificationStatus: 'Pending' | 'Verified' | 'Rejected';
+}
+
+export interface BusinessHistory {
+  id: string; // The {historyId}
+  businessId: string;
+  changedBy: string; // User Name or ID
+  fieldName: string;
+  oldValue: string | number | boolean | null | undefined;
+  newValue: string | number | boolean | null | undefined;
+  timestamp: Date;
+}
+
+// ========================================
+// RBAC & SESSION TYPES
+// ========================================
+
+export interface UserSession {
+  id: string; // The {sessionId}
+  userId: string;
+  refreshToken: string;
+  device: string;
+  browser: string;
+  operatingSystem: string;
+  ipAddress: string;
+  loginTime: Date;
+  lastActivity: Date;
+  expiresAt: Date;
+  isActive: boolean;
+}
+
+export interface RolePermission {
+  role: UserRole;
+  permissions: string[];
+}
+
+export interface ActivityLog {
+  id: string; // The {logId}
+  userId: string;
+  action: string;
+  entityType: string;
+  entityId: string;
+  description: string;
+  timestamp: Date;
+}
+
+// ========================================
+
+export type OrganizationStatus = 'Pending' | 'Under Review' | 'Approved' | 'Rejected' | 'Suspended';
+export type SubscriptionPlan = 'Starter' | 'Professional' | 'Enterprise';
+export type PaymentStatus = 'Active' | 'Trial' | 'Expired' | 'Suspended';
+export type OrgRole = 'organization_admin' | 'manager' | 'analyst' | 'vendor_user';
+
+export interface Organization {
+  id: string; // {organizationId}
+  name: string;
+  industry: string;
+  gstin: string;
+  website?: string;
+  address: string;
+  country: string;
+  state: string;
+  timezone: string;
+  logo?: string;
+  status: OrganizationStatus;
+  subscriptionPlan: SubscriptionPlan;
+  billingCycle: 'monthly' | 'yearly';
+  renewalDate: Date;
+  paymentStatus: PaymentStatus;
+  userLimit: number;
+  storageLimit: number;
+  apiLimit: number;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OrganizationSettings {
+  id: string; // {organizationId}
+  theme: 'light' | 'dark' | 'system';
+  notificationSettings: {
+    emailNotifications: boolean;
+    smsNotifications: boolean;
+    systemAlerts: boolean;
+  };
+  emailSettings: {
+    senderName: string;
+    senderEmail: string;
+    smtpConfigured: boolean;
+  };
+  aiSettings: {
+    aiProvider: string;
+    aiModel: string;
+    automationRulesEnabled: boolean;
+  };
+  crmSettings: {
+    leadPipelineStages: string[];
+    leadAssignmentRules: string;
+    followUpSettings: string;
+  };
+}
+
+export interface OrganizationMember {
+  userId: string;
+  role: OrgRole;
+  permissions: string[];
+  joinedAt: Date;
+  invitedBy: string;
+}
+
+export interface OrganizationInvitation {
+  id: string; // {inviteId}
+  organizationId: string;
+  email: string;
+  role: OrgRole;
+  invitationStatus: 'Pending' | 'Accepted' | 'Expired' | 'Rejected';
+  invitedBy: string;
+  invitedAt: Date;
+  expiresAt: Date;
+}
+
+export interface OrganizationAnalytics {
+  id: string; // {organizationId}
+  totalUsers: number;
+  activeUsers: number;
+  vendorsAdded: number;
+  leadsCreated: number;
+  aiReportsGenerated: number;
+  pricingRecordsUploaded: number;
+  updatedAt: Date;
+}
+
+export interface OrganizationApprovalLog {
+  id: string; // {approvalId}
+  organizationId: string;
+  status: OrganizationStatus;
+  remarks: string;
+  approvedBy: string;
+  approvedAt: Date;
+}

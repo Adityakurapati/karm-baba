@@ -18,6 +18,7 @@ import {
 import { ref, get, set, child, update, onValue, push } from 'firebase/database';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { createSession, terminateSession, logActivity } from './services/user-services';
 
 interface AuthContextType {
   user: User | null;
@@ -251,13 +252,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
       
-      // Log session
+      // Log session using user-services
       try {
-        const sessionData = {
-          timestamp: new Date().toISOString(),
+        const deviceData = {
           device: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown Device',
+          browser: typeof navigator !== 'undefined' ? navigator.vendor : 'Unknown Browser',
+          operatingSystem: typeof navigator !== 'undefined' ? navigator.platform : 'Unknown OS',
+          ipAddress: '127.0.0.1', // Real IP needs backend endpoint
         };
-        await push(ref(database, `user_sessions/${uid}`), sessionData);
+        const sessionId = await createSession(uid, deviceData);
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('currentSessionId', sessionId as string);
+        }
+        await logActivity({
+          userId: uid,
+          action: 'LOGIN',
+          entityType: 'SESSION',
+          entityId: sessionId as string,
+          description: 'User logged in via email/password'
+        });
+        
+        // Update last login
+        await update(ref(database, `users/${uid}`), { lastLogin: new Date().toISOString() });
       } catch (sessionErr) {
         console.error('Failed to log session:', sessionErr);
       }
@@ -326,13 +342,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await set(ref(database, `users/${uid}`), newUser);
       }
 
-      // Log session
+      // Log session using user-services
       try {
-        const sessionData = {
-          timestamp: new Date().toISOString(),
+        const deviceData = {
           device: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown Device',
+          browser: typeof navigator !== 'undefined' ? navigator.vendor : 'Unknown Browser',
+          operatingSystem: typeof navigator !== 'undefined' ? navigator.platform : 'Unknown OS',
+          ipAddress: '127.0.0.1',
         };
-        await push(ref(database, `user_sessions/${uid}`), sessionData);
+        const sessionId = await createSession(uid, deviceData);
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('currentSessionId', sessionId as string);
+        }
+        await logActivity({
+          userId: uid,
+          action: 'LOGIN',
+          entityType: 'SESSION',
+          entityId: sessionId as string,
+          description: `User logged in via ${providerName}`
+        });
+
+        // Update last login
+        await update(ref(database, `users/${uid}`), { lastLogin: new Date().toISOString() });
       } catch (sessionErr) {
         console.error('Failed to log session:', sessionErr);
       }
@@ -382,6 +413,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // 2. Clear Firebase Session
       await signOut(auth);
       
+      // Terminate Current Session using user-services
+      if (typeof window !== 'undefined') {
+        const currentSessionId = sessionStorage.getItem('currentSessionId');
+        if (currentSessionId) {
+          await terminateSession(currentSessionId);
+        }
+        if (user) {
+          await logActivity({
+            userId: user.id,
+            action: 'LOGOUT',
+            entityType: 'SESSION',
+            entityId: currentSessionId || 'unknown',
+            description: 'User logged out'
+          });
+        }
+      }
+
       // 3. Clear Local & Session Storage thoroughly
       if (typeof window !== 'undefined') {
         sessionStorage.clear();

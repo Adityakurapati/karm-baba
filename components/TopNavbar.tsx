@@ -6,11 +6,11 @@ import { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 
 interface TopNavbarProps {
-  activeNav: string;
-  setActiveNav: (nav: string) => void;
+  activeNav?: string;
+  setActiveNav?: (nav: string) => void;
 }
 
-export default function TopNavbar({ activeNav, setActiveNav }: TopNavbarProps) {
+export default function TopNavbar({ activeNav = '', setActiveNav = () => {} }: TopNavbarProps = {}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isAuthenticated, logout, user } = useAuth();
 

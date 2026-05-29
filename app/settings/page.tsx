@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { database } from '@/lib/firebase';
 import { ref, onValue, query, limitToLast } from 'firebase/database';
+import PhoneInput from '@/components/PhoneInput';
 
 const languages = [
   { code: 'en', name: 'English', native: 'English', region: 'Global', coverage: 100, status: 'primary' },
@@ -40,6 +41,10 @@ export default function SettingsPage() {
     company: user?.company?.name || '',
     country: '',
   });
+  // Phone-specific state for country code + verification
+  const [phoneDigits, setPhoneDigits] = useState('');
+  const [countryCode, setCountryCode] = useState('+91');
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const [primaryLang, setPrimaryLang] = useState(user?.language || i18n.language || 'en');
   const [searchLang, setSearchLang] = useState('');
 
@@ -70,6 +75,15 @@ export default function SettingsPage() {
         phone: user.phone || '',
         company: user.company?.name || '',
       }));
+      // Parse stored phone into digits + country code
+      const stored = user.phone || '';
+      const match = stored.match(/^(\+\d{1,3})(\d{10})$/);
+      if (match) {
+        setCountryCode(match[1]);
+        setPhoneDigits(match[2]);
+      } else {
+        setPhoneDigits(stored.replace(/\D/g, '').slice(-10));
+      }
       if (user.language) {
         setPrimaryLang(user.language);
       }
@@ -87,15 +101,19 @@ export default function SettingsPage() {
   };
 
   const handleSave = async () => {
-    if (formData.phone && formData.phone.length !== 10) {
+    if (phoneDigits && phoneDigits.length !== 10) {
       toast.error('Mobile number must be exactly 10 digits.');
+      return;
+    }
+    if (phoneDigits && !isPhoneVerified) {
+      toast.error('Please verify your new mobile number with OTP before saving.');
       return;
     }
     try {
       const success = await updateUserProfile({
         firstName: formData.firstName,
         lastName: formData.lastName,
-        phone: formData.phone,
+        phone: phoneDigits ? `${countryCode}${phoneDigits}` : '',
         company: {
           ...(user?.company || { id: '', name: '', registrationNumber: '', industry: '', location: '', employees: 0, yearEstablished: 0 }),
           name: formData.company,
@@ -188,7 +206,7 @@ export default function SettingsPage() {
       l.region.toLowerCase().includes(searchLang.toLowerCase())
   );
 
-  const tabs = ['security', 'notifications', 'billing', 'languages'];
+  const tabs = ['profile', 'security', 'notifications', 'billing', 'languages'];
 
   return (
     <ProtectedRoute>
@@ -213,6 +231,80 @@ export default function SettingsPage() {
           </div>
 
           {/* Profile tab removed, moved to dedicated page */}
+
+          {/* Profile Tab */}
+          {activeTab === 'profile' && (
+            <div className="bg-white rounded-xl border border-outline-variant p-4 md:p-8 animate-fade-in space-y-6">
+              <h2 className="text-xl md:text-2xl font-headline font-black text-on-surface mb-4">Profile Information</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">First Name</label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-outline-variant/30 rounded-xl focus:outline-none focus:border-primary bg-surface font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Last Name</label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-outline-variant/30 rounded-xl focus:outline-none focus:border-primary bg-surface font-medium"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-2">Email Address</label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  disabled
+                  className="w-full px-4 py-3 border border-outline-variant/20 rounded-xl bg-slate-50 text-on-surface-variant cursor-not-allowed font-medium"
+                />
+                <p className="text-[10px] text-on-surface-variant mt-1">Email is tied to your account credentials and cannot be changed here.</p>
+              </div>
+
+              <div>
+                <PhoneInput
+                  value={phoneDigits}
+                  countryCode={countryCode}
+                  onValueChange={(val) => {
+                    setPhoneDigits(val);
+                    setIsPhoneVerified(false);
+                  }}
+                  onCountryCodeChange={(code) => {
+                    setCountryCode(code);
+                    setIsPhoneVerified(false);
+                  }}
+                  onVerified={() => setIsPhoneVerified(true)}
+                  isVerified={isPhoneVerified}
+                  label="Mobile Number"
+                />
+                {phoneDigits && !isPhoneVerified && (
+                  <p className="text-amber-600 text-xs mt-1 font-medium">
+                    ⚠ You must re-verify your mobile number before saving changes.
+                  </p>
+                )}
+              </div>
+
+              <div className="pt-4 border-t border-outline-variant/20">
+                <button
+                  onClick={handleSave}
+                  disabled={phoneDigits.length > 0 && !isPhoneVerified}
+                  className="px-8 py-3 text-white font-bold rounded-xl transition-all shadow-lg hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}
+                >
+                  Save Profile
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Security Tab */}
           {activeTab === 'security' && (

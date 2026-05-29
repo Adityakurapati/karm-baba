@@ -6,6 +6,19 @@ import { ref, onValue, push, set, update, remove } from "firebase/database";
 import { PlatformLead, User, PlatformCategory } from "@/lib/types";
 import toast from "react-hot-toast";
 
+const COUNTRY_CODES = [
+  { code: '+91', flag: '🇮🇳', name: 'India' },
+  { code: '+1', flag: '🇺🇸', name: 'US/Canada' },
+  { code: '+44', flag: '🇬🇧', name: 'UK' },
+  { code: '+971', flag: '🇦🇪', name: 'UAE' },
+  { code: '+966', flag: '🇸🇦', name: 'Saudi' },
+  { code: '+65', flag: '🇸🇬', name: 'Singapore' },
+  { code: '+60', flag: '🇲🇾', name: 'Malaysia' },
+  { code: '+49', flag: '🇩🇪', name: 'Germany' },
+  { code: '+86', flag: '🇨🇳', name: 'China' },
+  { code: '+61', flag: '🇦🇺', name: 'Australia' },
+];
+
 export default function AdminLeadsPage() {
   const [leads, setLeads] = useState<PlatformLead[]>([]);
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
@@ -16,6 +29,7 @@ export default function AdminLeadsPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [editingLeadId, setEditingLeadId] = useState<string | null>(null);
+  const [leadCountryCode, setLeadCountryCode] = useState('+91');
 
   // New Lead Form State
   const [formData, setFormData] = useState({
@@ -96,6 +110,7 @@ export default function AdminLeadsPage() {
   const closeModal = () => {
     setIsAddModalOpen(false);
     setEditingLeadId(null);
+    setLeadCountryCode('+91');
     setFormData({
       name: "",
       companyName: "",
@@ -110,10 +125,19 @@ export default function AdminLeadsPage() {
 
   const handleEditLead = (lead: PlatformLead) => {
     setEditingLeadId(lead.id);
+    // Parse stored phone
+    const stored = lead.phone || '';
+    const match = stored.match(/^(\+\d{1,3})(\d{10})$/);
+    if (match) {
+      setLeadCountryCode(match[1]);
+      setFormData(prev => ({ ...prev, phone: match[2] }));
+    } else {
+      setLeadCountryCode('+91');
+    }
     setFormData({
       name: lead.name || "",
       companyName: lead.companyName || "",
-      phone: lead.phone || "",
+      phone: match ? match[2] : (lead.phone || '').replace(/\D/g,'').slice(-10),
       code: lead.code || "",
       location: lead.location || "Global",
       assignmentType: lead.assignmentType || "all",
@@ -149,7 +173,7 @@ export default function AdminLeadsPage() {
       const leadData: any = {
         name: formData.name,
         companyName: formData.companyName,
-        phone: formData.phone,
+        phone: `${leadCountryCode}${formData.phone}`,
         code: formData.code,
         location: formData.location,
         assignmentType: formData.assignmentType,
@@ -296,10 +320,29 @@ export default function AdminLeadsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Mobile Number</label>
-                    <input required type="tel" pattern="\d{10}" title="Please enter exactly 10 digits" value={formData.phone} onChange={e => {
-                      const numericVal = e.target.value.replace(/\D/g, '').slice(0, 10);
-                      setFormData({...formData, phone: numericVal});
-                    }} className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="1234567890" />
+                    <div className="flex gap-2">
+                      <select
+                        value={leadCountryCode}
+                        onChange={(e) => setLeadCountryCode(e.target.value)}
+                        className="shrink-0 bg-surface-container-low border border-outline-variant/30 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-primary"
+                      >
+                        {COUNTRY_CODES.map((c) => (
+                          <option key={c.code} value={c.code}>{c.flag} {c.code}</option>
+                        ))}
+                      </select>
+                      <input
+                        required
+                        type="tel"
+                        maxLength={10}
+                        value={formData.phone}
+                        onChange={e => {
+                          const numericVal = e.target.value.replace(/\D/g, '').slice(0, 10);
+                          setFormData({...formData, phone: numericVal});
+                        }}
+                        className="flex-1 bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                        placeholder="10-digit number"
+                      />
+                    </div>
                     {formData.phone && formData.phone.length !== 10 && (
                       <p className="text-error text-xs mt-1">Number must be exactly 10 digits</p>
                     )}

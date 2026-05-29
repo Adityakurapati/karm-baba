@@ -16,45 +16,28 @@ export interface NavSection {
 export const navigationConfig: Record<UserRole, NavSection[]> = {
   buyer: [
     {
-      title: 'Main',
       items: [
         { icon: 'dashboard', label: 'Dashboard', href: '/dashboard', roles: ['buyer'] },
-        { icon: 'assignment', label: 'Requirements', href: '/buyer/requirements', roles: ['buyer'] },
-        { icon: 'person_search', label: 'Find Suppliers', href: '/buyer/matches', roles: ['buyer'] },
-        { icon: 'handshake', label: 'My Deals', href: '/buyer/deals', roles: ['buyer'] },
+        { icon: 'handshake', label: 'Deals', href: '/buyer/deals', roles: ['buyer'] },
         { icon: 'person_search', label: 'Leads', href: '/buyer/leads', roles: ['buyer'] },
         { icon: 'storefront', label: 'Product Marketplace', href: '/buyer/marketplace/products', roles: ['buyer'] },
-        { icon: 'shopping_cart', label: 'My Purchases', href: '/buyer/purchases', roles: ['buyer'] },
+        { icon: 'shopping_cart', label: 'Purchases', href: '/buyer/purchases', roles: ['buyer'] },
+        { icon: 'assignment', label: 'Requirements', href: '/buyer/requirements', roles: ['buyer'] },
+        { icon: 'person_search', label: 'Find Suppliers', href: '/buyer/matches', roles: ['buyer'] },
       ],
-    },
-    {
-      title: 'Tools',
-      items: [
-        // { icon: 'group', label: 'Network', href: '/network', roles: ['buyer'] },
-        // { icon: 'verified', label: 'Certifications', href: '/buyer/certifications', roles: ['buyer'] },
-        // { icon: 'smart_toy', label: 'AI Assistant', href: '/assistant', roles: ['buyer'] },
-      ],
-    },
+    }
   ],
 
   seller: [
     {
-      title: 'Main',
       items: [
         { icon: 'dashboard', label: 'Dashboard', href: '/dashboard', roles: ['seller'] },
-        { icon: 'shopping_bag', label: 'My Products', href: '/seller/products', roles: ['seller'] },
         { icon: 'person_search', label: 'Leads', href: '/seller/leads', roles: ['seller'] },
-        { icon: 'handshake', label: 'My Deals', href: '/seller/deals', roles: ['seller'] },
-      ],
-    },
-    {
-      title: 'Tools',
-      items: [
-        // { icon: 'group', label: 'Network', href: '/network', roles: ['seller'] },
+        { icon: 'handshake', label: 'Deals', href: '/seller/deals', roles: ['seller'] },
         { icon: 'storefront', label: 'Marketplace', href: '/seller/marketplace', roles: ['seller'] },
-        // { icon: 'smart_toy', label: 'AI Assistant', href: '/assistant', roles: ['seller'] },
+        { icon: 'shopping_bag', label: 'Products', href: '/seller/products', roles: ['seller'] },
       ],
-    },
+    }
   ],
 
   admin: [
@@ -87,15 +70,61 @@ export const navigationConfig: Record<UserRole, NavSection[]> = {
   ],
 
   lead: [],
-  individual: [],
-  business: []
+  individual: [
+    {
+      title: 'Buying',
+      items: [
+        { icon: 'dashboard', label: 'Dashboard', href: '/dashboard', roles: ['individual'] },
+        { icon: 'assignment', label: 'Requirements', href: '/buyer/requirements', roles: ['individual'] },
+        { icon: 'person_search', label: 'Find Suppliers', href: '/buyer/matches', roles: ['individual'] },
+        { icon: 'handshake', label: 'My Deals (Buy)', href: '/buyer/deals', roles: ['individual'] },
+        { icon: 'person_search', label: 'Leads (Buy)', href: '/buyer/leads', roles: ['individual'] },
+        { icon: 'storefront', label: 'Marketplace (Buy)', href: '/buyer/marketplace/products', roles: ['individual'] },
+        { icon: 'shopping_cart', label: 'My Purchases', href: '/buyer/purchases', roles: ['individual'] },
+      ],
+    },
+    {
+      title: 'Selling',
+      items: [
+        { icon: 'shopping_bag', label: 'My Products', href: '/seller/products', roles: ['individual'] },
+        { icon: 'person_search', label: 'Sales Leads', href: '/seller/leads', roles: ['individual'] },
+        { icon: 'handshake', label: 'Sales Deals', href: '/seller/deals', roles: ['individual'] },
+        { icon: 'storefront', label: 'B2B Marketplace', href: '/seller/marketplace', roles: ['individual'] },
+      ],
+    }
+  ],
+  business: [
+    {
+      title: 'Buying',
+      items: [
+        { icon: 'dashboard', label: 'Dashboard', href: '/dashboard', roles: ['business'] },
+        { icon: 'assignment', label: 'Requirements', href: '/buyer/requirements', roles: ['business'] },
+        { icon: 'person_search', label: 'Find Suppliers', href: '/buyer/matches', roles: ['business'] },
+        { icon: 'handshake', label: 'My Deals (Buy)', href: '/buyer/deals', roles: ['business'] },
+        { icon: 'person_search', label: 'Leads (Buy)', href: '/buyer/leads', roles: ['business'] },
+        { icon: 'storefront', label: 'Marketplace (Buy)', href: '/buyer/marketplace/products', roles: ['business'] },
+        { icon: 'shopping_cart', label: 'My Purchases', href: '/buyer/purchases', roles: ['business'] },
+      ],
+    },
+    {
+      title: 'Selling',
+      items: [
+        { icon: 'shopping_bag', label: 'My Products', href: '/seller/products', roles: ['business'] },
+        { icon: 'person_search', label: 'Sales Leads', href: '/seller/leads', roles: ['business'] },
+        { icon: 'handshake', label: 'Sales Deals', href: '/seller/deals', roles: ['business'] },
+        { icon: 'storefront', label: 'B2B Marketplace', href: '/seller/marketplace', roles: ['business'] },
+      ],
+    }
+  ]
 };
 
-export function getNavigationForRole(role: UserRole): NavSection[] {
-  return navigationConfig[role] || [];
+export function getNavigationForRole(role: UserRole | string): NavSection[] {
+  if (!role) return [];
+  return navigationConfig[role.toLowerCase() as UserRole] || [];
 }
 
-export function getAllMenuItems(role: UserRole): NavItem[] {
-  const sections = navigationConfig[role] || [];
+export function getAllMenuItems(role: UserRole | string): NavItem[] {
+  if (!role) return [];
+  const sections = navigationConfig[role.toLowerCase() as UserRole] || [];
   return sections.flatMap(section => section.items);
 }

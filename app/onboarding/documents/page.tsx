@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import OnboardingLayout from '@/components/OnboardingLayout';
 import { useAuth } from '@/lib/auth-context';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { GST_STATE_CODES, STATE_NAMES } from '@/lib/gst-codes';
 import { ref, query, orderByChild, equalTo, get } from 'firebase/database';
 import { database } from '@/lib/firebase';
@@ -45,9 +45,25 @@ export default function DocumentUploadPage() {
   const [otpCode, setOtpCode] = useState('');
   const [otpError, setOtpError] = useState<string | null>(null);
   const [referenceId, setReferenceId] = useState<string | null>(null);
+  const [noGst, setNoGst] = useState(false);
 
   // Check if verified
   const isGstVerified = user?.isGstVerified || user?.verificationBadges?.some(b => b.type === 'gst' || b.type === 'pan');
+
+  // Pre-populate GST details from user's company profile if saved during step 2
+  useEffect(() => {
+    if (user) {
+      if (user.company?.name) {
+        setCompanyName(prev => prev || user.company.name);
+      }
+      if ((user.company as any)?.gstin) {
+        setGstin(prev => prev || (user.company as any).gstin);
+      }
+      if ((user.company as any)?.state) {
+        setSelectedState(prev => prev || (user.company as any).state);
+      }
+    }
+  }, [user]);
 
   const handleVerifyGST = async () => {
     if (!gstin || !selectedState || !companyName) {
@@ -336,8 +352,22 @@ export default function DocumentUploadPage() {
           <div className="col-span-12 lg:col-span-8">
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-outline-variant/20">
               
+              {!isIndividual && !isGstVerified && (
+                <div className="mb-6 flex justify-end">
+                  <label className="flex items-center gap-2 cursor-pointer bg-slate-50 px-4 py-2 rounded-lg border border-outline-variant/20">
+                    <input 
+                      type="checkbox" 
+                      checked={noGst} 
+                      onChange={(e) => setNoGst(e.target.checked)}
+                      className="w-4 h-4 accent-primary"
+                    />
+                    <span className="text-sm font-bold text-on-surface-variant">I don't have a GST Number</span>
+                  </label>
+                </div>
+              )}
+
               {/* Individual / Non-Business Verification UI */}
-              {isIndividual ? (
+              {(isIndividual || noGst) ? (
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="bg-orange-50 p-4 rounded-xl">

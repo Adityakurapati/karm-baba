@@ -13,6 +13,15 @@ export interface Company {
   website?: string;
   employees: number;
   yearEstablished: number;
+  gstin?: string;
+  entityType?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  pinCode?: string;
+  employeesRange?: string;
+  turnoverRange?: string;
 }
 
 export interface User {

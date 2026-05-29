@@ -23,14 +23,6 @@ const roles = [
     features: ['Production Monitoring', 'Direct Channel Liquidity'],
     color: 'secondary',
   },
-  {
-    id: 'individual',
-    icon: 'person',
-    title: 'Non-Business / Individual',
-    desc: 'Join as an individual professional or entity without a registered business. Verify your identity to participate in the ecosystem.',
-    features: ['Identity Verification', 'Ecosystem Access'],
-    color: 'slate',
-  },
 ];
 
 export default function OnboardingRoleSelectionPage() {

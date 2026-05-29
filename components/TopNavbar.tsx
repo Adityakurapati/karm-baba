@@ -22,26 +22,28 @@ export default function TopNavbar({ activeNav = '', setActiveNav = () => {} }: T
   ];
 
   if (isAuthenticated && user) {
-    if (user.role === 'buyer') {
+    if (user.role === 'super_admin') {
       navLinks = [
-        { id: 'requirements', label: 'Requirements', href: '/buyer/requirements' },
-        { id: 'matches', label: 'Find Suppliers', href: '/buyer/matches' },
-        { id: 'deals', label: 'My Deals', href: '/buyer/deals' },
-        { id: 'marketplace', label: 'Marketplace', href: '/buyer/marketplace/products' },
-      ];
-    } else if (user.role === 'seller') {
-      navLinks = [
-        { id: 'products', label: 'My Products', href: '/seller/products' },
-        { id: 'leads', label: 'Leads', href: '/seller/leads' },
-        { id: 'deals', label: 'My Deals', href: '/seller/deals' },
-        { id: 'marketplace', label: 'Marketplace', href: '/seller/marketplace' },
+        { id: 'dashboard', label: 'Dashboard', href: '/admin' },
+        { id: 'organizations', label: 'Organizations', href: '/admin/organizations' },
+        { id: 'users', label: 'Users', href: '/admin/users' },
+        { id: 'approvals', label: 'Pending', href: '/admin/organizations/pending-approvals' },
       ];
     } else if (user.role === 'admin') {
       navLinks = [
-        { id: 'users', label: 'Users', href: '/admin/users' },
-        { id: 'deals', label: 'Deals', href: '/admin/deals' },
-        { id: 'analytics', label: 'Analytics', href: '/admin/analytics' },
-        { id: 'requirements', label: 'Requirements', href: '/requirements' },
+        { id: 'dashboard', label: 'Dashboard', href: '/dashboard' },
+        { id: 'business', label: 'Business Profile', href: '/business/create' },
+      ];
+    } else if (user.role === 'vendor_user' || user.role === 'seller') {
+      navLinks = [
+        { id: 'products', label: 'Products', href: '/seller/products' },
+        { id: 'deals', label: 'Deals', href: '/seller/deals' },
+      ];
+    } else if (user.role === 'buyer') {
+      navLinks = [
+        { id: 'requirements', label: 'Requirements', href: '/buyer/requirements' },
+        { id: 'matches', label: 'Suppliers', href: '/buyer/matches' },
+        { id: 'deals', label: 'Deals', href: '/buyer/deals' },
       ];
     }
   }

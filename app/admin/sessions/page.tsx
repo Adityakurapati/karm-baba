@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Sidebar from '@/components/Sidebar';
-import TopNavbar from '@/components/TopNavbar';
+import DashboardLayout from '@/components/DashboardLayout';
 import { ModernCard } from '@/components/ModernCard';
 import { ModernBadge } from '@/components/ModernBadge';
 import { useAuth } from '@/lib/auth-context';
@@ -71,11 +70,8 @@ export default function AdminSessionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-container flex">
-      <Sidebar />
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <TopNavbar />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-24">
+    <DashboardLayout title="Dashboard">
+        <div className="p-4 md:p-8">
           <div className="max-w-7xl mx-auto space-y-6">
             
             <div className="flex items-center justify-between">
@@ -169,8 +165,7 @@ export default function AdminSessionsPage() {
               )}
             </ModernCard>
           </div>
-        </main>
-      </div>
-    </div>
+        </div>
+      </DashboardLayout>
   );
 }

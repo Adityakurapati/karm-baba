@@ -5,6 +5,7 @@ import { database } from '@/lib/firebase';
 import { ref, onValue, query, orderByChild, equalTo, update } from 'firebase/database';
 import { useAuth } from '@/lib/auth-context';
 import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface TopHeaderProps {
   title?: string;
@@ -57,11 +58,27 @@ export default function TopHeader({
   onMenuClick,
 }: TopHeaderProps) {
   const { user, logout } = useAuth();
+  const pathname = usePathname();
+  const router = useRouter();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifs, setShowNotifs] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+  const [orgDetails, setOrgDetails] = useState<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Fetch organization details if operating in an org context
+  useEffect(() => {
+    if (user?.organizationId) {
+      const orgRef = ref(database, `organizations/${user.organizationId}`);
+      const unsub = onValue(orgRef, (snap) => {
+        if (snap.exists()) {
+          setOrgDetails(snap.val());
+        }
+      });
+      return () => unsub();
+    }
+  }, [user?.organizationId]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -153,7 +170,7 @@ export default function TopHeader({
 
   const unreadCount = notifications.filter(n => !n.read).length;
   return (
-    <header className="bg-slate-50/80 backdrop-blur-md flex justify-between items-center h-14 md:h-16 px-4 md:px-8 border-b border-slate-200/20">
+    <header className="relative z-50 bg-slate-50/80 backdrop-blur-md flex justify-between items-center h-14 md:h-16 px-4 md:px-8 border-b border-slate-200/20">
       <div className="flex items-center gap-2 flex-1 md:flex-initial mr-4">
         {onMenuClick && (
           <button
@@ -266,11 +283,19 @@ export default function TopHeader({
               setShowProfileModal(!showProfileModal);
               setShowNotifs(false);
             }}
-            className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary text-white flex items-center justify-center font-headline font-bold text-sm select-none shadow-sm hover:scale-105 transition-transform" 
-            title={user ? `${user.firstName} ${user.lastName}` : 'Profile'}
+            className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary text-white flex items-center justify-center font-headline font-bold text-sm select-none shadow-sm hover:scale-105 transition-transform overflow-hidden" 
+            title={user ? (pathname.startsWith('/organizations') && orgDetails ? orgDetails.name : `${user.firstName} ${user.lastName}`) : 'Profile'}
           >
             {user ? (
-              `${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'
+              pathname.startsWith('/organizations') && orgDetails ? (
+                orgDetails.logo ? (
+                  <img src={orgDetails.logo} alt="Org" className="w-full h-full object-cover" />
+                ) : (
+                  orgDetails.name?.substring(0, 2).toUpperCase() || 'ORG'
+                )
+              ) : (
+                `${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'
+              )
             ) : (
               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
             )}
@@ -279,20 +304,39 @@ export default function TopHeader({
           {showProfileModal && user && (
             <div className="absolute right-0 mt-2 w-64 bg-white border border-outline-variant rounded-xl shadow-xl z-50 overflow-hidden animate-fade-in p-4">
               <div className="flex items-center gap-3 mb-4 border-b border-outline-variant pb-3">
-                <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-headline font-bold text-lg">
-                  {`${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}
+                <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-headline font-bold text-lg overflow-hidden border border-primary/20">
+                  {pathname.startsWith('/organizations') && orgDetails ? (
+                    orgDetails.logo ? (
+                      <img src={orgDetails.logo} alt="Org" className="w-full h-full object-cover" />
+                    ) : (
+                      orgDetails.name?.substring(0, 2).toUpperCase() || 'ORG'
+                    )
+                  ) : (
+                    `${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'
+                  )}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-bold text-on-surface truncate">{user.firstName} {user.lastName}</p>
-                  <p className="text-xs text-on-surface-variant truncate">{user.email}</p>
+                  <p className="font-bold text-on-surface truncate">
+                    {pathname.startsWith('/organizations') && orgDetails ? orgDetails.name : `${user.firstName} ${user.lastName}`}
+                  </p>
+                  <p className="text-xs text-on-surface-variant truncate">
+                    {pathname.startsWith('/organizations') && orgDetails ? orgDetails.industry : user.email}
+                  </p>
                 </div>
               </div>
               <div className="space-y-2 mb-4 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-on-surface-variant">Role:</span>
-                  <span className="font-medium capitalize">{user.role}</span>
+                  <span className="text-on-surface-variant">Context:</span>
+                  <span className="font-medium capitalize text-right truncate pl-2">
+                    {pathname.startsWith('/organizations') ? 'Organization' : user.role}
+                  </span>
                 </div>
-                {user.company && user.company.name && (
+                {pathname.startsWith('/organizations') && orgDetails ? (
+                  <div className="flex justify-between">
+                    <span className="text-on-surface-variant">GSTIN:</span>
+                    <span className="font-medium truncate max-w-[120px]">{orgDetails.gstin}</span>
+                  </div>
+                ) : user.company && user.company.name && (
                   <div className="flex justify-between">
                     <span className="text-on-surface-variant">Company:</span>
                     <span className="font-medium truncate max-w-[120px]">{user.company.name}</span>
@@ -301,24 +345,32 @@ export default function TopHeader({
               </div>
               <div className="flex flex-col gap-2">
                 <Link 
-                  href="/profile" 
+                  href={pathname.startsWith('/organizations') ? `/organizations/${user.organizationId}/settings` : "/profile"} 
                   onClick={() => setShowProfileModal(false)}
                   className="w-full block text-center py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-sm font-bold transition-colors"
                 >
-                  View Profile
+                  {pathname.startsWith('/organizations') ? "Org Settings" : "View Profile"}
                 </Link>
-                <Link 
-                  href="/settings" 
-                  onClick={() => setShowProfileModal(false)}
-                  className="w-full block text-center py-2 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-lg text-sm font-bold transition-colors"
-                >
-                  Settings
-                </Link>
+                {!pathname.startsWith('/organizations') && (
+                  <Link 
+                    href="/settings" 
+                    onClick={() => setShowProfileModal(false)}
+                    className="w-full block text-center py-2 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-lg text-sm font-bold transition-colors"
+                  >
+                    Settings
+                  </Link>
+                )}
                 <button 
                   onClick={async () => {
                     setShowProfileModal(false);
+                    const isOrgContext = pathname.startsWith('/organizations');
                     if (logout) {
                       await logout();
+                      if (isOrgContext) {
+                        router.push('/organizations/login');
+                      } else {
+                        router.push('/login');
+                      }
                     }
                   }}
                   className="w-full block text-center py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm font-bold transition-colors mt-2"

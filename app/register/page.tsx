@@ -4,12 +4,13 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@/lib/auth-context';
 import { registerUserSchema, RegisterUserData } from '@/lib/user-validation';
 import { ModernInput } from '@/components/ModernInput';
 import { ModernButton } from '@/components/ModernButton';
+import { PhoneVerificationInput } from '@/components/PhoneVerificationInput';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -17,8 +18,9 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<RegisterUserData>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<RegisterUserData>({
     resolver: zodResolver(registerUserSchema) as any,
     mode: 'onTouched',
   });
@@ -89,7 +91,23 @@ export default function RegisterPage() {
             <ModernInput label="First Name" {...register('firstName')} error={errors.firstName?.message} />
             <ModernInput label="Last Name" {...register('lastName')} error={errors.lastName?.message} />
             <ModernInput label="Email" type="email" {...register('email')} error={errors.email?.message} />
-            <ModernInput label="Mobile Number" {...register('mobile')} error={errors.mobile?.message} />
+            
+            <Controller
+              name="mobile"
+              control={control}
+              render={({ field }) => (
+                <PhoneVerificationInput 
+                  label="Mobile Number"
+                  value={field.value || ''}
+                  onChange={(e) => {
+                    setIsPhoneVerified(false);
+                    field.onChange(e);
+                  }}
+                  error={errors.mobile?.message}
+                  onVerified={() => setIsPhoneVerified(true)}
+                />
+              )}
+            />
             
             <ModernInput label="Designation (Optional)" {...register('designation')} error={errors.designation?.message} />
             <ModernInput label="Department (Optional)" {...register('department')} error={errors.department?.message} />
@@ -113,7 +131,13 @@ export default function RegisterPage() {
             <ModernInput label="Confirm Password" type="password" {...register('confirmPassword')} error={errors.confirmPassword?.message} />
           </div>
 
-          <ModernButton type="submit" variant="primary" fullWidth loading={loading}>
+          {!isPhoneVerified && (
+            <div className="text-sm text-warning font-medium text-center">
+              Please verify your mobile number to register.
+            </div>
+          )}
+
+          <ModernButton type="submit" variant="primary" fullWidth loading={loading} disabled={!isPhoneVerified}>
             Register
           </ModernButton>
 

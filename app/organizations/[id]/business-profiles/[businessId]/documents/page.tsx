@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import TopNavbar from '@/components/TopNavbar';
-import Sidebar from '@/components/Sidebar';
+import DashboardLayout from '@/components/DashboardLayout';
 import { ModernCard } from '@/components/ModernCard';
 import { ModernButton } from '@/components/ModernButton';
 import { ModernBadge } from '@/components/ModernBadge';
@@ -30,7 +29,9 @@ const DOCUMENT_TYPES = [
 ];
 
 export default function DocumentManagement() {
-  const { id } = useParams() as { id: string };
+  const params = useParams();
+  const orgId = params.id as string;
+  const businessId = params.businessId as string;
   const router = useRouter();
   const { user } = useAuth();
   
@@ -46,19 +47,19 @@ export default function DocumentManagement() {
   useEffect(() => {
     const fetchBusiness = async () => {
       try {
-        const data = await getBusinessById(id);
+        const data = await getBusinessById(businessId);
         if (data) setBusiness(data);
         else setError('Business not found');
       } catch (err: any) {
         setError(err.message);
       }
     };
-    if (id) fetchBusiness();
-  }, [id]);
+    if (businessId) fetchBusiness();
+  }, [businessId]);
 
   useEffect(() => {
     // Listen for realtime document updates
-    const docsRef = ref(database, `businessDocuments/${id}`);
+    const docsRef = ref(database, `businessDocuments/${businessId}`);
     const unsubscribe = onValue(docsRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
@@ -75,7 +76,7 @@ export default function DocumentManagement() {
     });
 
     return () => unsubscribe();
-  }, [id]);
+  }, [businessId]);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -122,7 +123,7 @@ export default function DocumentManagement() {
     setUploading(true);
     setError('');
     try {
-      await uploadBusinessDocument(id, file, selectedType, user.firstName + ' ' + user.lastName);
+      await uploadBusinessDocument(businessId, file, selectedType, user.firstName + ' ' + user.lastName);
     } catch (err: any) {
       setError(err.message || 'Failed to upload document');
     } finally {
@@ -133,7 +134,7 @@ export default function DocumentManagement() {
   const handleDelete = async (docId: string, fileUrl: string) => {
     if (!confirm('Are you sure you want to delete this document?')) return;
     try {
-      await deleteBusinessDocument(id, docId, fileUrl);
+      await deleteBusinessDocument(businessId, docId, fileUrl);
     } catch (err: any) {
       setError(err.message || 'Failed to delete document');
     }
@@ -148,11 +149,8 @@ export default function DocumentManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-container flex">
-      <Sidebar />
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <TopNavbar />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-24">
+    <DashboardLayout title="Document Management">
+        <div className="p-4 md:p-8">
           <div className="max-w-6xl mx-auto space-y-6">
             
             <div className="flex items-center justify-between">
@@ -160,7 +158,7 @@ export default function DocumentManagement() {
                 <h1 className="text-3xl font-display font-bold text-on-surface">Document Management</h1>
                 <p className="text-on-surface-variant mt-1">Upload and manage verification documents</p>
               </div>
-              <ModernButton variant="outline" onClick={() => router.push(`/business/${id}`)}>
+              <ModernButton variant="outline" onClick={() => router.push(`/organizations/${orgId}/business-profiles/${businessId}`)}>
                 Back to Dashboard
               </ModernButton>
             </div>
@@ -296,8 +294,7 @@ export default function DocumentManagement() {
 
             </div>
           </div>
-        </main>
-      </div>
-    </div>
+        </div>
+    </DashboardLayout>
   );
 }

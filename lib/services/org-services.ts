@@ -15,7 +15,7 @@ import {
 // Core DB Paths
 const DB_ORGS = 'organizations';
 const DB_ORG_SETTINGS = 'organizationSettings';
-const DB_ORG_MEMBERS = 'organizationMembers';
+export const DB_ORG_MEMBERS = 'organizationMembers';
 const DB_ORG_INVITES = 'organizationInvitations';
 const DB_ORG_ANALYTICS = 'organizationAnalytics';
 const DB_ORG_APPROVALS = 'organizationApprovalLogs';
@@ -177,14 +177,43 @@ export const removeMember = async (orgId: string, userId: string) => {
   await update(ref(database, `users/${userId}`), { organizationId: null });
 };
 
+export const updateMemberRole = async (orgId: string, userId: string, role: OrgRole) => {
+  const memberRef = ref(database, `${DB_ORG_MEMBERS}/${orgId}/${userId}`);
+  await update(memberRef, { role });
+};
+
 export const inviteMember = async (orgId: string, email: string, role: OrgRole, inviterId: string) => {
+  // Check for existing invite
   const invitesRef = ref(database, DB_ORG_INVITES);
+  const emailQuery = query(invitesRef, orderByChild('email'), equalTo(email.toLowerCase()));
+  const snapshot = await get(emailQuery);
+  
+  if (snapshot.exists()) {
+    let alreadyInvited = false;
+    let isMember = false;
+    snapshot.forEach((childSnap) => {
+      const inv = childSnap.val();
+      if (inv.organizationId === orgId) {
+        if (inv.invitationStatus === 'Pending') alreadyInvited = true;
+        if (inv.invitationStatus === 'Accepted') isMember = true;
+      }
+    });
+    
+    if (alreadyInvited) throw new Error('An invitation is already pending for this email.');
+    if (isMember) throw new Error('User is already a member of this organization.');
+  }
+
+  // Generate a random 4-digit PIN
+  const pin = Math.floor(1000 + Math.random() * 9000).toString();
+  const hashedPin = btoa(pin);
+
   const newInviteRef = push(invitesRef);
   
-  const inviteData: Omit<OrganizationInvitation, 'id'> = {
+  const inviteData: any = {
     organizationId: orgId,
     email,
     role,
+    hashedPin, // Store the hashed pin for login verification
     invitationStatus: 'Pending',
     invitedBy: inviterId,
     invitedAt: new Date(),
@@ -197,8 +226,29 @@ export const inviteMember = async (orgId: string, email: string, role: OrgRole, 
     invitedAt: serverTimestamp(),
     expiresAt: inviteData.expiresAt.toISOString()
   });
+
+  // Fetch the organization name for the email
+  const orgRef = ref(database, `organizations/${orgId}`);
+  const orgSnap = await get(orgRef);
+  const orgName = orgSnap.exists() ? orgSnap.val().name : 'an Organization';
+
+  // Call the backend API to send the email
+  try {
+    await fetch('/api/invite', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, orgName, pin, role })
+    });
+  } catch (err) {
+    console.error('Failed to trigger email invite API:', err);
+  }
   
   return newInviteRef.key;
+};
+
+export const suspendInvitation = async (inviteId: string) => {
+  const inviteRef = ref(database, `${DB_ORG_INVITES}/${inviteId}`);
+  await update(inviteRef, { invitationStatus: 'Suspended' });
 };
 
 // ==========================================

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { ModernButton } from '@/components/ModernButton';
@@ -10,6 +10,7 @@ import { ModernCard } from '@/components/ModernCard';
 import TopNavbar from '@/components/TopNavbar';
 import { useAuth } from '@/lib/auth-context';
 import { createBusiness } from '@/lib/services/business-services';
+import { PhoneVerificationInput } from '@/components/PhoneVerificationInput';
 import { 
   basicInfoSchema, 
   registrationInfoSchema, 
@@ -32,6 +33,7 @@ export default function CreateBusinessProfile() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
 
@@ -96,7 +98,7 @@ export default function CreateBusinessProfile() {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async () => {
     if (currentStep !== STEPS.length) {
       handleNext();
       return;
@@ -110,29 +112,31 @@ export default function CreateBusinessProfile() {
     setIsSubmitting(true);
     setError(null);
 
+    const allData = getValues() as any;
+
     try {
       const businessId = await createBusiness({
-        organizationId: user.company?.id || `ORG-${Date.now()}`,
-        businessName: data.businessName,
-        legalName: data.legalName,
-        gstin: data.gstin,
-        pan: data.pan,
-        cin: data.cin,
-        industryType: data.industryType,
-        businessCategory: data.businessCategory,
-        companySize: data.companySize,
-        annualRevenueRange: data.annualRevenueRange,
-        yearEstablished: data.yearEstablished,
-        websiteUrl: data.websiteUrl,
-        linkedinUrl: data.linkedinUrl,
-        headquartersAddress: data.headquartersAddress,
-        state: data.state,
-        country: data.country,
-        pincode: data.pincode,
+        organizationId: user.organizationId || `ORG-${Date.now()}`,
+        businessName: allData.businessName || 'Unnamed Business',
+        legalName: allData.legalName || 'Unnamed Legal',
+        gstin: allData.gstin || '',
+        pan: allData.pan,
+        cin: allData.cin,
+        industryType: allData.industryType,
+        businessCategory: allData.businessCategory,
+        companySize: allData.companySize,
+        annualRevenueRange: allData.annualRevenueRange,
+        yearEstablished: allData.yearEstablished,
+        websiteUrl: allData.websiteUrl,
+        linkedinUrl: allData.linkedinUrl,
+        headquartersAddress: allData.headquartersAddress,
+        state: allData.state,
+        country: allData.country,
+        pincode: allData.pincode,
         contactInformation: {
-          contactPersonName: data.contactPersonName,
-          contactEmail: data.contactEmail,
-          contactMobileNumber: data.contactMobileNumber
+          contactPersonName: allData.contactPersonName,
+          contactEmail: allData.contactEmail,
+          contactMobileNumber: allData.contactMobileNumber
         },
         status: 'active',
         verificationStatus: 'Pending',
@@ -142,7 +146,7 @@ export default function CreateBusinessProfile() {
       });
 
       localStorage.removeItem('businessProfileDraft');
-      router.push(`/business/${businessId}`);
+      router.push(`/organizations/${user.organizationId || 'default'}/business-profiles/${businessId}`);
     } catch (err: any) {
       setError(err.message || "Failed to create business profile");
       setIsSubmitting(false);
@@ -315,10 +319,21 @@ export default function CreateBusinessProfile() {
                       {...methods.register('contactEmail')}
                       error={errors.contactEmail?.message as string}
                     />
-                    <ModernInput 
-                      label="Contact Mobile" 
-                      {...methods.register('contactMobileNumber')}
-                      error={errors.contactMobileNumber?.message as string}
+                    <Controller
+                      name="contactMobileNumber"
+                      control={methods.control}
+                      render={({ field }) => (
+                        <PhoneVerificationInput 
+                          label="Contact Mobile"
+                          value={field.value || ''}
+                          onChange={(e) => {
+                            setIsPhoneVerified(false);
+                            field.onChange(e);
+                          }}
+                          error={errors.contactMobileNumber?.message as string}
+                          onVerified={() => setIsPhoneVerified(true)}
+                        />
+                      )}
                     />
                   </div>
                 </div>

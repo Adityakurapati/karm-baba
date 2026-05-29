@@ -2,13 +2,14 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createOrganizationSchema, CreateOrganizationData } from '@/lib/org-validation';
 import { createOrganization } from '@/lib/services/org-services';
 import { useAuth } from '@/lib/auth-context';
 import { ModernInput } from '@/components/ModernInput';
 import { ModernButton } from '@/components/ModernButton';
+import { PhoneVerificationInput } from '@/components/PhoneVerificationInput';
 import { BuildingOfficeIcon, BuildingStorefrontIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -19,8 +20,9 @@ export default function CreateOrganizationPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<CreateOrganizationData>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<CreateOrganizationData>({
     resolver: zodResolver(createOrganizationSchema),
     mode: 'onTouched',
     defaultValues: {
@@ -35,8 +37,14 @@ export default function CreateOrganizationPage() {
     setError('');
     
     try {
+      const { pin, ...orgData } = data;
+      // In a production app, use a strong hashing algorithm like bcrypt on a secure server.
+      // For this client-side prototype, we'll use a simple base64 encoding or Web Crypto.
+      const hashedPin = btoa(pin); 
+
       const orgId = await createOrganization({
-        ...data,
+        ...orgData,
+        hashedPin,
         paymentStatus: 'Trial',
         userLimit: data.subscriptionPlan === 'Starter' ? 5 : data.subscriptionPlan === 'Professional' ? 50 : 1000,
         storageLimit: data.subscriptionPlan === 'Starter' ? 10 : data.subscriptionPlan === 'Professional' ? 100 : 1000,
@@ -45,8 +53,8 @@ export default function CreateOrganizationPage() {
         createdBy: user.id
       }, user.id);
       
-      // Update the user's context directly if needed, though they need to re-fetch or login
-      await updateUserProfile({ organizationId: orgId });
+      // Upgrade the user to an Organization Admin (admin role) and link their organization
+      await updateUserProfile({ organizationId: orgId, role: 'admin' });
       
       setSuccess(true);
       setTimeout(() => {
@@ -111,11 +119,34 @@ export default function CreateOrganizationPage() {
             </div>
 
             <div className="md:col-span-2">
-              <ModernInput label="Full Address" {...register('address')} error={errors.address?.message} />
+            <ModernInput label="Full Address" {...register('address')} error={errors.address?.message} />
             </div>
             <ModernInput label="Country" {...register('country')} error={errors.country?.message} />
             <ModernInput label="State/Province" {...register('state')} error={errors.state?.message} />
             <ModernInput label="Timezone" {...register('timezone')} error={errors.timezone?.message} placeholder="e.g. Asia/Kolkata" />
+
+            <div className="md:col-span-2 mt-4">
+              <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider mb-2 border-b border-outline-variant pb-2">Organization Authentication</h3>
+              <p className="text-xs text-on-surface-variant mb-4">These credentials will be used to log into the Organization Management portal.</p>
+            </div>
+            
+            <Controller
+              name="phoneNumber"
+              control={control}
+              render={({ field }) => (
+                <PhoneVerificationInput 
+                  label="Phone Number"
+                  value={field.value || ''}
+                  onChange={(e) => {
+                    setIsPhoneVerified(false);
+                    field.onChange(e);
+                  }}
+                  error={errors.phoneNumber?.message}
+                  onVerified={() => setIsPhoneVerified(true)}
+                />
+              )}
+            />
+            <ModernInput label="4-Digit PIN" type="password" maxLength={4} {...register('pin')} error={errors.pin?.message} placeholder="e.g. 1234" />
 
             <div className="md:col-span-2 mt-4">
               <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider mb-2 border-b border-outline-variant pb-2">Subscription</h3>
@@ -142,8 +173,8 @@ export default function CreateOrganizationPage() {
           </div>
 
           <div className="pt-6">
-            <ModernButton type="submit" variant="primary" fullWidth loading={loading}>
-              Create Organization & Start Trial
+            <ModernButton type="submit" variant="primary" fullWidth loading={loading} disabled={!isPhoneVerified}>
+              {isPhoneVerified ? 'Create Organization & Start Trial' : 'Verify Phone to Continue'}
             </ModernButton>
             <p className="text-xs text-center text-on-surface-variant mt-4">
               By creating an organization, you agree to the Master Service Agreement and Terms of Service.

@@ -10,8 +10,7 @@ import { useAuth } from '@/lib/auth-context';
 import { ModernInput } from '@/components/ModernInput';
 import { ModernButton } from '@/components/ModernButton';
 import { ModernCard } from '@/components/ModernCard';
-import Sidebar from '@/components/Sidebar';
-import TopNavbar from '@/components/TopNavbar';
+import DashboardLayout from '@/components/DashboardLayout';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/lib/firebase';
 import { CameraIcon } from '@heroicons/react/24/outline';
@@ -121,11 +120,8 @@ export default function EditOrganizationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-container flex">
-      <Sidebar />
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <TopNavbar />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-24">
+    <DashboardLayout title="Dashboard">
+        <div className="p-4 md:p-8">
           <div className="max-w-4xl mx-auto space-y-6">
             
             <div className="flex items-center justify-between">
@@ -201,8 +197,7 @@ export default function EditOrganizationPage() {
               </form>
             </ModernCard>
           </div>
-        </main>
-      </div>
-    </div>
+        </div>
+      </DashboardLayout>
   );
 }

@@ -6,6 +6,7 @@ export interface NavItem {
   href: string;
   roles: UserRole[];
   badge?: number;
+  exactMatchOnly?: boolean;
 }
 
 export interface NavSection {
@@ -13,69 +14,75 @@ export interface NavSection {
   items: NavItem[];
 }
 
+export const organizationNavSection: NavSection = {
+  title: 'Organization Management',
+  items: [
+    { icon: 'corporate_fare', label: 'Org Dashboard', href: '/organizations/:orgId', roles: [], exactMatchOnly: true },
+    { icon: 'group', label: 'Team Members', href: '/organizations/:orgId/members', roles: [] },
+    { icon: 'settings', label: 'Settings', href: '/organizations/:orgId/settings', roles: [] },
+    { icon: 'storefront', label: 'Business Profiles', href: '/organizations/:orgId/business-profiles', roles: [] },
+  ],
+};
+
+export const businessProfileNavSection: NavSection = {
+  title: 'Business Profile',
+  items: [
+    { icon: 'arrow_back', label: 'Back to Organization', href: '/organizations/:orgId', roles: [], exactMatchOnly: true },
+    { icon: 'storefront', label: 'Profile Dashboard', href: '/organizations/:orgId/business-profiles/:businessId', roles: [], exactMatchOnly: true },
+    { icon: 'folder', label: 'Documents', href: '/organizations/:orgId/business-profiles/:businessId/documents', roles: [] },
+    { icon: 'history', label: 'Audit History', href: '/organizations/:orgId/business-profiles/:businessId/history', roles: [] },
+    { icon: 'settings', label: 'Settings', href: '/organizations/:orgId/business-profiles/:businessId/edit', roles: [] },
+  ],
+};
+
+const platformAdminNav: NavSection[] = [
+  {
+    title: 'Platform Administration',
+    items: [
+      { icon: 'dashboard', label: 'Admin Dashboard', href: '/admin', roles: ['super_admin', 'admin'] },
+      { icon: 'group', label: 'Users', href: '/admin/users', roles: ['super_admin', 'admin'] },
+      { icon: 'assignment_ind', label: 'Leads', href: '/admin/leads', roles: ['super_admin', 'admin'] },
+      { icon: 'corporate_fare', label: 'Organizations', href: '/admin/organizations', roles: ['super_admin', 'admin'] },
+      { icon: 'security', label: 'Roles & Permissions', href: '/admin/roles', roles: ['super_admin', 'admin'] },
+      { icon: 'history', label: 'Activity Logs', href: '/admin/activity-logs', roles: ['super_admin', 'admin'] },
+    ],
+  }
+];
+
 export const navigationConfig: Partial<Record<UserRole, NavSection[]>> = {
+  super_admin: platformAdminNav,
+  admin: platformAdminNav,
+  vendor_user: [
+    {
+      title: 'Vendor Portal',
+      items: [
+        { icon: 'dashboard', label: 'Dashboard', href: '/dashboard', roles: ['vendor_user'] },
+        { icon: 'shopping_bag', label: 'My Products', href: '/seller/products', roles: ['vendor_user'] },
+        { icon: 'handshake', label: 'My Deals', href: '/seller/deals', roles: ['vendor_user'] },
+      ],
+    }
+  ],
   buyer: [
     {
-      title: 'Main',
+      title: 'Buyer Portal',
       items: [
         { icon: 'dashboard', label: 'Dashboard', href: '/dashboard', roles: ['buyer'] },
         { icon: 'assignment', label: 'Requirements', href: '/buyer/requirements', roles: ['buyer'] },
         { icon: 'person_search', label: 'Find Suppliers', href: '/buyer/matches', roles: ['buyer'] },
         { icon: 'handshake', label: 'My Deals', href: '/buyer/deals', roles: ['buyer'] },
-        { icon: 'person_search', label: 'Leads', href: '/buyer/leads', roles: ['buyer'] },
-        { icon: 'storefront', label: 'Product Marketplace', href: '/buyer/marketplace/products', roles: ['buyer'] },
-        { icon: 'shopping_cart', label: 'My Purchases', href: '/buyer/purchases', roles: ['buyer'] },
       ],
-    },
-    {
-      title: 'Tools',
-      items: [
-        // { icon: 'group', label: 'Network', href: '/network', roles: ['buyer'] },
-        // { icon: 'verified', label: 'Certifications', href: '/buyer/certifications', roles: ['buyer'] },
-        // { icon: 'smart_toy', label: 'AI Assistant', href: '/assistant', roles: ['buyer'] },
-      ],
-    },
+    }
   ],
-
   seller: [
     {
-      title: 'Main',
+      title: 'Vendor Portal',
       items: [
         { icon: 'dashboard', label: 'Dashboard', href: '/dashboard', roles: ['seller'] },
         { icon: 'shopping_bag', label: 'My Products', href: '/seller/products', roles: ['seller'] },
-        { icon: 'person_search', label: 'Leads', href: '/seller/leads', roles: ['seller'] },
         { icon: 'handshake', label: 'My Deals', href: '/seller/deals', roles: ['seller'] },
       ],
-    },
-    {
-      title: 'Tools',
-      items: [
-        // { icon: 'group', label: 'Network', href: '/network', roles: ['seller'] },
-        { icon: 'storefront', label: 'Marketplace', href: '/seller/marketplace', roles: ['seller'] },
-        // { icon: 'smart_toy', label: 'AI Assistant', href: '/assistant', roles: ['seller'] },
-      ],
-    },
+    }
   ],
-
-  admin: [
-    {
-      title: 'Admin Panel',
-      items: [
-        { icon: 'dashboard', label: 'Dashboard', href: '/admin', roles: ['admin'] },
-        { icon: 'people', label: 'User Management', href: '/admin/users', roles: ['admin'] },
-        { icon: 'handshake', label: 'Deal Pipeline', href: '/admin/deals', roles: ['admin'] },
-        { icon: 'trending_up', label: 'Analytics', href: '/admin/analytics', roles: ['admin'] },
-      ],
-    },
-    {
-      title: 'Platform',
-      items: [
-        { icon: 'person_search', label: 'All Leads', href: '/leads', roles: ['admin'] },
-        { icon: 'assignment', label: 'Requirements', href: '/requirements', roles: ['admin'] },
-      ],
-    },
-  ],
-
   guest: [
     {
       title: 'KARM BABA',
@@ -85,7 +92,8 @@ export const navigationConfig: Partial<Record<UserRole, NavSection[]>> = {
       ],
     },
   ],
-
+  manager: [],
+  analyst: [],
   lead: [],
   individual: [],
   business: []

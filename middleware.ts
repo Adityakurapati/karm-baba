@@ -41,6 +41,7 @@ export function middleware(request: NextRequest) {
   // Define route categories
   const isNormalAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/register');
   const isAdminAuthRoute = pathname.startsWith('/admin/login');
+  const isOrgAuthRoute = pathname.startsWith('/organizations/login');
   
   // Public routes that don't need protection
   const isPublicRoute = 
@@ -79,14 +80,17 @@ export function middleware(request: NextRequest) {
   const expired = token ? isTokenExpired(token) : true;
 
   if (expired) {
-    if (!isNormalAuthRoute && !isPublicRoute) {
+    if (!isNormalAuthRoute && !isPublicRoute && !isOrgAuthRoute) {
       const response = NextResponse.redirect(new URL('/login?session_expired=true', request.url));
       response.cookies.delete('auth_token');
       return response;
     }
-    if (isNormalAuthRoute) {
+    if (isNormalAuthRoute || isOrgAuthRoute) {
       const response = NextResponse.next();
-      response.cookies.delete('auth_token');
+      // Only delete token if we're accessing normal auth routes, not org auth route
+      if (isNormalAuthRoute) {
+        response.cookies.delete('auth_token');
+      }
       return response;
     }
     return NextResponse.next();
@@ -96,6 +100,9 @@ export function middleware(request: NextRequest) {
   if (isNormalAuthRoute && !expired) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
+  // If they are logged in and access org login, we might let them proceed or redirect to their org dashboard.
+  // For now, let them proceed since they might be trying to log in as an org.
+
 
   return NextResponse.next();
 }

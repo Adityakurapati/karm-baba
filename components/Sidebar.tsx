@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { useState, useEffect } from 'react';
-import { getNavigationForRole } from '@/lib/navigation-config';
+import { getNavigationForRole, organizationNavSection, businessProfileNavSection } from '@/lib/navigation-config';
 import { database } from '@/lib/firebase';
 import { ref, onValue, query, orderByChild, equalTo } from 'firebase/database';
 
@@ -49,7 +49,37 @@ export default function Sidebar({ open = true, onClose, onToggle }: SidebarProps
     return null;
   }
 
-  const sections = getNavigationForRole(user.role);
+  let sections = [...getNavigationForRole(user.role)];
+  
+  // Check if we are inside a specific business profile route (e.g. /organizations/org1/business-profiles/bus1)
+  const isBusinessProfileRoute = pathname.includes('/business-profiles/') && pathname.split('/').length > 4;
+
+  // Extract businessId from pathname if present
+  const businessIdMatch = pathname.match(/\/business-profiles\/([^\/]+)/);
+  const currentBusinessId = businessIdMatch ? businessIdMatch[1] : '';
+
+  // If the user is a vendor or normal user but has an organization, inject the Org Management section
+  if (user.organizationId && user.role !== 'admin' && user.role !== 'super_admin') {
+    // Clone the section to modify it safely
+    let currentNav = isBusinessProfileRoute ? { ...businessProfileNavSection, items: [...businessProfileNavSection.items] } : { ...organizationNavSection, items: [...organizationNavSection.items] };
+    
+    // RBAC: Filter items based on sub-roles
+    if (user.role === 'analyst') {
+      currentNav.items = currentNav.items.filter(item => 
+        item.href.includes('business-profiles') || (!item.href.includes('settings') && !item.href.includes('members'))
+      );
+    } else if (user.role === 'manager' || (user.role as string) === 'vendor_user_manager') {
+      currentNav.items = currentNav.items.filter(item => !item.href.includes('settings'));
+    }
+
+    if (pathname.startsWith('/organizations')) {
+      // If actively managing the organization or profile, ONLY show those tabs
+      sections = [currentNav];
+    } else {
+      // Otherwise, show both the Vendor tabs and the Org Management tabs
+      sections.push(currentNav);
+    }
+  }
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -126,11 +156,21 @@ export default function Sidebar({ open = true, onClose, onToggle }: SidebarProps
               )}
               <div className="space-y-2">
                 {section.items.map((item) => {
-                  const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                  let href = item.href;
+                  if (href.includes(':orgId')) {
+                    href = href.replace(':orgId', user.organizationId || 'create');
+                  }
+                  if (href.includes(':businessId')) {
+                    href = href.replace(':businessId', currentBusinessId);
+                  }
+                  
+                  const isActive = item.exactMatchOnly
+                    ? pathname === href || pathname === href + '/'
+                    : pathname === href || pathname.startsWith(href + '/');
                   return (
                     <Link
                       key={item.href}
-                      href={item.href}
+                      href={href}
                       onClick={onClose}
                       className={`flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all relative ${
                         isActive

@@ -2,10 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import TopNavbar from '@/components/TopNavbar';
-import Sidebar from '@/components/Sidebar';
+import DashboardLayout from '@/components/DashboardLayout';
 import { ModernCard } from '@/components/ModernCard';
 import { ModernButton } from '@/components/ModernButton';
 import { ModernInput } from '@/components/ModernInput';
@@ -13,9 +12,12 @@ import { useAuth } from '@/lib/auth-context';
 import { getBusinessById, updateBusiness } from '@/lib/services/business-services';
 import { BusinessProfile } from '@/lib/types';
 import { businessProfileSchema } from '@/lib/business-validation';
+import { PhoneVerificationInput } from '@/components/PhoneVerificationInput';
 
 export default function EditBusinessProfile() {
-  const { id } = useParams() as { id: string };
+  const params = useParams();
+  const orgId = params.id as string;
+  const businessId = params.businessId as string;
   const router = useRouter();
   const { user } = useAuth();
   
@@ -23,6 +25,7 @@ export default function EditBusinessProfile() {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
 
   const methods = useForm({
     resolver: zodResolver(businessProfileSchema),
@@ -35,10 +38,13 @@ export default function EditBusinessProfile() {
   useEffect(() => {
     const fetchBusiness = async () => {
       try {
-        const data = await getBusinessById(id);
+        const data = await getBusinessById(businessId);
         if (data) {
           setBusiness(data);
           reset(data); // Pre-fill form
+          if (data.contactInformation?.contactMobileNumber) {
+            setIsPhoneVerified(true);
+          }
         } else {
           setError('Business not found');
         }
@@ -48,10 +54,10 @@ export default function EditBusinessProfile() {
         setLoading(false);
       }
     };
-    if (id) {
+    if (businessId) {
       fetchBusiness();
     }
-  }, [id, reset]);
+  }, [businessId, reset]);
 
   const onSubmit = async (data: any) => {
     if (!user) return;
@@ -69,8 +75,8 @@ export default function EditBusinessProfile() {
         updates.panVerificationResponse = null;
       }
 
-      await updateBusiness(id, updates, user.firstName + ' ' + user.lastName);
-      router.push(`/business/${id}`);
+      await updateBusiness(businessId, updates, user.firstName + ' ' + user.lastName);
+      router.push(`/organizations/${orgId}/business-profiles/${businessId}`);
     } catch (err: any) {
       setError(err.message || "Failed to update business profile");
       setIsSubmitting(false);
@@ -86,11 +92,8 @@ export default function EditBusinessProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-container flex">
-      <Sidebar />
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <TopNavbar />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-24">
+    <DashboardLayout title="Edit Profile">
+        <div className="p-4 md:p-8">
           <div className="max-w-4xl mx-auto space-y-6">
             
             <div className="flex items-center justify-between">
@@ -98,7 +101,7 @@ export default function EditBusinessProfile() {
                 <h1 className="text-3xl font-display font-bold text-on-surface">Edit Profile</h1>
                 <p className="text-on-surface-variant mt-1">Update your business information</p>
               </div>
-              <ModernButton variant="outline" onClick={() => router.push(`/business/${id}`)}>
+              <ModernButton variant="outline" onClick={() => router.push(`/organizations/${orgId}/business-profiles/${businessId}`)}>
                 Cancel
               </ModernButton>
             </div>
@@ -158,7 +161,22 @@ export default function EditBusinessProfile() {
                       <ModernInput label="Pincode" {...methods.register('pincode')} error={errors.pincode?.message as string} />
                       <ModernInput label="Contact Person Name" {...methods.register('contactPersonName')} error={errors.contactPersonName?.message as string} />
                       <ModernInput label="Contact Email" type="email" {...methods.register('contactEmail')} error={errors.contactEmail?.message as string} />
-                      <ModernInput label="Contact Mobile" {...methods.register('contactMobileNumber')} error={errors.contactMobileNumber?.message as string} />
+                      <Controller
+                        name="contactMobileNumber"
+                        control={methods.control}
+                        render={({ field }) => (
+                          <PhoneVerificationInput 
+                            label="Contact Mobile"
+                            value={field.value || ''}
+                            onChange={(e) => {
+                              setIsPhoneVerified(false);
+                              field.onChange(e);
+                            }}
+                            error={errors.contactMobileNumber?.message as string}
+                            onVerified={() => setIsPhoneVerified(true)}
+                          />
+                        )}
+                      />
                       <ModernInput label="Website URL" type="url" {...methods.register('websiteUrl')} error={errors.websiteUrl?.message as string} />
                     </div>
                   </section>
@@ -191,16 +209,15 @@ export default function EditBusinessProfile() {
                   </section>
 
                   <div className="flex justify-end pt-6 border-t">
-                    <ModernButton type="submit" variant="primary" loading={isSubmitting}>
-                      Save Changes
+                    <ModernButton type="submit" variant="primary" loading={isSubmitting} disabled={!isPhoneVerified}>
+                      {isPhoneVerified ? 'Save Changes' : 'Verify Phone to Save'}
                     </ModernButton>
                   </div>
                 </form>
               </FormProvider>
             </ModernCard>
           </div>
-        </main>
-      </div>
-    </div>
+        </div>
+    </DashboardLayout>
   );
 }

@@ -2,18 +2,19 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import TopNavbar from '@/components/TopNavbar';
-import Sidebar from '@/components/Sidebar';
+import DashboardLayout from '@/components/DashboardLayout';
 import { ModernCard } from '@/components/ModernCard';
 import { ModernButton } from '@/components/ModernButton';
 import { getBusinessById } from '@/lib/services/business-services';
 import { BusinessProfile, BusinessHistory } from '@/lib/types';
-import { ref, get, query, orderByChild } from 'firebase/database';
+import { ref, get } from 'firebase/database';
 import { database } from '@/lib/firebase';
 import { ClockIcon, UserIcon } from '@heroicons/react/24/outline';
 
 export default function BusinessHistoryPage() {
-  const { id } = useParams() as { id: string };
+  const params = useParams();
+  const orgId = params.id as string;
+  const businessId = params.businessId as string;
   const router = useRouter();
   
   const [business, setBusiness] = useState<BusinessProfile | null>(null);
@@ -24,7 +25,7 @@ export default function BusinessHistoryPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getBusinessById(id);
+        const data = await getBusinessById(businessId);
         if (data) {
           setBusiness(data);
         } else {
@@ -33,7 +34,7 @@ export default function BusinessHistoryPage() {
         }
 
         // Fetch history
-        const historyRef = ref(database, `businessHistory/${id}`);
+        const historyRef = ref(database, `businessHistory/${businessId}`);
         const snapshot = await get(historyRef);
         
         if (snapshot.exists()) {
@@ -53,8 +54,8 @@ export default function BusinessHistoryPage() {
       }
     };
     
-    if (id) fetchData();
-  }, [id]);
+    if (businessId) fetchData();
+  }, [businessId]);
 
   if (loading) {
     return (
@@ -65,11 +66,8 @@ export default function BusinessHistoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-container flex">
-      <Sidebar />
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <TopNavbar />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-24">
+    <DashboardLayout title="Audit History">
+        <div className="p-4 md:p-8">
           <div className="max-w-4xl mx-auto space-y-6">
             
             <div className="flex items-center justify-between">
@@ -79,7 +77,7 @@ export default function BusinessHistoryPage() {
                   Track all modifications made to {business?.businessName || 'this profile'}
                 </p>
               </div>
-              <ModernButton variant="outline" onClick={() => router.push(`/business/${id}`)}>
+              <ModernButton variant="outline" onClick={() => router.push(`/organizations/${orgId}/business-profiles/${businessId}`)}>
                 Back to Dashboard
               </ModernButton>
             </div>
@@ -146,8 +144,7 @@ export default function BusinessHistoryPage() {
               )}
             </ModernCard>
           </div>
-        </main>
-      </div>
-    </div>
+        </div>
+    </DashboardLayout>
   );
 }

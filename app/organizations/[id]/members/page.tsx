@@ -4,18 +4,17 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Sidebar from '@/components/Sidebar';
-import TopNavbar from '@/components/TopNavbar';
+import DashboardLayout from '@/components/DashboardLayout';
 import { ModernCard } from '@/components/ModernCard';
 import { ModernButton } from '@/components/ModernButton';
 import { ModernInput } from '@/components/ModernInput';
 import { ModernBadge } from '@/components/ModernBadge';
 import { useAuth } from '@/lib/auth-context';
-import { getOrganizationData, getOrganizationMembers, inviteMember, removeMember } from '@/lib/services/org-services';
-import { OrganizationMember } from '@/lib/types';
+import { getOrganizationData, getOrganizationMembers, inviteMember, removeMember, suspendInvitation, updateMemberRole } from '@/lib/services/org-services';
+import { OrganizationMember, OrganizationInvitation, OrgRole } from '@/lib/types';
 import { inviteMemberSchema, InviteMemberData } from '@/lib/org-validation';
-import { UsersIcon, UserPlusIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { ref, onValue } from 'firebase/database';
+import { UsersIcon, UserPlusIcon, TrashIcon, NoSymbolIcon } from '@heroicons/react/24/outline';
+import { ref, onValue, query, orderByChild, equalTo } from 'firebase/database';
 import { database } from '@/lib/firebase';
 
 export default function OrganizationMembersPage() {
@@ -23,7 +22,7 @@ export default function OrganizationMembersPage() {
   const { user } = useAuth();
   const router = useRouter();
   
-  const [members, setMembers] = useState<(OrganizationMember & { email?: string, name?: string })[]>([]);
+  const [allMembers, setAllMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [inviting, setInviting] = useState(false);
   const [error, setError] = useState('');
@@ -39,11 +38,19 @@ export default function OrganizationMembersPage() {
   useEffect(() => {
     if (!user || !id) return;
     
-    // Real-time listener for members
+    // Real-time listener for members and invitations
     const membersRef = ref(database, `organizationMembers/${id}`);
+    const invitationsRef = query(ref(database, 'organizationInvitations'), orderByChild('organizationId'), equalTo(id as string));
     const usersRef = ref(database, 'users');
 
     let usersData: Record<string, any> = {};
+    let currentMembers: any[] = [];
+    let currentInvitations: any[] = [];
+
+    const updateCombinedList = () => {
+      setAllMembers([...currentMembers, ...currentInvitations]);
+      setLoading(false);
+    };
 
     const unsubUsers = onValue(usersRef, (snapshot) => {
       if (snapshot.exists()) {
@@ -54,26 +61,50 @@ export default function OrganizationMembersPage() {
     const unsubMembers = onValue(membersRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const membersList = Object.keys(data).map(key => {
+        currentMembers = Object.keys(data).map(key => {
           const m = data[key];
           const uData = usersData[key];
           return {
             ...m,
+            type: 'member',
             joinedAt: new Date(m.joinedAt),
             email: uData?.email || 'Unknown',
-            name: uData ? `${uData.firstName} ${uData.lastName}` : 'Unknown'
+            name: uData ? `${uData.firstName} ${uData.lastName}` : 'Unknown',
+            status: 'Active'
           };
         });
-        setMembers(membersList);
       } else {
-        setMembers([]);
+        currentMembers = [];
       }
-      setLoading(false);
+      updateCombinedList();
+    });
+
+    const unsubInvites = onValue(invitationsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        currentInvitations = Object.keys(data).map(key => {
+          const inv = data[key];
+          return {
+            ...inv,
+            type: 'invitation',
+            joinedAt: new Date(inv.invitedAt),
+            email: inv.email,
+            name: 'Pending User',
+            role: inv.role,
+            status: inv.invitationStatus === 'Pending' ? 'Invited' : inv.invitationStatus,
+            userId: key // use invite id as userId for keying
+          };
+        });
+      } else {
+        currentInvitations = [];
+      }
+      updateCombinedList();
     });
     
     return () => {
       unsubUsers();
       unsubMembers();
+      unsubInvites();
     };
   }, [user, id]);
 
@@ -100,8 +131,21 @@ export default function OrganizationMembersPage() {
     if (!confirm('Are you sure you want to remove this member?')) return;
     try {
       await removeMember(id as string, userId);
+      setSuccess('Member removed successfully.');
+      setTimeout(() => setSuccess(''), 3000);
     } catch (e: any) {
       setError(e.message || 'Failed to remove member');
+    }
+  };
+
+  const handleRoleChange = async (userId: string, newRole: OrgRole) => {
+    if (!confirm(`Are you sure you want to change their role to ${newRole.replace(/_/g, ' ')}?`)) return;
+    try {
+      await updateMemberRole(id as string, userId, newRole);
+      setSuccess('Role updated successfully.');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (e: any) {
+      setError(e.message || 'Failed to update role');
     }
   };
 
@@ -114,15 +158,24 @@ export default function OrganizationMembersPage() {
   }
 
   // Find current user's role in this org
-  const currentUserOrgRole = members.find(m => m.userId === user?.id)?.role;
-  const isAdmin = currentUserOrgRole === 'organization_admin' || user?.role === 'super_admin';
+  const currentUserOrgRole = allMembers.find(m => m.userId === user?.id && m.type === 'member')?.role;
+  const isAdmin = currentUserOrgRole === 'organization_admin' || currentUserOrgRole === 'organization_super_admin' || user?.role === 'super_admin';
+  const isSuperAdmin = currentUserOrgRole === 'organization_super_admin' || user?.role === 'super_admin';
+
+  const handleSuspend = async (inviteId: string) => {
+    if (!confirm('Are you sure you want to suspend this invitation?')) return;
+    try {
+      await suspendInvitation(inviteId);
+      setSuccess('Invitation suspended successfully.');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (e: any) {
+      setError(e.message || 'Failed to suspend invitation');
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-surface-container flex">
-      <Sidebar />
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <TopNavbar />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-24">
+    <DashboardLayout title="Dashboard">
+        <div className="p-4 md:p-8">
           <div className="max-w-7xl mx-auto space-y-6">
             
             <div className="flex items-center justify-between">
@@ -185,16 +238,17 @@ export default function OrganizationMembersPage() {
                     <tr className="border-b border-outline-variant text-sm text-on-surface-variant uppercase tracking-wider">
                       <th className="pb-3 font-bold">User</th>
                       <th className="pb-3 font-bold">Role</th>
-                      <th className="pb-3 font-bold">Joined</th>
+                      <th className="pb-3 font-bold">Status</th>
+                      <th className="pb-3 font-bold">Joined / Invited</th>
                       {isAdmin && <th className="pb-3 font-bold text-right">Actions</th>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-outline-variant">
-                    {members.map((m) => (
+                    {allMembers.map((m) => (
                       <tr key={m.userId} className="hover:bg-surface-container-low transition-colors">
                         <td className="py-4 flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                            {m.name?.[0]}
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${m.type === 'invitation' ? 'bg-slate-100 text-slate-500' : 'bg-primary/10 text-primary'}`}>
+                            {m.name?.[0] || m.email[0].toUpperCase()}
                           </div>
                           <div>
                             <p className="font-bold text-on-surface flex items-center gap-2">
@@ -205,8 +259,26 @@ export default function OrganizationMembersPage() {
                           </div>
                         </td>
                         <td className="py-4">
-                          <ModernBadge variant={m.role === 'organization_admin' ? 'primary' : 'info'} className="capitalize">
-                            {m.role.replace('_', ' ')}
+                          {isSuperAdmin && m.type === 'member' && m.userId !== user?.id ? (
+                            <select
+                              value={m.role}
+                              onChange={(e) => handleRoleChange(m.userId, e.target.value as OrgRole)}
+                              className="bg-white border border-outline-variant rounded-lg py-1 px-2 text-xs font-bold text-on-surface focus:ring-2 focus:ring-primary/40 outline-none"
+                            >
+                              <option value="organization_admin">Admin</option>
+                              <option value="manager">Manager</option>
+                              <option value="analyst">Analyst</option>
+                              <option value="vendor_user">Vendor User</option>
+                            </select>
+                          ) : (
+                            <ModernBadge variant={m.role === 'organization_admin' || m.role === 'organization_super_admin' ? 'primary' : 'info'} className="capitalize">
+                              {m.role.replace(/_/g, ' ')}
+                            </ModernBadge>
+                          )}
+                        </td>
+                        <td className="py-4">
+                          <ModernBadge variant={m.status === 'Active' ? 'success' : m.status === 'Invited' ? 'warning' : 'info'} className="capitalize">
+                            {m.status}
                           </ModernBadge>
                         </td>
                         <td className="py-4 text-sm text-on-surface-variant">
@@ -214,18 +286,25 @@ export default function OrganizationMembersPage() {
                         </td>
                         {isAdmin && (
                           <td className="py-4 text-right">
-                            {m.userId !== user?.id && m.role !== 'organization_admin' && (
-                              <button onClick={() => handleRemove(m.userId)} className="p-2 text-error hover:bg-error/10 rounded-full" title="Remove Member">
-                                <TrashIcon className="w-5 h-5" />
-                              </button>
-                            )}
+                            <div className="flex items-center justify-end gap-2">
+                              {isSuperAdmin && m.type === 'invitation' && m.status === 'Invited' && (
+                                <button onClick={() => handleSuspend(m.userId)} className="p-2 text-warning hover:bg-warning/10 rounded-full" title="Suspend Invite">
+                                  <NoSymbolIcon className="w-5 h-5" />
+                                </button>
+                              )}
+                              {isSuperAdmin && m.userId !== user?.id && m.role !== 'organization_super_admin' && m.type === 'member' && (
+                                <button onClick={() => handleRemove(m.userId)} className="p-2 text-error hover:bg-error/10 rounded-full" title="Remove Member">
+                                  <TrashIcon className="w-5 h-5" />
+                                </button>
+                              )}
+                            </div>
                           </td>
                         )}
                       </tr>
                     ))}
-                    {members.length === 0 && (
+                    {allMembers.length === 0 && (
                       <tr>
-                        <td colSpan={isAdmin ? 4 : 3} className="py-12 text-center text-on-surface-variant">
+                        <td colSpan={isAdmin ? 5 : 4} className="py-12 text-center text-on-surface-variant">
                           <UsersIcon className="w-12 h-12 mx-auto mb-3 opacity-50" />
                           No members found.
                         </td>
@@ -236,8 +315,7 @@ export default function OrganizationMembersPage() {
               </div>
             </ModernCard>
           </div>
-        </main>
-      </div>
-    </div>
+        </div>
+      </DashboardLayout>
   );
 }

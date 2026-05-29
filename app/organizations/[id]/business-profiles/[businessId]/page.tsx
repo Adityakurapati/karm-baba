@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import TopNavbar from '@/components/TopNavbar';
-import Sidebar from '@/components/Sidebar';
+import DashboardLayout from '@/components/DashboardLayout';
 import { ModernCard } from '@/components/ModernCard';
 import { ModernButton } from '@/components/ModernButton';
 import { ModernBadge } from '@/components/ModernBadge';
@@ -20,7 +19,9 @@ import {
 } from '@heroicons/react/24/outline';
 
 export default function BusinessDashboard() {
-  const { id } = useParams() as { id: string };
+  const params = useParams();
+  const orgId = params.id as string;
+  const businessId = params.businessId as string;
   const router = useRouter();
   const [business, setBusiness] = useState<BusinessProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,7 +30,7 @@ export default function BusinessDashboard() {
   useEffect(() => {
     const fetchBusiness = async () => {
       try {
-        const data = await getBusinessById(id);
+        const data = await getBusinessById(businessId);
         if (data) {
           setBusiness(data);
         } else {
@@ -41,10 +42,10 @@ export default function BusinessDashboard() {
         setLoading(false);
       }
     };
-    if (id) {
+    if (businessId) {
       fetchBusiness();
     }
-  }, [id]);
+  }, [businessId]);
 
   if (loading) {
     return (
@@ -67,11 +68,8 @@ export default function BusinessDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-container flex">
-      <Sidebar />
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <TopNavbar />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-24">
+    <DashboardLayout title="Business Profile">
+        <div className="p-4 md:p-8">
           <div className="max-w-7xl mx-auto space-y-6">
             
             {/* Header section */}
@@ -89,14 +87,14 @@ export default function BusinessDashboard() {
                 <ModernButton 
                   variant="outline" 
                   icon={<DocumentDuplicateIcon className="w-5 h-5" />}
-                  onClick={() => router.push(`/business/${id}/documents`)}
+                  onClick={() => router.push(`/organizations/${orgId}/business-profiles/${businessId}/documents`)}
                 >
                   Documents
                 </ModernButton>
                 <ModernButton 
                   variant="primary" 
                   icon={<PencilIcon className="w-5 h-5" />}
-                  onClick={() => router.push(`/business/${id}/edit`)}
+                  onClick={() => router.push(`/organizations/${orgId}/business-profiles/${businessId}/edit`)}
                 >
                   Edit Profile
                 </ModernButton>
@@ -260,10 +258,10 @@ export default function BusinessDashboard() {
                 <ModernCard className="p-6">
                   <h3 className="font-bold text-on-surface mb-4">Quick Actions</h3>
                   <div className="space-y-3">
-                    <ModernButton fullWidth variant="outline" onClick={() => router.push(`/business/${id}/documents`)}>
+                    <ModernButton fullWidth variant="outline" onClick={() => router.push(`/organizations/${orgId}/business-profiles/${businessId}/documents`)}>
                       Manage Documents
                     </ModernButton>
-                    <ModernButton fullWidth variant="outline" onClick={() => router.push(`/business/${id}/history`)}>
+                    <ModernButton fullWidth variant="outline" onClick={() => router.push(`/organizations/${orgId}/business-profiles/${businessId}/history`)}>
                       View Audit History
                     </ModernButton>
                   </div>
@@ -272,8 +270,7 @@ export default function BusinessDashboard() {
 
             </div>
           </div>
-        </main>
-      </div>
-    </div>
+        </div>
+    </DashboardLayout>
   );
 }

@@ -4,8 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Sidebar from '@/components/Sidebar';
-import TopNavbar from '@/components/TopNavbar';
+import DashboardLayout from '@/components/DashboardLayout';
 import { ModernCard } from '@/components/ModernCard';
 import { ModernButton } from '@/components/ModernButton';
 import { useAuth } from '@/lib/auth-context';
@@ -80,11 +79,8 @@ export default function OrganizationSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-container flex">
-      <Sidebar />
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <TopNavbar />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-24">
+    <DashboardLayout title="Dashboard">
+        <div className="p-4 md:p-8">
           <div className="max-w-4xl mx-auto space-y-6">
             
             <div className="flex items-center justify-between">
@@ -169,8 +165,7 @@ export default function OrganizationSettingsPage() {
             </form>
 
           </div>
-        </main>
-      </div>
-    </div>
+        </div>
+      </DashboardLayout>
   );
 }

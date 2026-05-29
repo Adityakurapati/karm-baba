@@ -33,6 +33,7 @@ interface AuthContextType {
   canAccess: (roles: UserRole[]) => boolean;
   updateUserProfile: (data: Partial<User>) => Promise<boolean>;
   resetPassword: (email: string) => Promise<boolean>;
+  organizationLogin: (orgId: string, role: string, emailOrPhone: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -79,6 +80,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setIsLoading(false);
         })();
         return; // Skip Firebase listener if mock is active
+      }
+      
+      const persistedOrgMock = sessionStorage.getItem('mock_org_user');
+      if (persistedOrgMock) {
+        const mockOrgUser = JSON.parse(persistedOrgMock);
+        mockOrgUser.createdAt = new Date(mockOrgUser.createdAt);
+        mockOrgUser.updatedAt = new Date(mockOrgUser.updatedAt);
+        (async () => {
+          try {
+            await fetch('/api/auth/session', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ token: 'mock_token', expiresIn: 86400, role: mockOrgUser.role })
+            });
+          } catch (err) {}
+          
+          setUser(mockOrgUser);
+          setSession({
+            userId: mockOrgUser.id,
+            email: mockOrgUser.email,
+            role: mockOrgUser.role,
+            companyName: 'Organization',
+            token: 'mock_token',
+            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          });
+          setIsLoading(false);
+        })();
+        return;
       }
     }
 
@@ -283,6 +312,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Login error:', err);
       setIsLoading(false);
       return false;
+    }
+  };
+
+  const organizationLogin = async (orgId: string, role: string, emailOrPhone: string): Promise<boolean> => {
+    setIsLoading(true);
+    try {
+      const mockOrgUser: User = {
+        id: btoa(emailOrPhone).replace(/=/g, ''),
+        email: emailOrPhone.includes('@') ? emailOrPhone : '',
+        phone: emailOrPhone.includes('@') ? '' : emailOrPhone,
+        firstName: 'Org',
+        lastName: 'Member',
+        role: role as UserRole,
+        organizationId: orgId,
+        credibilityScore: 100,
+        verificationStatus: 'verified',
+        verificationBadges: [],
+        riskLevel: 'low',
+        isOnboarded: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      
+      try {
+        await fetch('/api/auth/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: 'mock_token', expiresIn: 86400, role })
+        });
+      } catch (err) {
+        console.error('Failed to sync mock session:', err);
+      }
+
+      setUser(mockOrgUser);
+      setSession({
+        userId: mockOrgUser.id,
+        email: mockOrgUser.email,
+        role: mockOrgUser.role,
+        companyName: 'Organization',
+        token: 'mock_token',
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      });
+
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('mock_org_user', JSON.stringify(mockOrgUser));
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Org Login error:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -535,6 +617,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     canAccess,
     updateUserProfile,
     resetPassword,
+    organizationLogin,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

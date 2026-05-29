@@ -1,4 +1,4 @@
-import { ref, set, get, update, push, remove, serverTimestamp } from 'firebase/database';
+import { ref, set, get, update, push, remove, serverTimestamp, query, orderByChild, equalTo } from 'firebase/database';
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { database, storage } from '../firebase';
 import { BusinessProfile, BusinessDocument, BusinessHistory } from '../types';
@@ -81,6 +81,26 @@ export const getBusinessById = async (businessId: string): Promise<BusinessProfi
     };
   }
   return null;
+};
+
+export const getBusinessesByOrganization = async (organizationId: string): Promise<BusinessProfile[]> => {
+  const businessesRef = ref(database, DB_BUSINESSES);
+  const orgQuery = query(businessesRef, orderByChild('organizationId'), equalTo(organizationId));
+  const snapshot = await get(orgQuery);
+  
+  const businesses: BusinessProfile[] = [];
+  if (snapshot.exists()) {
+    snapshot.forEach((childSnap) => {
+      const data = childSnap.val();
+      businesses.push({
+        ...data,
+        createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+        updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
+        verificationTimestamp: data.verificationTimestamp ? new Date(data.verificationTimestamp) : undefined
+      });
+    });
+  }
+  return businesses;
 };
 
 export const updateBusiness = async (

@@ -409,6 +409,8 @@ export interface Organization {
   storageLimit: number;
   apiLimit: number;
   createdBy: string;
+  phoneNumber?: string;
+  hashedPin?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -451,7 +453,7 @@ export interface OrganizationInvitation {
   organizationId: string;
   email: string;
   role: OrgRole;
-  invitationStatus: 'Pending' | 'Accepted' | 'Expired' | 'Rejected';
+  invitationStatus: 'Pending' | 'Accepted' | 'Expired' | 'Rejected' | 'Suspended';
   invitedBy: string;
   invitedAt: Date;
   expiresAt: Date;

@@ -11,6 +11,8 @@ export const createOrganizationSchema = z.object({
   timezone: z.string().min(2, 'Timezone is required'),
   subscriptionPlan: z.enum(['Starter', 'Professional', 'Enterprise']),
   billingCycle: z.enum(['monthly', 'yearly']),
+  phoneNumber: z.string().min(10, 'Valid phone number is required'),
+  pin: z.string().length(4, 'PIN must be exactly 4 digits').regex(/^\d+$/, 'PIN must contain only numbers'),
 });
 
 export const updateOrganizationSettingsSchema = z.object({

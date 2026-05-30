@@ -1,11 +1,23 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/DashboardLayout';
 import TopHeader from '@/components/TopHeader';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { useAuth } from '@/lib/auth-context';
 
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user && user.role === 'seller') {
+      router.push('/seller/dashboard');
+    }
+  }, [user, router]);
+
   return (
     <ProtectedRoute>
       <DashboardLayout title="KARM BABA Dashboard" searchPlaceholder="Search deals, leads, or documents...">

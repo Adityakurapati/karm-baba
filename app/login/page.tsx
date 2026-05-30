@@ -24,7 +24,11 @@ export default function LoginPage() {
       if (user?.role === 'admin') {
         router.push('/admin');
       } else if (user?.isOnboarded && user?.isAuthorized) {
-        router.push('/dashboard');
+        if (user?.role === 'seller') {
+          router.push('/seller/dashboard');
+        } else {
+          router.push('/dashboard');
+        }
       } else if (user?.isOnboarded && !user?.isAuthorized) {
         // If they are onboarded but not authorized, send them back to documents for verification
         router.push('/onboarding/documents');

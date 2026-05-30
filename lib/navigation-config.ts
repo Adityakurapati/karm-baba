@@ -80,6 +80,7 @@ export const navigationConfig: Partial<Record<UserRole, NavSection[]>> = {
     {
       title: 'Selling',
       items: [
+        { icon: 'dashboard', label: 'Dashboard', href: '/seller/dashboard', roles: ['seller'] },
         { icon: 'shopping_bag', label: 'My Products', href: '/seller/products', roles: ['seller'] },
         { icon: 'person_search', label: 'Sales Leads', href: '/seller/leads', roles: ['seller'] },
         { icon: 'handshake', label: 'Sales Deals', href: '/seller/deals', roles: ['seller'] },
@@ -115,6 +116,7 @@ export const navigationConfig: Partial<Record<UserRole, NavSection[]>> = {
     {
       title: 'Selling',
       items: [
+        { icon: 'dashboard', label: 'Dashboard', href: '/seller/dashboard', roles: ['individual'] },
         { icon: 'shopping_bag', label: 'My Products', href: '/seller/products', roles: ['individual'] },
         { icon: 'person_search', label: 'Sales Leads', href: '/seller/leads', roles: ['individual'] },
         { icon: 'handshake', label: 'Sales Deals', href: '/seller/deals', roles: ['individual'] },
@@ -138,6 +140,7 @@ export const navigationConfig: Partial<Record<UserRole, NavSection[]>> = {
     {
       title: 'Selling',
       items: [
+        { icon: 'dashboard', label: 'Dashboard', href: '/seller/dashboard', roles: ['business'] },
         { icon: 'shopping_bag', label: 'My Products', href: '/seller/products', roles: ['business'] },
         { icon: 'person_search', label: 'Sales Leads', href: '/seller/leads', roles: ['business'] },
         { icon: 'handshake', label: 'Sales Deals', href: '/seller/deals', roles: ['business'] },

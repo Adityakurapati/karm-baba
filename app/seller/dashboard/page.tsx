@@ -9,6 +9,7 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { database } from '@/lib/firebase';
 import { ref, onValue, query, orderByChild, equalTo } from 'firebase/database';
 import { ModernBadge } from '@/components/ModernBadge';
+import { PlatformLead } from '@/lib/types';
 
 export default function SellerDashboardPage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -64,7 +65,7 @@ export default function SellerDashboardPage() {
         const leadsArray = Object.keys(data).map(key => ({
           ...data[key],
           id: key
-        }));
+        })) as PlatformLead[];
 
         // Filter based on assignment logic (similar to app/seller/leads/page.tsx)
         const visibleLeads = leadsArray.filter(lead => {

@@ -1,35 +1,104 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { otpStore } from './otp-store';
 
-const FIREBASE_DATABASE_URL = "https://thirdeye-1e99c-default-rtdb.asia-southeast1.firebasedatabase.app";
-
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { phone } = await request.json();
+    const { phone } = await req.json();
+
+    console.log('\n========== SEND OTP ==========');
+    console.log('Phone:', phone);
+
     if (!phone) {
-      return NextResponse.json({ success: false, error: 'Phone number is required' }, { status: 400 });
+      console.log('Phone number missing');
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Phone number is required',
+        },
+        { status: 400 }
+      );
     }
 
-    // Generate a 6-digit OTP
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
 
-    // Store in Firebase RTDB
-    const phoneSafe = phone.replace(/[^0-9]/g, '');
-    const rtdbResponse = await fetch(`${FIREBASE_DATABASE_URL}/mobile_verification_codes/${phoneSafe}.json`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        code,
-        createdAt: new Date().toISOString(),
-      })
+    console.log('Generated OTP:', otp);
+
+    otpStore.set(phone, {
+      otp,
+      expiresAt: Date.now() + 10 * 60 * 1000,
     });
 
-    if (!rtdbResponse.ok) {
-      return NextResponse.json({ success: false, error: 'Failed to generate verification code' }, { status: 500 });
+    console.log('OTP saved in memory');
+
+    const cleanNumber = phone
+      .replace('+91', '')
+      .replace(/\D/g, '');
+
+    const url =
+      `https://www.fast2sms.com/dev/bulkV2` +
+      `?authorization=${process.env.FAST2SMS_API_KEY}` +
+      `&route=otp` +
+      `&variables_values=${otp}` +
+      `&flash=0` +
+      `&numbers=${cleanNumber}`;
+
+    console.log('Calling Fast2SMS...');
+    console.log(
+      'Number:',
+      cleanNumber
+    );
+
+    const response = await fetch(url, {
+      method: 'GET',
+    });
+
+    const data = await response.json();
+
+    console.log(
+      'Fast2SMS Response:',
+      JSON.stringify(data, null, 2)
+    );
+
+    if (
+      data.return === false ||
+      data.status_code !== 200
+    ) {
+      console.log('Fast2SMS failed');
+
+      return NextResponse.json({
+        success: false,
+        error:
+          data.message ||
+          'Failed to send OTP',
+      });
     }
 
-    return NextResponse.json({ success: true, message: 'Verification code sent', code });
-  } catch (error: any) {
-    console.error('Send mobile OTP error:', error);
-    return NextResponse.json({ success: false, error: 'Failed to send OTP' }, { status: 500 });
+    console.log('OTP sent successfully');
+    console.log('==============================\n');
+
+    return NextResponse.json({
+      success: true,
+
+      ...(process.env.NODE_ENV ===
+      'development'
+        ? { code: otp }
+        : {}),
+    });
+  } catch (error) {
+    console.error(
+      'SEND OTP ERROR:',
+      error
+    );
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Internal server error',
+      },
+      { status: 500 }
+    );
   }
 }

@@ -45,6 +45,7 @@ export default function PhoneInput({
   isVerified = false,
 }: PhoneInputProps) {
   const [verifying, setVerifying] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
   const [otpError, setOtpError] = useState('');
   const [otpLoading, setOtpLoading] = useState(false);
@@ -73,59 +74,147 @@ export default function PhoneInput({
     }, 1000);
   };
 
-  // MOCK: Auto-verify without OTP
   const handleSendOtp = async () => {
     if (value.length !== 10) {
       setOtpError('Please enter a valid 10-digit mobile number.');
       return;
     }
 
-    console.log('[MOCK] Skipping OTP - Auto Verifying:', fullPhone);
+    console.log('[OTP] Starting OTP flow');
+    console.log('[OTP] Phone:', fullPhone);
+
     setSendLoading(true);
     setOtpError('');
 
-    // Simulate API delay
-    setTimeout(() => {
-      console.log('[MOCK] Verification successful!');
-      onVerified(fullPhone);
+    try {
+      console.log('[OTP] Calling /api/send-mobile-otp');
+
+      const sendRes = await fetch('/api/send-mobile-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phone: fullPhone,
+        }),
+      });
+
+      console.log('[OTP] API Response Status:', sendRes.status);
+
+      const sendData = await sendRes.json();
+
+      console.log('[OTP] API Response:', sendData);
+
+      if (!sendData.success) {
+        console.error('[OTP] Failed:', sendData.error);
+
+        setOtpError(
+          sendData.error || 'Failed to send OTP. Please try again.'
+        );
+
+        return;
+      }
+
+      if (sendData.code) {
+        console.log(
+          `[DEV OTP] OTP for ${fullPhone}:`,
+          sendData.code
+        );
+      }
+
+      console.log('[OTP] OTP sent successfully');
+
+      setOtpSent(true);
+      setVerifying(true);
+
+      startCountdown();
+    } catch (error) {
+      console.error('[OTP] Unexpected error:', error);
+
+      setOtpError(
+        'Something went wrong. Please try again.'
+      );
+    } finally {
       setSendLoading(false);
-    }, 500);
+    }
   };
 
-  // MOCK: Simulate OTP verification (always succeeds with any 6-digit code)
   const handleVerifyOtp = async () => {
     if (otp.length !== 6) {
       setOtpError('Please enter the 6-digit code.');
       return;
     }
 
-    console.log('[MOCK] Verifying OTP:', otp);
-    console.log('[MOCK] Phone:', fullPhone);
+    console.log('[VERIFY] Starting verification');
+    console.log('[VERIFY] Phone:', fullPhone);
+    console.log('[VERIFY] OTP:', otp);
 
     setOtpLoading(true);
     setOtpError('');
 
-    // Simulate API delay
-    setTimeout(() => {
-      // MOCK: Always succeed for any 6-digit code
-      console.log('[MOCK] Verification successful!');
+    try {
+      console.log('[VERIFY] Calling /api/verify-mobile-otp');
 
-      setVerifying(false);
-      setOtp('');
+      const res = await fetch('/api/verify-mobile-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phone: fullPhone,
+          otp,
+        }),
+      });
 
-      // Call the onVerified callback with the verified phone number
-      onVerified(fullPhone);
+      console.log(
+        '[VERIFY] API Response Status:',
+        res.status
+      );
+
+      const data = await res.json();
+
+      console.log(
+        '[VERIFY] API Response:',
+        data
+      );
+
+      if (data.success) {
+        console.log(
+          '[VERIFY] Mobile number verified successfully'
+        );
+
+        setVerifying(false);
+        setOtpSent(false);
+        setOtp('');
+
+        onVerified(fullPhone);
+      } else {
+        console.error(
+          '[VERIFY] Verification failed:',
+          data.error
+        );
+
+        setOtpError(
+          data.error || 'Invalid OTP. Please try again.'
+        );
+      }
+    } catch (error) {
+      console.error(
+        '[VERIFY] Unexpected error:',
+        error
+      );
+
+      setOtpError(
+        'Verification failed. Please try again.'
+      );
+    } finally {
       setOtpLoading(false);
-    }, 1000);
-  };
-
-  const handleResendOtp = async () => {
-    if (resendCountdown > 0) return;
-    await handleSendOtp();
+    }
   };
 
   const handleClose = () => {
     setVerifying(false);
+    setOtpSent(false);
     setOtp('');
     setOtpError('');
   };
@@ -260,10 +349,6 @@ export default function PhoneInput({
               <p className="font-bold text-on-surface text-sm mt-1">
                 {selectedCountry.flag} {countryCode} {value}
               </p>
-              {/* Mock mode indicator */}
-              <p className="text-xs text-amber-600 mt-2 bg-amber-50 px-2 py-1 rounded">
-                🔧 Mock Mode: Any 6-digit code works
-              </p>
             </div>
 
             {/* OTP Input */}
@@ -290,10 +375,6 @@ export default function PhoneInput({
               {otpError && (
                 <p className="text-error text-xs mt-2 font-bold text-center">{otpError}</p>
               )}
-              {/* Mock hint */}
-              <p className="text-xs text-gray-400 text-center mt-2">
-                Mock Mode: Enter any 6-digit number (e.g., 123456)
-              </p>
             </div>
 
             {/* Verify Button */}
@@ -330,7 +411,7 @@ export default function PhoneInput({
               ) : (
                 <button
                   type="button"
-                  onClick={handleResendOtp}
+                  onClick={handleSendOtp}
                   disabled={sendLoading}
                   className="text-primary font-bold text-xs hover:underline disabled:opacity-50"
                 >

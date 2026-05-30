@@ -1,28 +1,100 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { otpStore } from '../send-mobile-otp/otp-store';
 
-const FIREBASE_DATABASE_URL = "https://thirdeye-1e99c-default-rtdb.asia-southeast1.firebasedatabase.app";
-
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { phone, otp } = await request.json();
-    if (!phone || !otp) {
-      return NextResponse.json({ success: false, error: 'Phone number and OTP are required' }, { status: 400 });
+    const { phone, otp } =
+      await req.json();
+
+    console.log(
+      '\n========== VERIFY OTP =========='
+    );
+
+    console.log('Phone:', phone);
+    console.log('Entered OTP:', otp);
+
+    const record =
+      otpStore.get(phone);
+
+    console.log(
+      'Stored Record:',
+      record
+    );
+
+    if (!record) {
+      console.log(
+        'No OTP found for phone'
+      );
+
+      return NextResponse.json({
+        success: false,
+        error:
+          'OTP not found. Please resend.',
+      });
     }
 
-    const phoneSafe = phone.replace(/[^0-9]/g, '');
-    const verifyResponse = await fetch(`${FIREBASE_DATABASE_URL}/mobile_verification_codes/${phoneSafe}.json`);
-    const verifyData = await verifyResponse.json();
+    const expired =
+      Date.now() >
+      record.expiresAt;
 
-    if (!verifyData || verifyData.code !== otp) {
-      return NextResponse.json({ success: false, error: 'Invalid or expired verification code' }, { status: 400 });
+    console.log(
+      'Expired:',
+      expired
+    );
+
+    if (expired) {
+      otpStore.delete(phone);
+
+      console.log('OTP expired');
+
+      return NextResponse.json({
+        success: false,
+        error:
+          'OTP expired. Please resend.',
+      });
     }
 
-    // Code is valid. Clean it up
-    await fetch(`${FIREBASE_DATABASE_URL}/mobile_verification_codes/${phoneSafe}.json`, { method: 'DELETE' });
+    const matched =
+      record.otp === otp;
 
-    return NextResponse.json({ success: true, message: 'Mobile number verified successfully' });
-  } catch (error: any) {
-    console.error('Verify mobile OTP error:', error);
-    return NextResponse.json({ success: false, error: 'Failed to verify OTP' }, { status: 500 });
+    console.log(
+      'OTP Match:',
+      matched
+    );
+
+    if (!matched) {
+      return NextResponse.json({
+        success: false,
+        error: 'Invalid OTP',
+      });
+    }
+
+    otpStore.delete(phone);
+
+    console.log(
+      'Mobile verified successfully'
+    );
+
+    console.log(
+      '================================\n'
+    );
+
+    return NextResponse.json({
+      success: true,
+      verified: true,
+    });
+  } catch (error) {
+    console.error(
+      'VERIFY OTP ERROR:',
+      error
+    );
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Verification failed',
+      },
+      { status: 500 }
+    );
   }
 }

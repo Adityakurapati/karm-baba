@@ -9,6 +9,7 @@ import { ref, query, orderByChild, equalTo, get } from 'firebase/database';
 import { database } from '@/lib/firebase';
 import toast from 'react-hot-toast';
 import { GSTIN_REGEX } from '@/lib/sandbox';
+import { uploadImageToR2 } from '@/lib/actions/upload-actions';
 
 const documentSlots = [
   {
@@ -36,6 +37,8 @@ export default function DocumentUploadPage() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState('');
+  const [gstDocument, setGstDocument] = useState<File | null>(null);
+  const [documentUrl, setDocumentUrl] = useState<string | null>(null);
 
   // PAN / Aadhar State (for Non-Business / Individual)
   const [pan, setPan] = useState('');
@@ -47,8 +50,9 @@ export default function DocumentUploadPage() {
   const [referenceId, setReferenceId] = useState<string | null>(null);
   const [noGst, setNoGst] = useState(false);
 
-  // Check if verified
-  const isGstVerified = user?.isGstVerified || user?.verificationBadges?.some(b => b.type === 'gst' || b.type === 'pan');
+  const hasGstBadge = user?.isGstVerified || user?.verificationBadges?.some(b => b.type === 'gst');
+  const hasPanBadge = user?.verificationBadges?.some(b => b.type === 'pan');
+  const isFullyVerified = (isIndividual || noGst) ? hasPanBadge : (hasGstBadge && hasPanBadge);
 
   // Pre-populate GST details from user's company profile if saved during step 2
   useEffect(() => {
@@ -68,6 +72,11 @@ export default function DocumentUploadPage() {
   const handleVerifyGST = async () => {
     if (!gstin || !selectedState || !companyName) {
       setVerificationError('Please enter GST Number, State, and Company/Trade Name.');
+      return;
+    }
+
+    if (!gstDocument) {
+      setVerificationError('Please upload your GST Registration Document.');
       return;
     }
 
@@ -100,6 +109,34 @@ export default function DocumentUploadPage() {
         }
       }
 
+      // 1. Upload Document to R2
+      let uploadedUrl = '';
+      try {
+        const formData = new FormData();
+        formData.append('file', gstDocument);
+        formData.append('key', `gst-documents/${gstin.toUpperCase()}-${Date.now()}-${gstDocument.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`);
+        
+        const uploadData = await uploadImageToR2(formData);
+        
+        if (uploadData.success && uploadData.url) {
+          uploadedUrl = uploadData.url;
+          setDocumentUrl(uploadedUrl);
+        } else {
+          console.warn('Document upload warning:', uploadData.error);
+          // If upload fails because keys are missing, we still want to proceed for sandbox testing, but we'll show an error.
+          if (!uploadData.success && uploadData.error?.includes('missing')) {
+             toast.error('Warning: R2 Keys missing. Proceeding without file upload for dummy testing.');
+          } else {
+             throw new Error(uploadData.error || 'Failed to upload document');
+          }
+        }
+      } catch (err: any) {
+        setVerificationError('Document Upload Failed: ' + err.message);
+        setIsVerifying(false);
+        return;
+      }
+
+      // 2. Verify GST via API
       const res = await fetch('/api/verify-gst', {
         method: 'POST',
         headers: {
@@ -141,10 +178,8 @@ export default function DocumentUploadPage() {
         const currentBadges = user?.verificationBadges || [];
         await updateUserProfile({
           verificationBadges: [...currentBadges, newBadge],
-          gstDetails: { ...d },
+          gstDetails: { ...d, documentUrl: uploadedUrl },
           isGstVerified: true,
-          verificationStatus: 'verified',
-          isAuthorized: true,
           onboardingStep: 4
         });
 
@@ -296,6 +331,43 @@ export default function DocumentUploadPage() {
     }
   };
 
+  const handleVerifyBusinessPanOtp = async () => {
+    if (!otpCode) {
+      setOtpError('Please enter OTP');
+      return;
+    }
+    
+    setIsVerifying(true);
+    // Dummy delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    const newBadge = {
+      id: `pan_${Date.now()}`,
+      type: 'pan' as const,
+      number: user?.gstDetails?.gstin?.substring(2, 12) || 'UNKNOWN',
+      issuedDate: new Date(),
+      verifiedBy: 'MOCK PAN VERIFICATION'
+    };
+
+    const currentBadges = user?.verificationBadges || [];
+    const success = await updateUserProfile({
+      verificationBadges: [...currentBadges, newBadge],
+      verificationStatus: 'verified',
+      isAuthorized: true,
+      onboardingStep: 4
+    });
+
+    if (success) {
+      toast.success('Business PAN Verified Successfully!');
+      setOtpCode('');
+      setOtpError(null);
+    } else {
+      toast.error('Failed to update profile.');
+    }
+    
+    setIsVerifying(false);
+  };
+
   return (
     <OnboardingLayout>
       <div className="max-w-6xl mx-auto p-8 md:p-12 pb-40">
@@ -333,15 +405,15 @@ export default function DocumentUploadPage() {
               <div className="relative flex items-center justify-center py-4">
                 <svg className="w-40 h-40 transform -rotate-90">
                   <circle className="text-surface-container-high" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" strokeWidth="12"></circle>
-                  <circle className="text-primary transition-all duration-1000" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" strokeDasharray="440" strokeDashoffset={440 - (440 * (isGstVerified ? 85 : 35)) / 100} strokeWidth="12"></circle>
+                  <circle className="text-primary transition-all duration-1000" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" strokeDasharray="440" strokeDashoffset={440 - (440 * (isFullyVerified ? 85 : (hasGstBadge ? 60 : 35))) / 100} strokeWidth="12"></circle>
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-4xl font-black font-headline">{isGstVerified ? 85 : 35}%</span>
+                  <span className="text-4xl font-black font-headline">{isFullyVerified ? 85 : (hasGstBadge ? 60 : 35)}%</span>
                   <span className="text-[10px] uppercase font-bold tracking-widest text-on-surface-variant">Current Rating</span>
                 </div>
               </div>
               <p className="text-xs text-on-surface-variant leading-relaxed text-center italic">
-                {isGstVerified 
+                {isFullyVerified 
                   ? "Identity verified! Proceed to complete remaining verification metrics."
                   : "Complete current step credentials to raise your rating to 85%."}
               </p>
@@ -352,7 +424,7 @@ export default function DocumentUploadPage() {
           <div className="col-span-12 lg:col-span-8">
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-outline-variant/20">
               
-              {!isIndividual && !isGstVerified && (
+              {!isIndividual && !isFullyVerified && !hasGstBadge && (
                 <div className="mb-6 flex justify-end">
                   <label className="flex items-center gap-2 cursor-pointer bg-slate-50 px-4 py-2 rounded-lg border border-outline-variant/20">
                     <input 
@@ -379,7 +451,7 @@ export default function DocumentUploadPage() {
                     </div>
                   </div>
 
-                  {isGstVerified ? (
+                  {hasPanBadge ? (
                     <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-8 flex flex-col items-center gap-4 text-center">
                       <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
                         <span className="material-symbols-outlined notranslate text-4xl" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
@@ -522,17 +594,64 @@ export default function DocumentUploadPage() {
                       <p className="text-on-surface-variant leading-relaxed">Official certificate issued by the tax authority. Your PAN will be derived automatically from this.</p>
                     </div>
 
-                    {isGstVerified ? (
-                      <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-8 flex flex-col items-center gap-4 text-center">
-                        <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
-                          <span className="material-symbols-outlined notranslate text-4xl" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                    {hasGstBadge ? (
+                      hasPanBadge ? (
+                        <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-8 flex flex-col items-center gap-6 text-center">
+                          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
+                            <span className="material-symbols-outlined notranslate text-4xl" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                          </div>
+                          <div>
+                            <span className="text-xs font-black text-emerald-700 uppercase tracking-widest block mb-1">Authenticated Entity</span>
+                            <h4 className="text-xl font-bold text-emerald-900">{user?.gstDetails?.legalName}</h4>
+                          </div>
+                          
+                          {/* Separated Badges */}
+                          <div className="flex flex-col sm:flex-row justify-center gap-4 w-full mt-2">
+                            <div className="bg-white border border-emerald-200 shadow-sm rounded-xl p-5 flex flex-col items-center gap-2 flex-1 min-w-[160px]">
+                              <span className="material-symbols-outlined notranslate text-emerald-500 text-3xl mb-1" translate="no">description</span>
+                              <span className="text-xs font-black text-emerald-800 uppercase tracking-widest">GST Verified</span>
+                              <span className="text-[11px] text-emerald-700 font-mono font-bold bg-emerald-50 px-3 py-1.5 rounded-md border border-emerald-100">{user?.gstDetails?.gstin}</span>
+                            </div>
+                            
+                            <div className="bg-white border border-emerald-200 shadow-sm rounded-xl p-5 flex flex-col items-center gap-2 flex-1 min-w-[160px]">
+                              <span className="material-symbols-outlined notranslate text-emerald-500 text-3xl mb-1" translate="no">credit_card</span>
+                              <span className="text-xs font-black text-emerald-800 uppercase tracking-widest">PAN Verified</span>
+                              <span className="text-[11px] text-emerald-700 font-mono font-bold bg-emerald-50 px-3 py-1.5 rounded-md border border-emerald-100">{user?.gstDetails?.gstin?.substring(2, 12) || 'Verified'}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <span className="text-xs font-black text-emerald-700 uppercase tracking-widest block mb-1">Authenticated Entity</span>
-                          <h4 className="text-xl font-bold text-emerald-900">{user?.gstDetails?.legalName}</h4>
-                          <p className="text-sm text-emerald-600 font-medium mt-1">GST Number: {user?.gstDetails?.gstin}</p>
+                      ) : (
+                        <div className="space-y-6 animate-in fade-in duration-500">
+                           <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex items-start gap-3">
+                             <span className="material-symbols-outlined notranslate text-emerald-600 text-sm" translate="no">check_circle</span>
+                             <p className="text-xs text-emerald-800 font-bold">GST Verified Successfully. Now verify PAN associated with GSTIN.</p>
+                           </div>
+                           <div className="space-y-4">
+                             <label className="block text-xs font-black text-on-surface-variant uppercase tracking-widest ml-1">PAN OTP Verification</label>
+                             <p className="text-xs text-on-surface-variant mb-4">An OTP has been sent to the mobile number linked with PAN <b>{user?.gstDetails?.gstin?.substring(2, 12)}</b>.</p>
+                             <div className="flex gap-2">
+                               <input
+                                 type="text"
+                                 placeholder="Enter dummy OTP"
+                                 value={otpCode}
+                                 onChange={(e) => setOtpCode(e.target.value)}
+                                 className="w-full bg-slate-50 border-2 border-outline-variant/30 rounded-2xl px-6 py-4 text-sm font-bold tracking-widest focus:border-primary focus:outline-none"
+                               />
+                               <button
+                                 onClick={handleVerifyBusinessPanOtp}
+                                 disabled={isVerifying || !otpCode}
+                                 className="px-8 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary transition-all flex items-center justify-center gap-2"
+                               >
+                                 {isVerifying && <span className="animate-spin material-symbols-outlined notranslate text-xs" translate="no">sync</span>}
+                                 Verify PAN
+                               </button>
+                             </div>
+                             {otpError && (
+                               <p className="text-xs text-red-600 font-bold">{otpError}</p>
+                             )}
+                           </div>
                         </div>
-                      </div>
+                      )
                     ) : (
                       <div className="space-y-6 animate-in fade-in duration-500">
                         <div className="space-y-4">
@@ -572,6 +691,24 @@ export default function DocumentUploadPage() {
                               <span className="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined notranslate text-on-surface-variant/30 pointer-events-none" translate="no">expand_more</span>
                             </div>
                           </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          <label className="block text-xs font-black text-on-surface-variant uppercase tracking-widest ml-1">Upload GST Certificate</label>
+                          <div className="relative">
+                            <input
+                              type="file"
+                              accept=".pdf,image/*"
+                              onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                  setGstDocument(e.target.files[0]);
+                                  setVerificationError(null);
+                                }
+                              }}
+                              className="w-full bg-slate-50 border-2 border-outline-variant/30 rounded-2xl px-6 py-4 text-sm font-bold tracking-widest focus:border-primary focus:outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
+                            />
+                          </div>
+                          <p className="text-[10px] text-on-surface-variant uppercase tracking-wider ml-1 font-bold">Max file size: 5MB. PDF, JPG, PNG allowed.</p>
                         </div>
 
                         {verificationError && (
@@ -633,7 +770,7 @@ export default function DocumentUploadPage() {
                 setIsSaving(false);
               }
             }}
-            disabled={isSaving || !isGstVerified || authLoading || !user}
+            disabled={isSaving || !isFullyVerified || authLoading || !user}
             className="px-10 py-4 rounded-full font-headline text-sm font-bold text-white shadow-lg shadow-primary/20 hover:scale-105 transition-transform disabled:opacity-50"
             style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}
           >
@@ -644,9 +781,9 @@ export default function DocumentUploadPage() {
         {/* Floating HUD */}
         <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-white/70 backdrop-blur-md px-8 py-4 rounded-full flex items-center gap-12 border border-white/20 shadow-2xl z-50">
           <div className="flex items-center gap-3">
-            <div className={`w-3 h-3 rounded-full animate-pulse ${isGstVerified ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
+            <div className={`w-3 h-3 rounded-full animate-pulse ${isFullyVerified ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
             <span className="text-xs font-bold font-headline text-on-surface">
-              {isGstVerified ? 'Verification Done' : 'Credentials Pending'}
+              {isFullyVerified ? 'Verification Done' : 'Credentials Pending'}
             </span>
           </div>
           <div className="h-4 w-[1px] bg-outline-variant/30"></div>

@@ -153,7 +153,7 @@ export default function TopHeader({
 
   const unreadCount = notifications.filter(n => !n.read).length;
   return (
-    <header className="bg-slate-50/80 backdrop-blur-md flex justify-between items-center h-14 md:h-16 px-4 md:px-8 border-b border-slate-200/20">
+    <header className="relative z-[200] bg-slate-50/80 backdrop-blur-md flex justify-between items-center h-14 md:h-16 px-4 md:px-8 border-b border-slate-200/20 overflow-visible">
       <div className="flex items-center gap-2 flex-1 md:flex-initial mr-4">
         {onMenuClick && (
           <button
@@ -219,7 +219,7 @@ export default function TopHeader({
           </button>
           
           {showNotifs && (
-            <div className="absolute right-0 mt-2 w-80 bg-white border border-outline-variant rounded-xl shadow-xl z-50 overflow-hidden animate-fade-in">
+            <div className="absolute right-0 mt-2 w-80 bg-white border border-outline-variant rounded-xl shadow-xl z-[9999] overflow-hidden animate-fade-in">
               <div className="p-4 border-b border-outline-variant flex justify-between items-center">
                 <span className="font-bold text-on-surface">Notifications</span>
                 <span 
@@ -277,7 +277,7 @@ export default function TopHeader({
           </button>
           
           {showProfileModal && user && (
-            <div className="absolute right-0 mt-2 w-64 bg-white border border-outline-variant rounded-xl shadow-xl z-50 overflow-hidden animate-fade-in p-4">
+            <div className="absolute right-0 mt-2 w-64 bg-white border border-outline-variant rounded-xl shadow-xl z-[9999] overflow-hidden animate-fade-in p-4">
               <div className="flex items-center gap-3 mb-4 border-b border-outline-variant pb-3">
                 <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-headline font-bold text-lg">
                   {`${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}

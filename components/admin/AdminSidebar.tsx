@@ -15,7 +15,6 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: "Users", href: "/admin/users", icon: "group" },
   { label: "Leads", href: "/admin/leads", icon: "person_search" },
-  { label: "Organizations", href: "/admin/organizations", icon: "corporate_fare" },
   { label: "Activity Logs", href: "/admin/activity-logs", icon: "history" },
 ];
 

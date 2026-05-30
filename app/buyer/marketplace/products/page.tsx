@@ -20,13 +20,26 @@ export default function BuyerProductMarketplace() {
 
   // Product Details Modal State
   const [selectedProductDetail, setSelectedProductDetail] = useState<any | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [selectedProductDetail]);
 
   useEffect(() => {
     const productsRef = ref(database, 'products');
     const unsubscribe = onValue(productsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const list = Object.values(data);
+        const list = Object.values(data).map((product: any) => ({
+          ...product,
+          // Firebase may return arrays as objects with numeric keys — normalize to a real array
+          images: product.images
+            ? Array.isArray(product.images)
+              ? product.images
+              : Object.values(product.images)
+            : [],
+        }));
         setProducts(list);
       } else {
         setProducts([]);
@@ -55,7 +68,7 @@ export default function BuyerProductMarketplace() {
 
   const handleConnect = async (product: any) => {
     if (!user) return;
-    
+
     try {
       // Create an inquiry deal to enable messaging
       const dealsRef = ref(database, 'deals');
@@ -111,7 +124,7 @@ export default function BuyerProductMarketplace() {
   const confirmPayment = async () => {
     if (!user || !selectedProduct) return;
     setIsProcessing(true);
-    
+
     try {
       // Create Order
       const orderRef = push(ref(database, 'orders'));
@@ -196,11 +209,26 @@ export default function BuyerProductMarketplace() {
                     className="bg-white rounded-2xl border border-outline-variant hover:border-primary hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 aspect-square flex flex-col justify-between overflow-hidden group"
                   >
                     {/* Image Banner */}
-                    <div className="h-[35%] bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
-                      <span className="text-4xl group-hover:scale-110 transition-transform duration-500">📦</span>
+                    <div className="h-[40%] bg-surface-container-low flex items-center justify-center relative overflow-hidden">
+                      {product.images && product.images.length > 0 ? (
+                        <img
+                          src={product.images[0]}
+                          alt={product.name}
+                          className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500"
+                          referrerPolicy="no-referrer"
+                          crossOrigin="anonymous"
+                        />
+                      ) : (
+                        <span className="text-4xl group-hover:scale-110 transition-transform duration-500">📦</span>
+                      )}
                       <div className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-bold text-primary shadow-sm">
                         {product.category}
                       </div>
+                      {product.images && product.images.length > 1 && (
+                        <div className="absolute bottom-1.5 right-2.5 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-[9px] font-bold text-white">
+                          1/{product.images.length}
+                        </div>
+                      )}
                     </div>
 
                     {/* Card Content */}
@@ -210,7 +238,7 @@ export default function BuyerProductMarketplace() {
                           {product.name}
                         </h3>
                         <p className="text-[10px] text-on-surface-variant mb-2">by {product.sellerName || 'Verified Seller'}</p>
-                        
+
                         <div className="flex justify-between items-baseline">
                           <span className="text-[9px] uppercase font-bold text-on-surface-variant tracking-wider">Price</span>
                           <span className="text-sm font-headline font-black text-primary">
@@ -238,31 +266,108 @@ export default function BuyerProductMarketplace() {
 
         {/* Beautiful Product Details Modal */}
         {selectedProductDetail && (
-          <div 
+          <div
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] flex items-center justify-center p-4 animate-fade-in"
             onClick={() => setSelectedProductDetail(null)}
           >
-            <div 
+            <div
               className="bg-white rounded-2xl max-w-2xl w-full border border-outline-variant shadow-2xl overflow-hidden transform scale-100 transition-all flex flex-col max-h-[90vh]"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Modal Header Banner */}
-              <div className="h-48 bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center relative overflow-hidden border-b border-outline-variant">
-                <span className="text-7xl">📦</span>
-                <div className="absolute top-4 right-4 flex items-center gap-2">
-                  <span className="text-xs font-bold px-2.5 py-1 bg-white border border-outline-variant/50 rounded-full text-primary shadow-sm">
-                    {selectedProductDetail.category}
-                  </span>
-                  <button
-                    onClick={() => setSelectedProductDetail(null)}
-                    className="bg-white/80 hover:bg-white text-on-surface-variant hover:text-on-surface p-1.5 rounded-full shadow-sm hover:shadow transition-all"
-                    aria-label="Close modal"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
+              {/* Modal Header Banner — Image Carousel */}
+              <div className="relative border-b border-outline-variant">
+                {/* Main Image Area */}
+                <div className="h-72 bg-neutral-100 flex items-center justify-center relative overflow-hidden">
+                  {selectedProductDetail.images && selectedProductDetail.images.length > 0 ? (
+                    <>
+                      <img
+                        key={activeImageIndex}
+                        src={selectedProductDetail.images[activeImageIndex]}
+                        alt={`${selectedProductDetail.name} image ${activeImageIndex + 1}`}
+                        className="max-w-full max-h-full object-contain p-4 animate-fade-in"
+                        style={{ imageRendering: 'auto' }}
+                        referrerPolicy="no-referrer"
+                        crossOrigin="anonymous"
+                      />
+                      {/* Carousel Controls */}
+                      {selectedProductDetail.images.length > 1 && (
+                        <>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setActiveImageIndex((prev) => (prev - 1 + selectedProductDetail.images.length) % selectedProductDetail.images.length); }}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full shadow-lg transition-all hover:scale-110"
+                            aria-label="Previous image"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setActiveImageIndex((prev) => (prev + 1) % selectedProductDetail.images.length); }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full shadow-lg transition-all hover:scale-110"
+                            aria-label="Next image"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                          </button>
+                          {/* Image counter badge */}
+                          <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full text-xs font-bold text-white">
+                            {activeImageIndex + 1} / {selectedProductDetail.images.length}
+                          </div>
+                          {/* Dot indicators */}
+                          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                            {selectedProductDetail.images.map((_: string, i: number) => (
+                              <button
+                                key={i}
+                                onClick={(e) => { e.stopPropagation(); setActiveImageIndex(i); }}
+                                className={`rounded-full transition-all duration-300 ${i === activeImageIndex ? 'bg-white w-6 h-2 shadow-md' : 'bg-white/50 hover:bg-white/70 w-2 h-2'
+                                  }`}
+                                aria-label={`Go to image ${i + 1}`}
+                              />
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <span className="text-7xl">📦</span>
+                  )}
+                  {/* Top-right badges */}
+                  <div className="absolute top-4 right-4 flex items-center gap-2">
+                    <span className="text-xs font-bold px-2.5 py-1 bg-white/90 backdrop-blur-sm border border-outline-variant/50 rounded-full text-primary shadow-sm">
+                      {selectedProductDetail.category}
+                    </span>
+                    <button
+                      onClick={() => setSelectedProductDetail(null)}
+                      className="bg-white/80 hover:bg-white text-on-surface-variant hover:text-on-surface p-1.5 rounded-full shadow-sm hover:shadow transition-all"
+                      aria-label="Close modal"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
+                {/* Thumbnail Strip */}
+                {selectedProductDetail.images && selectedProductDetail.images.length > 1 && (
+                  <div className="flex gap-2 p-3 bg-white overflow-x-auto">
+                    {selectedProductDetail.images.map((img: string, i: number) => (
+                      <button
+                        key={i}
+                        onClick={(e) => { e.stopPropagation(); setActiveImageIndex(i); }}
+                        className={`shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 transition-all duration-200 ${i === activeImageIndex
+                            ? 'border-primary shadow-md ring-2 ring-primary/20'
+                            : 'border-outline-variant/50 hover:border-primary/40 opacity-60 hover:opacity-100'
+                          }`}
+                        aria-label={`View image ${i + 1}`}
+                      >
+                        <img
+                          src={img}
+                          alt={`Thumbnail ${i + 1}`}
+                          className="w-full h-full object-cover"
+                          referrerPolicy="no-referrer"
+                          crossOrigin="anonymous"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Modal Content */}
@@ -300,14 +405,6 @@ export default function BuyerProductMarketplace() {
                   </div>
                 </div>
 
-                {/* Secure Trust Badges */}
-                <div className="flex gap-4 items-center p-3 bg-green-50/50 rounded-xl border border-green-200/50 text-green-800 text-xs">
-                  <span className="text-lg">🛡️</span>
-                  <div>
-                    <p className="font-bold">Verified Global Seller</p>
-                    <p className="text-[10px] text-green-700/80">Secured transaction support with safe trade assurance protections.</p>
-                  </div>
-                </div>
               </div>
 
               {/* Modal Footer */}
@@ -367,7 +464,7 @@ export default function BuyerProductMarketplace() {
                       <span className="font-bold text-primary">{selectedProduct?.currency} {selectedProduct?.price?.toLocaleString()}</span>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-4 mb-8">
                     <div className="p-4 border-2 border-primary bg-primary/5 rounded-xl flex items-center gap-4">
                       <div className="w-10 h-10 bg-primary text-white rounded-lg flex items-center justify-center">

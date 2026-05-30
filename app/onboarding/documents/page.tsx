@@ -115,9 +115,9 @@ export default function DocumentUploadPage() {
         const formData = new FormData();
         formData.append('file', gstDocument);
         formData.append('key', `gst-documents/${gstin.toUpperCase()}-${Date.now()}-${gstDocument.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`);
-        
+
         const uploadData = await uploadImageToR2(formData);
-        
+
         if (uploadData.success && uploadData.url) {
           uploadedUrl = uploadData.url;
           setDocumentUrl(uploadedUrl);
@@ -125,9 +125,9 @@ export default function DocumentUploadPage() {
           console.warn('Document upload warning:', uploadData.error);
           // If upload fails because keys are missing, we still want to proceed for sandbox testing, but we'll show an error.
           if (!uploadData.success && uploadData.error?.includes('missing')) {
-             toast.error('Warning: R2 Keys missing. Proceeding without file upload for dummy testing.');
+            toast.error('Warning: R2 Keys missing. Proceeding without file upload for dummy testing.');
           } else {
-             throw new Error(uploadData.error || 'Failed to upload document');
+            throw new Error(uploadData.error || 'Failed to upload document');
           }
         }
       } catch (err: any) {
@@ -214,7 +214,7 @@ export default function DocumentUploadPage() {
 
     setIsVerifying(true);
     setVerificationError(null);
-    
+
     try {
       const res = await fetch('/api/verify-pan-aadhaar', {
         method: 'POST',
@@ -222,7 +222,7 @@ export default function DocumentUploadPage() {
         body: JSON.stringify({ pan: pan.toUpperCase(), aadhaar: aadhar }),
       });
       const result = await res.json();
-      
+
       if (result.success && result.aadhaarSeedingStatus?.toLowerCase() === 'y') {
         setLinkageChecked(true);
         toast.success('PAN-Aadhar Linkage Verified successfully');
@@ -249,7 +249,7 @@ export default function DocumentUploadPage() {
         body: JSON.stringify({ aadhaar: aadhar }),
       });
       const result = await res.json();
-      
+
       if (result.success && result.reference_id) {
         setReferenceId(result.reference_id);
         setOtpSent(true);
@@ -279,7 +279,7 @@ export default function DocumentUploadPage() {
     }
 
     setIsVerifying(true);
-    
+
     try {
       const res = await fetch('/api/verify-aadhaar-otp', {
         method: 'POST',
@@ -287,7 +287,7 @@ export default function DocumentUploadPage() {
         body: JSON.stringify({ referenceId, otp: otpCode }),
       });
       const result = await res.json();
-      
+
       if (result.success && result.data?.status === 'VALID') {
         const newBadge = {
           id: `pan_${Date.now()}`,
@@ -336,11 +336,11 @@ export default function DocumentUploadPage() {
       setOtpError('Please enter OTP');
       return;
     }
-    
+
     setIsVerifying(true);
     // Dummy delay
     await new Promise(resolve => setTimeout(resolve, 800));
-    
+
     const newBadge = {
       id: `pan_${Date.now()}`,
       type: 'pan' as const,
@@ -364,7 +364,7 @@ export default function DocumentUploadPage() {
     } else {
       toast.error('Failed to update profile.');
     }
-    
+
     setIsVerifying(false);
   };
 
@@ -379,7 +379,7 @@ export default function DocumentUploadPage() {
               {isIndividual ? 'Identity Verification' : 'Document Upload'}
             </h1>
             <p className="text-on-surface-variant mt-4 text-lg max-w-2xl">
-              {isIndividual 
+              {isIndividual
                 ? 'Verify your individual identity credentials using the Aadhar-PAN linkage sandbox to unlock ecosystem participation.'
                 : 'Establish your commercial identity. Provide the necessary tax credentials to unlock high-limit trade transactions.'
               }
@@ -413,7 +413,7 @@ export default function DocumentUploadPage() {
                 </div>
               </div>
               <p className="text-xs text-on-surface-variant leading-relaxed text-center italic">
-                {isFullyVerified 
+                {isFullyVerified
                   ? "Identity verified! Proceed to complete remaining verification metrics."
                   : "Complete current step credentials to raise your rating to 85%."}
               </p>
@@ -423,13 +423,13 @@ export default function DocumentUploadPage() {
           {/* Verification Forms */}
           <div className="col-span-12 lg:col-span-8">
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-outline-variant/20">
-              
+
               {!isIndividual && !isFullyVerified && !hasGstBadge && (
                 <div className="mb-6 flex justify-end">
                   <label className="flex items-center gap-2 cursor-pointer bg-slate-50 px-4 py-2 rounded-lg border border-outline-variant/20">
-                    <input 
-                      type="checkbox" 
-                      checked={noGst} 
+                    <input
+                      type="checkbox"
+                      checked={noGst}
                       onChange={(e) => setNoGst(e.target.checked)}
                       className="w-4 h-4 accent-primary"
                     />
@@ -464,7 +464,7 @@ export default function DocumentUploadPage() {
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      
+
                       {/* Step A: Linkage Details Input */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="relative">
@@ -604,7 +604,7 @@ export default function DocumentUploadPage() {
                             <span className="text-xs font-black text-emerald-700 uppercase tracking-widest block mb-1">Authenticated Entity</span>
                             <h4 className="text-xl font-bold text-emerald-900">{user?.gstDetails?.legalName}</h4>
                           </div>
-                          
+
                           {/* Separated Badges */}
                           <div className="flex flex-col sm:flex-row justify-center gap-4 w-full mt-2">
                             <div className="bg-white border border-emerald-200 shadow-sm rounded-xl p-5 flex flex-col items-center gap-2 flex-1 min-w-[160px]">
@@ -612,7 +612,7 @@ export default function DocumentUploadPage() {
                               <span className="text-xs font-black text-emerald-800 uppercase tracking-widest">GST Verified</span>
                               <span className="text-[11px] text-emerald-700 font-mono font-bold bg-emerald-50 px-3 py-1.5 rounded-md border border-emerald-100">{user?.gstDetails?.gstin}</span>
                             </div>
-                            
+
                             <div className="bg-white border border-emerald-200 shadow-sm rounded-xl p-5 flex flex-col items-center gap-2 flex-1 min-w-[160px]">
                               <span className="material-symbols-outlined notranslate text-emerald-500 text-3xl mb-1" translate="no">credit_card</span>
                               <span className="text-xs font-black text-emerald-800 uppercase tracking-widest">PAN Verified</span>
@@ -622,34 +622,34 @@ export default function DocumentUploadPage() {
                         </div>
                       ) : (
                         <div className="space-y-6 animate-in fade-in duration-500">
-                           <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex items-start gap-3">
-                             <span className="material-symbols-outlined notranslate text-emerald-600 text-sm" translate="no">check_circle</span>
-                             <p className="text-xs text-emerald-800 font-bold">GST Verified Successfully. Now verify PAN associated with GSTIN.</p>
-                           </div>
-                           <div className="space-y-4">
-                             <label className="block text-xs font-black text-on-surface-variant uppercase tracking-widest ml-1">PAN OTP Verification</label>
-                             <p className="text-xs text-on-surface-variant mb-4">An OTP has been sent to the mobile number linked with PAN <b>{user?.gstDetails?.gstin?.substring(2, 12)}</b>.</p>
-                             <div className="flex gap-2">
-                               <input
-                                 type="text"
-                                 placeholder="Enter dummy OTP"
-                                 value={otpCode}
-                                 onChange={(e) => setOtpCode(e.target.value)}
-                                 className="w-full bg-slate-50 border-2 border-outline-variant/30 rounded-2xl px-6 py-4 text-sm font-bold tracking-widest focus:border-primary focus:outline-none"
-                               />
-                               <button
-                                 onClick={handleVerifyBusinessPanOtp}
-                                 disabled={isVerifying || !otpCode}
-                                 className="px-8 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary transition-all flex items-center justify-center gap-2"
-                               >
-                                 {isVerifying && <span className="animate-spin material-symbols-outlined notranslate text-xs" translate="no">sync</span>}
-                                 Verify PAN
-                               </button>
-                             </div>
-                             {otpError && (
-                               <p className="text-xs text-red-600 font-bold">{otpError}</p>
-                             )}
-                           </div>
+                          <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex items-start gap-3">
+                            <span className="material-symbols-outlined notranslate text-emerald-600 text-sm" translate="no">check_circle</span>
+                            <p className="text-xs text-emerald-800 font-bold">GST Verified Successfully. Now verify PAN associated with GSTIN.</p>
+                          </div>
+                          <div className="space-y-4">
+                            <label className="block text-xs font-black text-on-surface-variant uppercase tracking-widest ml-1">PAN OTP Verification</label>
+                            <p className="text-xs text-on-surface-variant mb-4">An OTP has been sent to the mobile number linked with PAN <b>{user?.gstDetails?.gstin?.substring(2, 12)}</b>.</p>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                placeholder="Enter OTP"
+                                value={otpCode}
+                                onChange={(e) => setOtpCode(e.target.value)}
+                                className="w-full bg-slate-50 border-2 border-outline-variant/30 rounded-2xl px-6 py-4 text-sm font-bold tracking-widest focus:border-primary focus:outline-none"
+                              />
+                              <button
+                                onClick={handleVerifyBusinessPanOtp}
+                                disabled={isVerifying || !otpCode}
+                                className="px-8 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary transition-all flex items-center justify-center gap-2"
+                              >
+                                {isVerifying && <span className="animate-spin material-symbols-outlined notranslate text-xs" translate="no">sync</span>}
+                                Verify PAN
+                              </button>
+                            </div>
+                            {otpError && (
+                              <p className="text-xs text-red-600 font-bold">{otpError}</p>
+                            )}
+                          </div>
                         </div>
                       )
                     ) : (
@@ -747,12 +747,6 @@ export default function DocumentUploadPage() {
 
         {/* Actions */}
         <footer className="mt-16 flex justify-end gap-4">
-          <button
-            onClick={() => router.push('/onboarding/discovery')}
-            className="px-8 py-4 rounded-full font-headline text-sm font-bold text-primary hover:bg-primary/5 transition-all"
-          >
-            Save Progress
-          </button>
           <button
             onClick={async () => {
               setIsSaving(true);

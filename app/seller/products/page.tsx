@@ -19,6 +19,11 @@ export default function SellerProductsPage() {
   const [categoryFilter, setCategoryFilter] = useState('All Categories');
   const [locationFilter, setLocationFilter] = useState('All Locations');
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [selectedProduct]);
 
   useEffect(() => {
     if (!user) return;
@@ -185,7 +190,11 @@ export default function SellerProductsPage() {
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5 mb-1 min-w-0">
-                      <span className="text-sm shrink-0">📦</span>
+                      {product.images && product.images.length > 0 ? (
+                        <img src={product.images[0]} alt={product.name} className="w-6 h-6 rounded object-cover shrink-0 border border-outline-variant" />
+                      ) : (
+                        <span className="text-sm shrink-0">📦</span>
+                      )}
                       <h3 className="text-xs font-bold text-on-surface line-clamp-1 leading-snug flex-1 truncate" title={product.name}>
                         {product.name}
                       </h3>
@@ -241,8 +250,50 @@ export default function SellerProductsPage() {
 
               {/* Modal Content */}
               <div className="p-6 overflow-y-auto space-y-6">
+                {/* Image Carousel */}
+                {selectedProduct.images && selectedProduct.images.length > 0 && (
+                  <div className="relative w-full h-64 rounded-xl overflow-hidden border border-outline-variant bg-gray-100">
+                    <img
+                      src={selectedProduct.images[activeImageIndex]}
+                      alt={`${selectedProduct.name} image ${activeImageIndex + 1}`}
+                      className="w-full h-full object-contain"
+                    />
+                    {selectedProduct.images.length > 1 && (
+                      <>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setActiveImageIndex((prev) => (prev - 1 + selectedProduct.images.length) % selectedProduct.images.length); }}
+                          className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full shadow transition-all"
+                          aria-label="Previous image"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setActiveImageIndex((prev) => (prev + 1) % selectedProduct.images.length); }}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full shadow transition-all"
+                          aria-label="Next image"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                        </button>
+                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                          {selectedProduct.images.map((_: string, i: number) => (
+                            <button
+                              key={i}
+                              onClick={(e) => { e.stopPropagation(); setActiveImageIndex(i); }}
+                              className={`w-1.5 h-1.5 rounded-full transition-all ${
+                                i === activeImageIndex ? 'bg-white w-3' : 'bg-white/50'
+                              }`}
+                              aria-label={`Go to image ${i + 1}`}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl bg-surface-container-low p-2 rounded-xl border border-outline-variant">📦</span>
+                  {(!selectedProduct.images || selectedProduct.images.length === 0) && (
+                    <span className="text-3xl bg-surface-container-low p-2 rounded-xl border border-outline-variant">📦</span>
+                  )}
                   <div>
                     <h2 className="text-2xl font-headline font-black text-on-surface leading-snug">
                       {selectedProduct.name}

@@ -1,7 +1,6 @@
 'use client';
 
-<<<<<<< HEAD
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import TopNavbar from '@/components/TopNavbar';
 import Sidebar from '@/components/Sidebar';
@@ -9,31 +8,21 @@ import { ModernCard } from '@/components/ModernCard';
 import { ModernButton } from '@/components/ModernButton';
 import { ModernBadge } from '@/components/ModernBadge';
 import { useAuth } from '@/lib/auth-context';
-import { UserIcon, EnvelopeIcon, PhoneIcon, BriefcaseIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline';
-
-export default function ProfilePage() {
-  const { user } = useAuth();
-  const router = useRouter();
-=======
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/lib/auth-context';
-import DashboardLayout from '@/components/DashboardLayout';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { STATE_NAMES } from '@/lib/gst-codes';
+import { EnvelopeIcon, PhoneIcon, BriefcaseIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
+import { STATE_NAMES } from '@/lib/gst-codes';
 
 export default function ProfilePage() {
   const { user, updateUserProfile } = useAuth();
+  const router = useRouter();
 
-  const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [activeSection, setActiveSection] = useState<'personal' | 'organization'>('personal');
-
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     phone: '',
-    // Organization fields
     companyName: '',
     gstin: '',
     registrationNumber: '',
@@ -48,30 +37,6 @@ export default function ProfilePage() {
     turnoverRange: '',
     website: '',
   });
-
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        phone: user.phone || '',
-        companyName: user.company?.name || '',
-        gstin: (user.company as any)?.gstin || user.gstDetails?.gstin || '',
-        registrationNumber: user.company?.registrationNumber || '',
-        entityType: (user.company as any)?.entityType || '',
-        addressLine1: (user.company as any)?.addressLine1 || '',
-        addressLine2: (user.company as any)?.addressLine2 || '',
-        city: (user.company as any)?.city || '',
-        state: (user.company as any)?.state || '',
-        pinCode: (user.company as any)?.pinCode || '',
-        employeesRange: (user.company as any)?.employeesRange || '',
-        yearEstablished: user.company?.yearEstablished ? String(user.company.yearEstablished) : '',
-        turnoverRange: (user.company as any)?.turnoverRange || '',
-        website: (user.company as any)?.website || user.company?.website || '',
-      });
-    }
-  }, [user]);
->>>>>>> cloudflare-upload
 
   if (!user) {
     return (
@@ -178,14 +143,13 @@ export default function ProfilePage() {
     'w-full bg-white border border-outline-variant rounded-lg px-3 py-2 text-sm font-semibold text-on-surface focus:border-primary focus:outline-none transition-colors';
 
   return (
-<<<<<<< HEAD
     <div className="min-h-screen bg-surface-container flex">
       <Sidebar />
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
         <TopNavbar />
         <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-24">
           <div className="max-w-4xl mx-auto space-y-6">
-            
+
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-display font-bold text-on-surface">My Profile</h1>
@@ -206,7 +170,7 @@ export default function ProfilePage() {
                     <span className="text-4xl font-bold text-primary">{user.firstName?.[0]}{user.lastName?.[0]}</span>
                   )}
                 </div>
-                
+
                 <div className="mt-20 flex justify-between items-start">
                   <div>
                     <h2 className="text-2xl font-bold text-on-surface">{user.firstName} {user.lastName}</h2>
@@ -253,132 +217,16 @@ export default function ProfilePage() {
 
               </div>
             </ModernCard>
-=======
-    <ProtectedRoute>
-      <DashboardLayout title="My Profile" searchPlaceholder="Search profile data...">
-        <main className="flex-1 overflow-auto p-4 md:p-8 max-w-5xl mx-auto w-full">
-
-          {/* Profile Header Card */}
-          <div className="bg-white rounded-2xl border border-outline-variant p-8 shadow-sm mb-6">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-              {/* Avatar */}
-              <div
-                className="w-24 h-24 rounded-2xl text-white flex items-center justify-center font-headline font-black text-4xl shrink-0 shadow-lg"
-                style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}
-              >
-                {`${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'}
-              </div>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <h1 className="text-2xl md:text-3xl font-extrabold font-headline text-on-surface mb-1 truncate">
-                  {user.firstName} {user.lastName}
-                </h1>
-                <p className="text-on-surface-variant font-medium text-sm mb-3">{user.email}</p>
-
-                {/* Badges Row */}
-                <div className="flex gap-2 flex-wrap">
-                  {/* Role Badge */}
-                  <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                    {user.role}
-                  </span>
-
-                  {/* GST Verified Badge */}
-                  {hasGstBadge && (
-                    <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-emerald-200">
-                      <span className="material-symbols-outlined notranslate text-[14px]" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>
-                        description
-                      </span>
-                      GST Verified
-                    </span>
-                  )}
-
-                  {/* PAN Verified Badge */}
-                  {hasPanBadge && (
-                    <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-blue-200">
-                      <span className="material-symbols-outlined notranslate text-[14px]" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>
-                        credit_card
-                      </span>
-                      PAN Verified
-                    </span>
-                  )}
-
-                  {/* Individual Identity Verified Badge */}
-                  {isIndividual && hasPanBadge && (
-                    <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-green-200">
-                      <span className="material-symbols-outlined notranslate text-[14px]" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>
-                        fingerprint
-                      </span>
-                      Identity Verified
-                    </span>
-                  )}
-
-                  {/* Karm Baba Certified — only shown when admin has set this flag */}
-                  {user.isKarmBabaCertified && (
-                    <span className="bg-orange-50 text-primary px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-orange-200 shadow-sm shadow-primary/10">
-                      <span className="material-symbols-outlined notranslate text-[14px]" translate="no" style={{ fontVariationSettings: "'FILL' 1" }}>
-                        workspace_premium
-                      </span>
-                      Karm Baba Certified
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Edit / Save Actions */}
-              <div className="shrink-0">
-                {isEditing ? (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleCancel}
-                      className="px-5 py-2 bg-surface-container hover:bg-surface-container-high text-on-surface font-bold rounded-lg transition-colors text-sm"
-                      disabled={saving}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleSave}
-                      className="px-5 py-2 text-white font-bold rounded-lg transition-all shadow-lg shadow-primary/20 flex items-center gap-2 text-sm"
-                      style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}
-                      disabled={saving}
-                    >
-                      {saving ? (
-                        <>
-                          <span className="animate-spin material-symbols-outlined notranslate text-sm" translate="no">sync</span>
-                          Saving...
-                        </>
-                      ) : (
-                        <>
-                          <span className="material-symbols-outlined notranslate text-sm" translate="no">save</span>
-                          Save Changes
-                        </>
-                      )}
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="px-5 py-2 text-white font-bold rounded-lg transition-all shadow-lg shadow-primary/20 flex items-center gap-2 text-sm hover:scale-[1.02]"
-                    style={{ background: 'linear-gradient(135deg, #e55a24, #ff6b35)' }}
-                  >
-                    <span className="material-symbols-outlined notranslate text-sm" translate="no">edit</span>
-                    Edit Profile
-                  </button>
-                )}
-              </div>
-            </div>
->>>>>>> cloudflare-upload
           </div>
 
           {/* Section Tabs */}
           <div className="flex bg-white rounded-xl border border-outline-variant p-1 mb-6 gap-1">
             <button
               onClick={() => setActiveSection('personal')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${
-                activeSection === 'personal'
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${activeSection === 'personal'
                   ? 'bg-primary text-white shadow-sm'
                   : 'text-on-surface-variant hover:bg-surface-container'
-              }`}
+                }`}
             >
               <span className="material-symbols-outlined notranslate text-base" translate="no">manage_accounts</span>
               Personal Details
@@ -386,11 +234,10 @@ export default function ProfilePage() {
             {!isIndividual && (
               <button
                 onClick={() => setActiveSection('organization')}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${
-                  activeSection === 'organization'
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${activeSection === 'organization'
                     ? 'bg-primary text-white shadow-sm'
                     : 'text-on-surface-variant hover:bg-surface-container'
-                }`}
+                  }`}
               >
                 <span className="material-symbols-outlined notranslate text-base" translate="no">domain</span>
                 Organization Details

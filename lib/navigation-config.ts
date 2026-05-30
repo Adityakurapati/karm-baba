@@ -64,42 +64,22 @@ export const navigationConfig: Partial<Record<UserRole, NavSection[]>> = {
   ],
   buyer: [
     {
-<<<<<<< HEAD
       title: 'Buyer Portal',
       items: [
         { icon: 'dashboard', label: 'Dashboard', href: '/dashboard', roles: ['buyer'] },
         { icon: 'assignment', label: 'Requirements', href: '/buyer/requirements', roles: ['buyer'] },
         { icon: 'person_search', label: 'Find Suppliers', href: '/buyer/matches', roles: ['buyer'] },
         { icon: 'handshake', label: 'My Deals', href: '/buyer/deals', roles: ['buyer'] },
-=======
-      items: [
-        { icon: 'dashboard', label: 'Dashboard', href: '/dashboard', roles: ['buyer'] },
-        { icon: 'handshake', label: 'Deals', href: '/buyer/deals', roles: ['buyer'] },
-        { icon: 'person_search', label: 'Leads', href: '/buyer/leads', roles: ['buyer'] },
-        { icon: 'storefront', label: 'Product Marketplace', href: '/buyer/marketplace/products', roles: ['buyer'] },
-        { icon: 'shopping_cart', label: 'Purchases', href: '/buyer/purchases', roles: ['buyer'] },
-        { icon: 'assignment', label: 'Requirements', href: '/buyer/requirements', roles: ['buyer'] },
-        { icon: 'person_search', label: 'Find Suppliers', href: '/buyer/matches', roles: ['buyer'] },
->>>>>>> cloudflare-upload
       ],
     }
   ],
   seller: [
     {
-<<<<<<< HEAD
       title: 'Vendor Portal',
       items: [
         { icon: 'dashboard', label: 'Dashboard', href: '/dashboard', roles: ['seller'] },
         { icon: 'shopping_bag', label: 'My Products', href: '/seller/products', roles: ['seller'] },
         { icon: 'handshake', label: 'My Deals', href: '/seller/deals', roles: ['seller'] },
-=======
-      items: [
-        { icon: 'dashboard', label: 'Dashboard', href: '/dashboard', roles: ['seller'] },
-        { icon: 'person_search', label: 'Leads', href: '/seller/leads', roles: ['seller'] },
-        { icon: 'handshake', label: 'Deals', href: '/seller/deals', roles: ['seller'] },
-        { icon: 'storefront', label: 'Marketplace', href: '/seller/marketplace', roles: ['seller'] },
-        { icon: 'shopping_bag', label: 'Products', href: '/seller/products', roles: ['seller'] },
->>>>>>> cloudflare-upload
       ],
     }
   ],

@@ -58,7 +58,7 @@ export default function DocumentUploadPage() {
   useEffect(() => {
     if (user) {
       if (user.company?.name) {
-        setCompanyName(prev => prev || user.company.name);
+        setCompanyName(prev => prev || user.company?.name || '');
       }
       if ((user.company as any)?.gstin) {
         setGstin(prev => prev || (user.company as any).gstin);

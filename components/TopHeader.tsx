@@ -121,13 +121,13 @@ export default function TopHeader({
         const list = Object.values(data);
         // Sort by createdAt desc
         list.sort((a: any, b: any) => (b.createdAt || 0) - (a.createdAt || 0));
-        
+
         // Separate messages from other notifications
         const messageNotifs = list.filter((n: any) => n.type === 'message_received');
         const otherNotifs = list.filter((n: any) => n.type !== 'message_received');
-        
+
         setNotifications(otherNotifs);
-        
+
         const unreadMsgs = messageNotifs.filter((n: any) => !n.read).length;
         setUnreadMessagesCount(unreadMsgs);
 
@@ -151,7 +151,7 @@ export default function TopHeader({
 
   const markAllRead = async () => {
     if (!user || notifications.length === 0) return;
-    
+
     try {
       const updates: any = {};
       notifications.forEach(notif => {
@@ -159,7 +159,7 @@ export default function TopHeader({
           updates[`notifications/${notif.id}/read`] = true;
         }
       });
-      
+
       if (Object.keys(updates).length > 0) {
         await update(ref(database), updates);
       }
@@ -170,11 +170,7 @@ export default function TopHeader({
 
   const unreadCount = notifications.filter(n => !n.read).length;
   return (
-<<<<<<< HEAD
     <header className="relative z-50 bg-slate-50/80 backdrop-blur-md flex justify-between items-center h-14 md:h-16 px-4 md:px-8 border-b border-slate-200/20">
-=======
-    <header className="relative z-[200] bg-slate-50/80 backdrop-blur-md flex justify-between items-center h-14 md:h-16 px-4 md:px-8 border-b border-slate-200/20 overflow-visible">
->>>>>>> cloudflare-upload
       <div className="flex items-center gap-2 flex-1 md:flex-initial mr-4">
         {onMenuClick && (
           <button
@@ -186,15 +182,15 @@ export default function TopHeader({
           </button>
         )}
         <div className="relative w-full md:w-96">
-        <span className="material-symbols-outlined notranslate absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" translate="no">
-          search
-        </span>
-        <input
-          className="w-full bg-surface-container-lowest border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/30 transition-all outline-none text-on-surface"
-          placeholder={searchPlaceholder}
-          type="text"
-        />
-      </div>
+          <span className="material-symbols-outlined notranslate absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" translate="no">
+            search
+          </span>
+          <input
+            className="w-full bg-surface-container-lowest border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/30 transition-all outline-none text-on-surface"
+            placeholder={searchPlaceholder}
+            type="text"
+          />
+        </div>
       </div>
       <div ref={containerRef} className="flex items-center gap-4 md:gap-6 ml-4 flex-shrink-0">
         {/* Mute/Unmute Toggle */}
@@ -210,7 +206,7 @@ export default function TopHeader({
         </button>
 
         {/* Messages Icon Button */}
-        <Link 
+        <Link
           href="/messages"
           className="text-slate-500 hover:text-slate-900 transition-colors relative p-1.5 rounded-full hover:bg-slate-200/50 flex items-center justify-center"
         >
@@ -224,7 +220,7 @@ export default function TopHeader({
 
         {/* Notifications Icon Button */}
         <div className="relative">
-          <button 
+          <button
             onClick={() => {
               setShowNotifs(!showNotifs);
               setShowProfileModal(false);
@@ -238,12 +234,12 @@ export default function TopHeader({
               </span>
             )}
           </button>
-          
+
           {showNotifs && (
             <div className="absolute right-0 mt-2 w-80 bg-white border border-outline-variant rounded-xl shadow-xl z-[9999] overflow-hidden animate-fade-in">
               <div className="p-4 border-b border-outline-variant flex justify-between items-center">
                 <span className="font-bold text-on-surface">Notifications</span>
-                <span 
+                <span
                   onClick={markAllRead}
                   className="text-xs text-primary font-bold cursor-pointer hover:underline"
                 >
@@ -266,7 +262,7 @@ export default function TopHeader({
                         </p>
                       </div>
                     );
-                    
+
                     return notif.link ? (
                       <Link key={notif.id} href={notif.link} onClick={() => setShowNotifs(false)}>
                         {content}
@@ -282,12 +278,12 @@ export default function TopHeader({
         </div>
 
         <div className="relative">
-          <button 
+          <button
             onClick={() => {
               setShowProfileModal(!showProfileModal);
               setShowNotifs(false);
             }}
-            className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary text-white flex items-center justify-center font-headline font-bold text-sm select-none shadow-sm hover:scale-105 transition-transform overflow-hidden" 
+            className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary text-white flex items-center justify-center font-headline font-bold text-sm select-none shadow-sm hover:scale-105 transition-transform overflow-hidden"
             title={user ? (pathname.startsWith('/organizations') && orgDetails ? orgDetails.name : `${user.firstName} ${user.lastName}`) : 'Profile'}
           >
             {user ? (
@@ -304,7 +300,7 @@ export default function TopHeader({
               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
             )}
           </button>
-          
+
           {showProfileModal && user && (
             <div className="absolute right-0 mt-2 w-64 bg-white border border-outline-variant rounded-xl shadow-xl z-[9999] overflow-hidden animate-fade-in p-4">
               <div className="flex items-center gap-3 mb-4 border-b border-outline-variant pb-3">
@@ -348,23 +344,23 @@ export default function TopHeader({
                 )}
               </div>
               <div className="flex flex-col gap-2">
-                <Link 
-                  href={pathname.startsWith('/organizations') ? `/organizations/${user.organizationId}/settings` : "/profile"} 
+                <Link
+                  href={pathname.startsWith('/organizations') ? `/organizations/${user.organizationId}/settings` : "/profile"}
                   onClick={() => setShowProfileModal(false)}
                   className="w-full block text-center py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-sm font-bold transition-colors"
                 >
                   {pathname.startsWith('/organizations') ? "Org Settings" : "View Profile"}
                 </Link>
                 {!pathname.startsWith('/organizations') && (
-                  <Link 
-                    href="/settings" 
+                  <Link
+                    href="/settings"
                     onClick={() => setShowProfileModal(false)}
                     className="w-full block text-center py-2 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-lg text-sm font-bold transition-colors"
                   >
                     Settings
                   </Link>
                 )}
-                <button 
+                <button
                   onClick={async () => {
                     setShowProfileModal(false);
                     const isOrgContext = pathname.startsWith('/organizations');

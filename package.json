@@ -9,8 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.4.0",
+=======
+    "@aws-sdk/client-s3": "^3.1056.0",
+    "@aws-sdk/s3-request-presigner": "^3.1056.0",
+>>>>>>> cloudflare-upload
     "bcrypt": "^6.0.0",
     "firebase": "^12.12.1",
     "firebase-admin": "^13.10.0",
@@ -22,7 +27,11 @@
     "react-hook-form": "^7.76.1",
     "react-hot-toast": "^2.6.0",
     "react-i18next": "^17.0.8",
+<<<<<<< HEAD
     "zod": "^4.4.3"
+=======
+    "server-only": "^0.0.1"
+>>>>>>> cloudflare-upload
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage";
 const firebaseConfig = {
@@ -19,4 +19,11 @@ const auth = getAuth(app);
 const database = getDatabase(app);
 const storage = getStorage(app);
 
+<<<<<<< HEAD
 export { app, auth, database, storage, firebaseConfig };
+=======
+// Enable phone number verification for Firebase Auth
+auth.settings.appVerificationDisabledForTesting = false; // Set to true only for testing with test phone numbers
+
+export { app, auth, database, firebaseConfig, RecaptchaVerifier, signInWithPhoneNumber };
+>>>>>>> cloudflare-upload

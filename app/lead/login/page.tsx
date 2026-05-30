@@ -8,10 +8,13 @@ import { database } from '@/lib/firebase';
 import { ref, query, orderByChild, equalTo, get } from 'firebase/database';
 import { PlatformLead } from '@/lib/types';
 import toast from 'react-hot-toast';
+import PhoneInput from '@/components/PhoneInput';
 
 export default function LeadLoginPage() {
   const router = useRouter();
   const [phone, setPhone] = useState('');
+  const [countryCode, setCountryCode] = useState('+91');
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const [code, setCode] = useState('');
   const [showCode, setShowCode] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -21,18 +24,24 @@ export default function LeadLoginPage() {
     e.preventDefault();
     setError('');
 
-    if (!phone || !code) {
-      setError('Please enter both phone number and login code');
+    if (!phone || phone.length !== 10) {
+      setError('Please enter a valid 10-digit phone number');
       return;
     }
 
-    if (phone.length !== 10) {
-      setError('Phone number must be exactly 10 digits');
+    if (!isPhoneVerified) {
+      setError('Please verify your mobile number with OTP before logging in');
+      return;
+    }
+
+    if (!code) {
+      setError('Please enter your login code');
       return;
     }
 
     setLoading(true);
     try {
+      // Query by 10-digit number only (stored without country code in leads)
       const leadsRef = ref(database, 'leads');
       const q = query(leadsRef, orderByChild('phone'), equalTo(phone));
       const snapshot = await get(q);
@@ -43,7 +52,6 @@ export default function LeadLoginPage() {
           const leadData = childSnapshot.val() as PlatformLead;
           if (leadData.code === code) {
             found = true;
-            // Set session
             const leadSession = {
               id: childSnapshot.key,
               name: leadData.name,
@@ -113,62 +121,69 @@ export default function LeadLoginPage() {
               </div>
             )}
 
-            {/* Phone Number */}
+            {/* Phone Number with OTP */}
             <div>
-              <label className="block text-xs font-headline font-bold text-on-surface-variant uppercase tracking-wider mb-2">
-                Phone Number
-              </label>
-              <div className="relative">
-                <span className="material-symbols-outlined notranslate absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50" translate="no">phone_iphone</span>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => {
-                    const numericVal = e.target.value.replace(/\D/g, '').slice(0, 10);
-                    setPhone(numericVal);
-                  }}
-                  placeholder="10-digit number"
-                  className="w-full pl-12 pr-4 py-3.5 border border-outline-variant/30 rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-surface transition-all text-sm font-medium"
-                />
-              </div>
+              <PhoneInput
+                value={phone}
+                countryCode={countryCode}
+                onValueChange={(val) => {
+                  setPhone(val);
+                  setIsPhoneVerified(false);
+                  setError('');
+                }}
+                onCountryCodeChange={(code) => {
+                  setCountryCode(code);
+                  setIsPhoneVerified(false);
+                }}
+                onVerified={() => setIsPhoneVerified(true)}
+                isVerified={isPhoneVerified}
+                label="Phone Number"
+              />
             </div>
 
-            {/* Code */}
-            <div>
-              <label className="block text-xs font-headline font-bold text-on-surface-variant uppercase tracking-wider mb-2">
-                Login Code
-              </label>
-              <div className="relative">
-                <span className="material-symbols-outlined notranslate absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50" translate="no">password</span>
-                <input
-                  type={showCode ? "text" : "password"}
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="Enter your code"
-                  className="w-full pl-12 pr-12 py-3.5 border border-outline-variant/30 rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-surface transition-all text-sm font-medium"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowCode(!showCode)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/60 hover:text-primary transition-colors focus:outline-none flex items-center justify-center"
-                >
-                  <span className="material-symbols-outlined notranslate text-xl" translate="no">
-                    {showCode ? 'visibility_off' : 'visibility'}
-                  </span>
-                </button>
+            {/* Login Code — only shown after phone verified */}
+            {isPhoneVerified && (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                <label className="block text-xs font-headline font-bold text-on-surface-variant uppercase tracking-wider mb-2">
+                  Login Code
+                </label>
+                <div className="relative">
+                  <span className="material-symbols-outlined notranslate absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50" translate="no">password</span>
+                  <input
+                    type={showCode ? "text" : "password"}
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    placeholder="Enter your login code"
+                    className="w-full pl-12 pr-12 py-3.5 border border-outline-variant/30 rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-surface transition-all text-sm font-medium"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCode(!showCode)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/60 hover:text-primary transition-colors focus:outline-none flex items-center justify-center"
+                  >
+                    <span className="material-symbols-outlined notranslate text-xl" translate="no">
+                      {showCode ? 'visibility_off' : 'visibility'}
+                    </span>
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !isPhoneVerified}
               className="w-full py-4 bg-primary text-white font-headline font-bold rounded-xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/20 hover:shadow-primary/30 active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   Authenticating...
+                </>
+              ) : !isPhoneVerified ? (
+                <>
+                  <span className="material-symbols-outlined notranslate text-lg" translate="no">phone_iphone</span>
+                  Verify Phone to Continue
                 </>
               ) : (
                 <>

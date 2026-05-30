@@ -64,22 +64,26 @@ export const navigationConfig: Partial<Record<UserRole, NavSection[]>> = {
   ],
   buyer: [
     {
-      title: 'Buyer Portal',
+      title: 'Buying',
       items: [
         { icon: 'dashboard', label: 'Dashboard', href: '/dashboard', roles: ['buyer'] },
         { icon: 'assignment', label: 'Requirements', href: '/buyer/requirements', roles: ['buyer'] },
         { icon: 'person_search', label: 'Find Suppliers', href: '/buyer/matches', roles: ['buyer'] },
-        { icon: 'handshake', label: 'My Deals', href: '/buyer/deals', roles: ['buyer'] },
+        { icon: 'handshake', label: 'My Deals (Buy)', href: '/buyer/deals', roles: ['buyer'] },
+        { icon: 'person_search', label: 'Leads (Buy)', href: '/buyer/leads', roles: ['buyer'] },
+        { icon: 'storefront', label: 'Marketplace (Buy)', href: '/buyer/marketplace/products', roles: ['buyer'] },
+        { icon: 'shopping_cart', label: 'My Purchases', href: '/buyer/purchases', roles: ['buyer'] },
       ],
     }
   ],
   seller: [
     {
-      title: 'Vendor Portal',
+      title: 'Selling',
       items: [
-        { icon: 'dashboard', label: 'Dashboard', href: '/dashboard', roles: ['seller'] },
         { icon: 'shopping_bag', label: 'My Products', href: '/seller/products', roles: ['seller'] },
-        { icon: 'handshake', label: 'My Deals', href: '/seller/deals', roles: ['seller'] },
+        { icon: 'person_search', label: 'Sales Leads', href: '/seller/leads', roles: ['seller'] },
+        { icon: 'handshake', label: 'Sales Deals', href: '/seller/deals', roles: ['seller'] },
+        { icon: 'storefront', label: 'Marketplace', href: '/seller/marketplace', roles: ['seller'] },
       ],
     }
   ],
@@ -114,7 +118,7 @@ export const navigationConfig: Partial<Record<UserRole, NavSection[]>> = {
         { icon: 'shopping_bag', label: 'My Products', href: '/seller/products', roles: ['individual'] },
         { icon: 'person_search', label: 'Sales Leads', href: '/seller/leads', roles: ['individual'] },
         { icon: 'handshake', label: 'Sales Deals', href: '/seller/deals', roles: ['individual'] },
-        { icon: 'storefront', label: 'B2B Marketplace', href: '/seller/marketplace', roles: ['individual'] },
+        { icon: 'storefront', label: 'Marketplace', href: '/seller/marketplace', roles: ['individual'] },
       ],
     }
   ],
@@ -137,7 +141,7 @@ export const navigationConfig: Partial<Record<UserRole, NavSection[]>> = {
         { icon: 'shopping_bag', label: 'My Products', href: '/seller/products', roles: ['business'] },
         { icon: 'person_search', label: 'Sales Leads', href: '/seller/leads', roles: ['business'] },
         { icon: 'handshake', label: 'Sales Deals', href: '/seller/deals', roles: ['business'] },
-        { icon: 'storefront', label: 'B2B Marketplace', href: '/seller/marketplace', roles: ['business'] },
+        { icon: 'storefront', label: 'Marketplace', href: '/seller/marketplace', roles: ['business'] },
       ],
     }
   ]

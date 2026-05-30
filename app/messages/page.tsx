@@ -221,7 +221,7 @@ function MessagesContent() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="flex-1 overflow-auto flex">
+        <div className="h-full flex overflow-hidden">
           {/* Conversations Sidebar */}
           <div className="w-full md:w-80 border-r border-outline-variant flex flex-col bg-white">
             {/* Header and Tabs */}
@@ -312,7 +312,7 @@ function MessagesContent() {
           </div>
 
           {/* Chat Area */}
-          <div className="hidden md:flex flex-1 flex-col bg-gray-50">
+          <div className="hidden md:flex flex-1 flex-col bg-gray-50 overflow-hidden">
             {(activeTab === 'deals' && selectedDeal) || (activeTab === 'leads' && selectedLeadId) ? (
               <>
                 {/* Chat Header */}

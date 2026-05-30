@@ -91,7 +91,7 @@ export default function NegotiateDealPage({ params }: PageProps) {
     );
   }
 
-  const isMyTurn = deal.status === 'negotiation' || deal.status === 'new_supplier' || deal.status === 'quote_received';
+  const isMyTurn = deal.status === 'negotiation' || deal.status === 'new_supplier' || deal.status === 'quote_received' || deal.status === 'inquiry';
   const otherPartyId = user.id === deal.buyerId ? deal.sellerId : deal.buyerId;
 
   const handleCounterOffer = async (e: React.FormEvent) => {
@@ -215,7 +215,7 @@ export default function NegotiateDealPage({ params }: PageProps) {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="text-on-surface hover:text-primary transition-colors"
+                className="md:hidden text-on-surface hover:text-primary transition-colors"
               >
                 <span className="material-symbols-outlined notranslate" translate="no">menu</span>
               </button>
@@ -247,24 +247,24 @@ export default function NegotiateDealPage({ params }: PageProps) {
                       </span>
                     </div>
                     <h2 className="text-3xl font-black font-headline mb-2">{deal.title}</h2>
-                    <p className="text-white/80 font-medium mb-6 max-w-2xl">{deal.description}</p>
+                    <p className="text-white/80 font-medium mb-6 max-w-2xl">{deal.description || 'No detailed description available.'}</p>
                     
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="bg-black/20 p-4 rounded-xl backdrop-blur-sm border border-white/10">
                         <p className="text-[10px] uppercase tracking-widest text-white/60 font-bold mb-1">Current Total Value</p>
-                        <p className="text-xl font-black">{deal.currency || '$'}{(deal.agreedPrice * deal.quantity).toLocaleString()}</p>
+                        <p className="text-xl font-black">{deal.currency || '$'}{((deal.agreedPrice || deal.expectedValue || 0) * (deal.quantity || 1)).toLocaleString()}</p>
                       </div>
                       <div className="bg-black/20 p-4 rounded-xl backdrop-blur-sm border border-white/10">
                         <p className="text-[10px] uppercase tracking-widest text-white/60 font-bold mb-1">Quantity</p>
-                        <p className="text-xl font-black">{deal.quantity.toLocaleString()} {deal.unit}</p>
+                        <p className="text-xl font-black">{(deal.quantity || 1).toLocaleString()} {deal.unit || 'Units'}</p>
                       </div>
                       <div className="bg-black/20 p-4 rounded-xl backdrop-blur-sm border border-white/10">
                         <p className="text-[10px] uppercase tracking-widest text-white/60 font-bold mb-1">Unit Price</p>
-                        <p className="text-xl font-black">{deal.currency || '$'}{deal.agreedPrice.toLocaleString()}</p>
+                        <p className="text-xl font-black">{deal.currency || '$'}{(deal.agreedPrice || deal.expectedValue || 0).toLocaleString()}</p>
                       </div>
                       <div className="bg-black/20 p-4 rounded-xl backdrop-blur-sm border border-white/10">
                         <p className="text-[10px] uppercase tracking-widest text-white/60 font-bold mb-1">Target Delivery</p>
-                        <p className="text-xl font-black">{new Date(deal.deliveryDate).toLocaleDateString()}</p>
+                        <p className="text-xl font-black">{deal.deliveryDate ? new Date(deal.deliveryDate).toLocaleDateString() : 'TBD'}</p>
                       </div>
                     </div>
                   </div>

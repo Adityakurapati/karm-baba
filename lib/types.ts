@@ -170,7 +170,7 @@ export interface Deal {
   unit: string;
   agreedPrice: number;
   currency: string;
-  status: 'new_supplier' | 'quote_received' | 'negotiation' | 'sample_requested' | 'finalized' | 'cancelled';
+  status: 'inquiry' | 'new_supplier' | 'quote_received' | 'negotiation' | 'sample_requested' | 'finalized' | 'cancelled';
   paymentTerms: string;
   deliveryTerms: string;
   deliveryDate: Date;

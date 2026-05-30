@@ -166,7 +166,7 @@ export default function DealDetailPage({ params }: PageProps) {
         <header className="bg-white border-b border-outline-variant p-4 md:p-6 flex justify-between items-center">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-on-surface hover:text-primary transition-colors"
+            className="md:hidden text-on-surface hover:text-primary transition-colors"
           >
             <span className="material-symbols-outlined notranslate" translate="no">menu</span>
           </button>

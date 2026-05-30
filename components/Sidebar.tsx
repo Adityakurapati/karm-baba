@@ -59,7 +59,7 @@ export default function Sidebar({ open = true, onClose, onToggle }: SidebarProps
   const currentBusinessId = businessIdMatch ? businessIdMatch[1] : '';
 
   // If the user is a vendor or normal user but has an organization, inject the Org Management section
-  if (user.organizationId && user.role !== 'admin' && user.role !== 'super_admin') {
+  if (user.organizationId && !['admin', 'super_admin', 'seller', 'buyer'].includes(user.role)) {
     // Clone the section to modify it safely
     let currentNav = isBusinessProfileRoute ? { ...businessProfileNavSection, items: [...businessProfileNavSection.items] } : { ...organizationNavSection, items: [...organizationNavSection.items] };
     

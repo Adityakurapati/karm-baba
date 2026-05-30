@@ -86,6 +86,7 @@ export default function BuyerDealsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case 'inquiry':
       case 'new_supplier':
         return 'bg-blue-100 text-blue-800';
       case 'quote_received':
@@ -104,7 +105,7 @@ export default function BuyerDealsPage() {
   };
 
   const getProgress = (status: string) => {
-    const stages = ['new_supplier', 'quote_received', 'negotiation', 'sample_requested', 'finalized'];
+    const stages = ['inquiry', 'new_supplier', 'quote_received', 'negotiation', 'sample_requested', 'finalized'];
     const index = stages.indexOf(status);
     if (index === -1) return status === 'cancelled' ? 0 : 100;
     return ((index + 1) / stages.length) * 100;
@@ -113,7 +114,7 @@ export default function BuyerDealsPage() {
   // Map tabs to statuses
   const tabToStatuses: { [key: string]: string[] } = {
     'All': [],
-    'New Supplier': ['new_supplier'],
+    'New Supplier': ['inquiry', 'new_supplier'],
     'Quote Received': ['quote_received'],
     'Negotiation': ['negotiation', 'sample_requested'],
     'Finalized': ['finalized'],

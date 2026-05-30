@@ -19,10 +19,10 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [role, setRole] = useState<UserRole>('buyer');
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const [showVerification, setShowVerification] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [verificationSent, setVerificationSent] = useState(false);
@@ -99,7 +99,7 @@ export default function RegisterPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email }),
         });
-        
+
         const data = await response.json();
         if (response.ok) {
           setShowVerification(true);
@@ -115,7 +115,7 @@ export default function RegisterPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, verificationCode }),
         });
-        
+
         const data = await response.json();
         if (response.ok) {
           setIsEmailVerified(true);
@@ -210,7 +210,7 @@ export default function RegisterPage() {
             Create Your Account
           </h2>
           <p className="text-on-surface-variant">
-            Join the global marketplace for buyers and sellers
+            Join the Global marketplace for buyers and sellers
           </p>
         </div>
 
@@ -235,9 +235,8 @@ export default function RegisterPage() {
                   onChange={(e) => setFirstName(e.target.value)}
                   onBlur={() => handleBlur('firstName')}
                   placeholder="John"
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background ${
-                    touched.firstName && !firstName.trim() ? 'border-error' : 'border-outline-variant'
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background ${touched.firstName && !firstName.trim() ? 'border-error' : 'border-outline-variant'
+                    }`}
                 />
                 {touched.firstName && !firstName.trim() && (
                   <p className="text-error text-xs mt-1">First name is required</p>
@@ -255,9 +254,8 @@ export default function RegisterPage() {
                   onChange={(e) => setLastName(e.target.value)}
                   onBlur={() => handleBlur('lastName')}
                   placeholder="Doe"
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background ${
-                    touched.lastName && !lastName.trim() ? 'border-error' : 'border-outline-variant'
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background ${touched.lastName && !lastName.trim() ? 'border-error' : 'border-outline-variant'
+                    }`}
                 />
                 {touched.lastName && !lastName.trim() && (
                   <p className="text-error text-xs mt-1">Last name is required</p>
@@ -277,9 +275,8 @@ export default function RegisterPage() {
                 onBlur={() => handleBlur('email')}
                 placeholder="you@example.com"
                 disabled={isEmailVerified || showVerification}
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background ${
-                  touched.email && !isValidEmail(email) ? 'border-error' : 'border-outline-variant'
-                } disabled:opacity-50`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background ${touched.email && !isValidEmail(email) ? 'border-error' : 'border-outline-variant'
+                  } disabled:opacity-50`}
               />
               {touched.email && !isValidEmail(email) && (
                 <p className="text-error text-xs mt-1">Please enter a valid email address</p>
@@ -326,7 +323,7 @@ export default function RegisterPage() {
                   <span className="material-symbols-outlined notranslate" translate="no">verified</span>
                   Email verified successfully!
                 </div>
-                
+
                 {/* Password */}
                 <div>
                   <label className="block text-sm font-headline font-bold text-on-surface mb-2">
@@ -339,9 +336,8 @@ export default function RegisterPage() {
                       onChange={(e) => setPassword(e.target.value)}
                       onBlur={() => handleBlur('password')}
                       placeholder="••••••••"
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background pr-12 ${
-                        touched.password && !passwordStrength.isValid ? 'border-error' : 'border-outline-variant'
-                      }`}
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background pr-12 ${touched.password && !passwordStrength.isValid ? 'border-error' : 'border-outline-variant'
+                        }`}
                     />
                     <button
                       type="button"
@@ -366,15 +362,14 @@ export default function RegisterPage() {
                         {[1, 2, 3, 4, 5].map((level) => (
                           <div
                             key={level}
-                            className={`flex-1 rounded-full ${
-                              level <= passwordStrength.strength
-                                ? passwordStrength.strength <= 2
-                                  ? 'bg-error'
-                                  : passwordStrength.strength <= 3
+                            className={`flex-1 rounded-full ${level <= passwordStrength.strength
+                              ? passwordStrength.strength <= 2
+                                ? 'bg-error'
+                                : passwordStrength.strength <= 3
                                   ? 'bg-yellow-400'
                                   : 'bg-green-500'
-                                : 'bg-outline-variant/30'
-                            }`}
+                              : 'bg-outline-variant/30'
+                              }`}
                           />
                         ))}
                       </div>
@@ -411,9 +406,8 @@ export default function RegisterPage() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       onBlur={() => handleBlur('confirmPassword')}
                       placeholder="••••••••"
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background pr-12 ${
-                        touched.confirmPassword && password !== confirmPassword ? 'border-error' : 'border-outline-variant'
-                      }`}
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-primary bg-background pr-12 ${touched.confirmPassword && password !== confirmPassword ? 'border-error' : 'border-outline-variant'
+                        }`}
                     />
                     <button
                       type="button"
@@ -440,13 +434,13 @@ export default function RegisterPage() {
               disabled={loading || !isFormValid()}
               className="w-full py-4 bg-primary text-white font-headline font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 text-lg shadow-lg shadow-primary/20"
             >
-              {loading 
-                ? (!showVerification 
-                    ? 'Sending Code...' 
-                    : (!isEmailVerified ? 'Verifying Code...' : 'Creating Account...')) 
-                : (!showVerification 
-                    ? 'Send Verification Code' 
-                    : (!isEmailVerified ? 'Verify Code' : 'Create Account'))}
+              {loading
+                ? (!showVerification
+                  ? 'Sending Code...'
+                  : (!isEmailVerified ? 'Verifying Code...' : 'Creating Account...'))
+                : (!showVerification
+                  ? 'Send Verification Code'
+                  : (!isEmailVerified ? 'Verify Code' : 'Create Account'))}
             </button>
 
             <div className="relative my-6">
